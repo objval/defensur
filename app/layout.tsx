@@ -1,10 +1,13 @@
-import { Geist, Geist_Mono, Manrope, Instrument_Serif } from "next/font/google"
+import { Geist_Mono, Manrope, Noto_Serif } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 
-const instrumentSerifHeading = Instrument_Serif({subsets:['latin'],weight:['400'],variable:'--font-heading'});
+const notoSerifHeading = Noto_Serif({
+  subsets: ["latin"],
+  variable: "--font-heading",
+})
 
 const manrope = Manrope({subsets:['latin'],variable:'--font-sans'})
 
@@ -22,7 +25,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", manrope.variable, instrumentSerifHeading.variable)}
+      className={cn("antialiased", fontMono.variable, "font-sans", manrope.variable, notoSerifHeading.variable)}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>

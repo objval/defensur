@@ -34,3 +34,11 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local AI/dev tooling
+.agents/
+skills/
+skills-lock.json
+.impeccable.md
+STITCH-HERO-PROMPT.md
+.github/copilot-instructions.md

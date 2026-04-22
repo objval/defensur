@@ -1,21 +1,25 @@
-# Next.js template
+# Defensur
 
-This is a Next.js template with shadcn/ui.
+Modern rebuild of the Defensur law firm website for Temuco, Chile.
 
-## Adding components
+## Stack
+- Next.js 16
+- React 19
+- Tailwind CSS 4
+- shadcn/ui
+- Framer Motion
 
-To add components to your app, run the following command:
+## Current scope
+- Editorial-style homepage hero
+- Practice-area messaging section
+- Team section with portrait grid
+- Light/dark theme support
 
+## Run locally
 ```bash
-npx shadcn@latest add button
+npm install
+npm run dev
 ```
 
-This will place the ui components in the `components` directory.
-
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
-```
+## Notes
+This repo currently focuses on the homepage experience and design system groundwork for the full site rebuild.

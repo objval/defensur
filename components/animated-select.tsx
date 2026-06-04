@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion, MotionConfig } from "framer-motion"
+import { AnimatePresence, LazyMotion, m, MotionConfig } from "framer-motion"
+import { domAnimation } from "framer-motion"
 import { ChevronDown, X, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -17,9 +18,10 @@ type AnimatedSelectProps = {
   options: SelectOption[]
   value: string
   onChange: (value: string) => void
+  id?: string
 }
 
-export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps) {
+export function AnimatedSelect({ options, value, onChange, id }: AnimatedSelectProps) {
   const [open, setOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const selected = options.find((o) => o.value === value) ?? options[0]
@@ -47,10 +49,12 @@ export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps
   }, [open])
 
   return (
-    <MotionConfig transition={{ type: "spring", stiffness: 400, damping: 32 }}>
+    <LazyMotion features={domAnimation}>
+      <MotionConfig transition={{ type: "spring", stiffness: 400, damping: 32 }}>
       <div ref={containerRef} className="relative">
         {/* ── Trigger: collapsed pill ──────────────────────────────────────── */}
         <button
+          id={id}
           type="button"
           onClick={() => setOpen((v) => !v)}
           className={cn(
@@ -64,8 +68,8 @@ export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps
         >
           <div className="flex items-center gap-3">
             {selected.icon && (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand-navy/10 bg-brand-navy/5 text-brand-navy dark:border-brand-on-navy-muted/15 dark:bg-brand-on-navy-muted/8 dark:text-brand-on-navy-muted">
-                <selected.icon className="h-4 w-4" />
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-brand-navy/10 bg-brand-navy/5 text-brand-navy dark:border-brand-on-navy-muted/15 dark:bg-brand-on-navy-muted/8 dark:text-brand-on-navy-muted">
+                <selected.icon className="size-4" />
               </div>
             )}
             <div className="flex flex-col min-w-0">
@@ -79,15 +83,15 @@ export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps
               )}
             </div>
           </div>
-          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-          </motion.div>
+          <m.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown className="size-4 text-muted-foreground" />
+          </m.div>
         </button>
 
         {/* ── Dropdown: absolute overlay, no layout shift ──────────────────── */}
         <AnimatePresence>
           {open && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -4, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.98 }}
@@ -103,10 +107,10 @@ export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
+                  className="flex size-6 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
                   aria-label="Cerrar"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                 </button>
               </div>
 
@@ -136,13 +140,13 @@ export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps
                       {Icon && (
                         <div
                           className={cn(
-                            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors duration-150",
+                            "flex size-9 shrink-0 items-center justify-center rounded-full border transition-colors duration-150",
                             isSelected
                               ? "border-brand-navy/15 bg-brand-navy/8 text-brand-navy dark:border-brand-on-navy-muted/20 dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted"
                               : "border-border bg-muted/30 text-muted-foreground group-hover:border-brand-navy/10 group-hover:text-brand-navy dark:group-hover:text-brand-on-navy-muted"
                           )}
                         >
-                          <Icon className="h-4 w-4" />
+                          <Icon className="size-4" />
                         </div>
                       )}
                       <div className="flex flex-col min-w-0 flex-1">
@@ -161,16 +165,17 @@ export function AnimatedSelect({ options, value, onChange }: AnimatedSelectProps
                         )}
                       </div>
                       {isSelected && (
-                        <Check className="h-4 w-4 shrink-0 text-brand-navy dark:text-brand-on-navy-muted" />
+                        <Check className="size-4 shrink-0 text-brand-navy dark:text-brand-on-navy-muted" />
                       )}
                     </button>
                   )
                 })}
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
     </MotionConfig>
+    </LazyMotion>
   )
 }

@@ -89,9 +89,8 @@ function TeamCard({ member }: { member: TeamMember }) {
 
 function FeaturedCard({ member }: { member: TeamMember }) {
   return (
-    <div
+    <article
       className="relative h-full min-h-[26rem] w-full overflow-hidden rounded-2xl sm:min-h-[34rem] lg:min-h-0"
-      role="article"
       aria-label={`${member.name}, ${member.role}`}
     >
       <Image
@@ -114,7 +113,7 @@ function FeaturedCard({ member }: { member: TeamMember }) {
           </h3>
         </div>
       </div>
-    </div>
+    </article>
   )
 }
 

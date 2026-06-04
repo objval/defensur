@@ -1,16 +1,17 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { HTMLMotionProps, motion } from "framer-motion"
+import { HTMLMotionProps, LazyMotion, m } from "framer-motion"
+import { domAnimation } from "framer-motion"
 
-export const GRADIENT_ANGLES = {
+const GRADIENT_ANGLES = {
   top: 0,
   right: 90,
   bottom: 180,
   left: 270,
 }
 
-export type ProgressiveBlurProps = {
+type ProgressiveBlurProps = {
   direction?: keyof typeof GRADIENT_ANGLES
   blurLayers?: number
   className?: string
@@ -28,6 +29,7 @@ export function ProgressiveBlur({
   const segmentSize = 1 / (blurLayers + 1)
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className={cn("relative", className)}>
       {Array.from({ length: layers }).map((_, index) => {
         const angle = GRADIENT_ANGLES[direction]
@@ -44,7 +46,7 @@ export function ProgressiveBlur({
         const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(", ")})`
 
         return (
-          <motion.div
+          <m.div
             key={index}
             className="pointer-events-none absolute inset-0 rounded-[inherit]"
             style={{
@@ -57,5 +59,6 @@ export function ProgressiveBlur({
         )
       })}
     </div>
+    </LazyMotion>
   )
 }

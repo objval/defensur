@@ -1,6 +1,6 @@
 "use client"
 
-import { Scale, Users, BriefcaseBusiness, Landmark, ShieldCheck, Phone } from "lucide-react"
+import { Scale, BriefcaseBusiness, ShieldCheck, Phone } from "lucide-react"
 import { Marquee } from "@/components/marquee"
 import { cn } from "@/lib/utils"
 
@@ -55,7 +55,7 @@ export function WhyDefensur() {
     <section className="relative bg-background py-16 md:py-28">
       <div className="mx-auto max-w-full">
         {/* ── Heading ────────────────────────────────────────────────────── */}
-        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center space-y-5 px-5 text-center md:px-10">
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-y-5 px-5 text-center md:px-10">
           <h2 className="max-w-3xl font-[family-name:var(--font-heading)] font-semibold text-3xl sm:text-4xl lg:text-[clamp(2.4rem,4.5vw,3.5rem)] leading-[1.15] text-primary">
             Sabemos lo que te preocupa.{" "}
             <span className="italic font-normal">Por eso defendemos así.</span>
@@ -134,7 +134,7 @@ export function WhyDefensur() {
                     !isLast && "lg:border-r"
                   )}
                 >
-                  <Icon className="h-10 w-10 text-brand-navy/40 dark:text-brand-on-navy-muted/30" aria-hidden="true" />
+                  <Icon className="size-10 text-brand-navy/40 dark:text-brand-on-navy-muted/30" aria-hidden="true" />
 
                   <div className="flex flex-col gap-2.5 pt-6 sm:pt-10 lg:pt-16">
                     <h3 className="font-[family-name:var(--font-heading)] font-semibold text-xl sm:text-2xl text-primary leading-tight">

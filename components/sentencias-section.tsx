@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Calendar, User } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Calendar, User } from "lucide-react"
 
 const sentencias = [
   {
@@ -10,8 +10,9 @@ const sentencias = [
     excerpt:
       "Tribunal acoge acción de tutela laboral interpuesta en favor de funcionaria municipal que fue objeto de vulneración de derechos fundamentales.",
     date: "2024-11-15",
-    author: "Nicolás Yáñez",
+    author: "Nicolás Yañez",
     category: "Tutela Laboral",
+    amount: "$14.500.000",
   },
   {
     slug: "tutela-laboral-supermercado-lily-villarrica",
@@ -19,8 +20,9 @@ const sentencias = [
     excerpt:
       "Práctica antisindical declarada por tribunal en causa seguida contra Supermercado Lily por represalias contra dirigente sindical.",
     date: "2024-10-08",
-    author: "Nicolás Yáñez",
+    author: "Nicolás Yañez",
     category: "Práctica Antisindical",
+    amount: "$9.900.000",
   },
   {
     slug: "vulneracion-derechos-municipalidad-gorbea",
@@ -30,6 +32,7 @@ const sentencias = [
     date: "2024-09-22",
     author: "Sebastián Pizarro",
     category: "Tutela Laboral",
+    amount: "$6.000.000",
   },
   {
     slug: "indemnizacion-hospital-heyermann-angol",
@@ -37,8 +40,9 @@ const sentencias = [
     excerpt:
       "Funcionaria del Hospital Heyermann obtiene indemnización por despido injustificado tras años de servicio dedicado.",
     date: "2024-08-10",
-    author: "Nicolás Yáñez",
+    author: "Nicolás Yañez",
     category: "Despido Injustificado",
+    amount: "$15.000.000",
   },
 ]
 
@@ -66,62 +70,70 @@ export function SentenciasSection() {
           </Link>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {sentencias.map((sentencia, i) => (
+        {/* 2x2 grid — 4 cards, completely filled */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {sentencias.map((s) => (
             <Link
-              key={sentencia.slug}
-              href={`/sentencias/${sentencia.slug}`}
-              className={`group flex flex-col rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)] ${
-                i === 0 ? "md:col-span-2 md:flex-row md:gap-10" : ""
-              }`}
+              key={s.slug}
+              href={`/sentencias/${s.slug}`}
+              className="group flex flex-col rounded-2xl border border-border/60 bg-card p-6 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
             >
-              <div className={`flex flex-col flex-1 ${i === 0 ? "md:max-w-[55%]" : ""}`}>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-sky px-2.5 py-1 rounded-full bg-brand-sky/10">
-                    {sentencia.category}
-                  </span>
-                </div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-sky px-2.5 py-1 rounded-full bg-brand-sky/10">
+                  {s.category}
+                </span>
+                <span className="text-[10px] font-bold text-brand-navy dark:text-brand-on-navy-muted px-2.5 py-1 rounded-full bg-brand-navy/8 dark:bg-brand-on-navy-muted/10">
+                  {s.amount}
+                </span>
+              </div>
 
-                <h3
-                  className={`font-[family-name:var(--font-heading)] font-semibold text-primary mb-3 leading-snug group-hover:text-brand-navy transition-colors dark:group-hover:text-brand-on-navy-muted ${
-                    i === 0 ? "text-xl md:text-2xl lg:text-3xl" : "text-lg"
-                  }`}
-                >
-                  {sentencia.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">
-                  {sentencia.excerpt}
-                </p>
+              <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-primary mb-2 leading-snug group-hover:text-brand-navy transition-colors dark:group-hover:text-brand-on-navy-muted">
+                {s.title}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">
+                {s.excerpt}
+              </p>
 
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <User className="size-3.5" />
-                    {sentencia.author}
+                    {s.author}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <Calendar className="size-3.5" />
-                    {new Date(sentencia.date).toLocaleDateString("es-CL", {
+                    {new Date(s.date).toLocaleDateString("es-CL", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                     })}
                   </span>
                 </div>
+                <ArrowUpRight className="size-4 text-muted-foreground/40 transition-all group-hover:text-brand-sky group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </div>
-
-              {i === 0 && (
-                <div className="hidden md:flex items-center justify-center flex-1 rounded-xl bg-brand-navy/5 dark:bg-brand-on-navy-muted/5 min-h-[200px]">
-                  <div className="text-center space-y-3 p-8">
-                    <p className="text-4xl font-bold text-brand-navy dark:text-brand-on-navy-muted">
-                      $14.5M
-                    </p>
-                    <p className="text-sm text-muted-foreground">Indemnización lograda</p>
-                  </div>
-                </div>
-              )}
             </Link>
           ))}
+        </div>
+
+        {/* Full-width CTA banner */}
+        <div className="mt-4">
+          <Link
+            href="/contacto/"
+            className="group relative flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8 rounded-2xl bg-brand-navy p-7 md:p-9 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(8,24,107,0.25)]"
+          >
+            <div className="text-center sm:text-left">
+              <p className="font-[family-name:var(--font-heading)] text-xl md:text-2xl font-semibold text-white leading-tight">
+                ¿Necesitas asesoría legal?
+              </p>
+              <p className="mt-1 text-sm text-white/50">
+                Cuéntanos tu caso. Tu primera consulta es gratuita y sin compromiso.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-brand-sky group-hover:gap-3 transition-all shrink-0">
+              Consultar ahora
+              <ArrowRight className="size-4" />
+            </span>
+          </Link>
         </div>
       </div>
     </section>

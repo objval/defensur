@@ -4,7 +4,7 @@ import { VideoSection } from "@/components/video-section"
 import { SuccessCases } from "@/components/success-cases"
 import { SentenciasSection } from "@/components/sentencias-section"
 import { FAQSection } from "@/components/faq-section"
-import { StatsBar, CTASection } from "@/components/stats-bar"
+import { CTASection } from "@/components/stats-bar"
 import { SiteFooter } from "@/components/site-footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 
@@ -15,7 +15,6 @@ export default function Page() {
       <ServicesGrid />
       <VideoSection />
       <SuccessCases />
-      <StatsBar />
       <SentenciasSection />
       <FAQSection />
       <CTASection />

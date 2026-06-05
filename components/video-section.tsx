@@ -1,45 +1,96 @@
 "use client"
 
-export function VideoSection() {
-  return (
-    <section className="py-16 md:py-24 bg-muted/30" aria-label="Video informativo">
-      <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div className="space-y-5">
-            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy dark:text-brand-on-navy-muted">
-              Conoce nuestro trabajo
-            </span>
-            <h2 className="font-[family-name:var(--font-heading)] text-3xl font-semibold leading-[1.15] text-primary sm:text-4xl">
-              Asesoría legal en sumarios administrativos{" "}
-              <span className="italic font-normal">de principio a fin.</span>
-            </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              En Defensur acompañamos a funcionarios públicos durante todo el proceso
-              de sumarios administrativos. Desde la notificación hasta la defensa
-              final, nuestro equipo garantiza el debido proceso y la protección de
-              tus derechos.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-brand-navy/5 dark:bg-brand-on-navy-muted/5">
-                <span className="text-2xl font-bold text-brand-navy dark:text-brand-on-navy-muted">+15</span>
-                <span className="text-sm text-muted-foreground">Años de experiencia</span>
-              </div>
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-brand-navy/5 dark:bg-brand-on-navy-muted/5">
-                <span className="text-2xl font-bold text-brand-navy dark:text-brand-on-navy-muted">+500</span>
-                <span className="text-sm text-muted-foreground">Casos resueltos</span>
-              </div>
-            </div>
-          </div>
+import * as React from "react"
+import { Play } from "lucide-react"
 
-          <div className="relative aspect-video rounded-2xl overflow-hidden shadow-[0_16px_48px_rgba(8,24,107,0.12)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
+const VIDEO_ID = "44g_fgYZtEg"
+const THUMBNAIL = `https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`
+
+const stats = [
+  { value: "+15", label: "Años de experiencia" },
+  { value: "+500", label: "Casos resueltos" },
+  { value: "$150M+", label: "En indemnizaciones" },
+  { value: "98%", label: "Casos favorables" },
+]
+
+export function VideoSection() {
+  const [playing, setPlaying] = React.useState(false)
+
+  return (
+    <section className="relative bg-brand-navy overflow-hidden" aria-label="Conoce nuestro trabajo">
+      {/* Decorative blurs */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-brand-sky/8 rounded-full blur-[120px]" aria-hidden="true" />
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-brand-sky/5 rounded-full blur-[120px]" aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto px-5 md:px-12 lg:px-24 py-16 md:py-24">
+        {/* Header */}
+        <div className="text-center mb-10 md:mb-14">
+          <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-brand-sky">
+            Conoce nuestro trabajo
+          </span>
+          <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl sm:text-4xl lg:text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.15] text-white">
+            Asesoría legal en sumarios administrativos{" "}
+            <span className="italic font-normal text-white/60">de principio a fin.</span>
+          </h2>
+          <p className="mt-4 text-white/50 max-w-2xl mx-auto leading-relaxed">
+            En Defensur acompañamos a funcionarios públicos durante todo el proceso.
+            Desde la notificación hasta la defensa final, garantizamos el debido proceso
+            y la protección de tus derechos.
+          </p>
+        </div>
+
+        {/* Video container */}
+        <div className="relative rounded-2xl overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.5)] aspect-video max-w-4xl mx-auto">
+          {playing ? (
             <iframe
-              src="https://www.youtube.com/embed/44g_fgYZtEg"
-              title="Defensur: Asesoría legal en sumarios administrativos de principio a fin"
+              src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&rel=0`}
+              title="Defensur: Asesoría legal en sumarios administrativos"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="absolute inset-0 w-full h-full"
             />
-          </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setPlaying(true)}
+              className="group absolute inset-0 w-full h-full cursor-pointer"
+              aria-label="Reproducir video"
+            >
+              {/* Thumbnail */}
+              <img
+                src={THUMBNAIL}
+                alt="Defensur — Asesoría legal en sumarios administrativos"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent" />
+              {/* Play button */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative flex items-center justify-center size-20 rounded-full bg-white/15 backdrop-blur-md border border-white/20 transition-all duration-300 group-hover:bg-white/25 group-hover:scale-110 group-hover:border-white/30">
+                  <Play className="size-8 text-white ml-1" fill="currentColor" />
+                  {/* Pulse ring */}
+                  <div className="absolute inset-0 rounded-full border border-white/20 animate-ping" />
+                </div>
+              </div>
+              {/* Bottom label */}
+              <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 flex items-center gap-2 text-xs text-white/60">
+                <span className="size-2 rounded-full bg-red-500 animate-pulse" />
+                Ver video informativo
+              </div>
+            </button>
+          )}
+        </div>
+
+        {/* Stats strip */}
+        <div className="mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-4xl mx-auto">
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl font-bold text-white">
+                {stat.value}
+              </p>
+              <p className="mt-1 text-xs md:text-sm text-white/40">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

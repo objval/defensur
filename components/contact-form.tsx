@@ -232,6 +232,7 @@ export function ContactForm() {
             options={formAreas}
             value={selectedArea}
             onChange={setSelectedArea}
+            label="Área de Interés"
           />
         </div>
 

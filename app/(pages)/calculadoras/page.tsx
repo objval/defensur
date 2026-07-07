@@ -2,20 +2,104 @@
 
 import * as React from "react"
 import { PageHero } from "@/components/page-hero"
-import { Calculator, Scale, Percent, Landmark, HelpCircle, AlertTriangle, ShieldCheck } from "lucide-react"
+import {
+  Calculator,
+  Scale,
+  Landmark,
+  HelpCircle,
+  AlertTriangle,
+  ShieldCheck,
+  Clock,
+  History,
+  CalendarCheck,
+  CalendarClock,
+  Baby,
+  Users,
+  Users2,
+  UsersRound,
+} from "lucide-react"
+import { AnimatedSelect, type SelectOption } from "@/components/animated-select"
+
+// ── Options for selects ─────────────────────────────────────────────────────
+
+const horasJornadaOptions: SelectOption[] = [
+  {
+    id: "44",
+    label: "44 horas",
+    value: "44",
+    icon: Clock,
+    description: "Jornada vigente — tope legal actual",
+  },
+  {
+    id: "42",
+    label: "42 horas",
+    value: "42",
+    icon: CalendarCheck,
+    description: "Desde 2026 — reducción gradual",
+  },
+  {
+    id: "40",
+    label: "40 horas",
+    value: "40",
+    icon: CalendarClock,
+    description: "Ley N° 21.561 — jornada completa",
+  },
+  {
+    id: "45",
+    label: "45 horas",
+    value: "45",
+    icon: History,
+    description: "Jornada histórica — anterior al 2024",
+  },
+]
+
+const cantidadHijosOptions: SelectOption[] = [
+  {
+    id: "1",
+    label: "1 hijo",
+    value: "1",
+    icon: Baby,
+    description: "Mínimo: 40% de 1 sueldo mínimo",
+  },
+  {
+    id: "2",
+    label: "2 hijos",
+    value: "2",
+    icon: Users,
+    description: "Mínimo: 30% por cada hijo",
+  },
+  {
+    id: "3",
+    label: "3 hijos",
+    value: "3",
+    icon: Users2,
+    description: "Mínimo: 30% por cada hijo",
+  },
+  {
+    id: "4",
+    label: "4 o más hijos",
+    value: "4",
+    icon: UsersRound,
+    description: "Mínimo: 30% por cada hijo",
+  },
+]
 
 export default function CalculadorasPage() {
   const [activeTab, setActiveTab] = React.useState<"sueldo" | "alimentos">("sueldo")
 
   // --- State for Sueldo Mínimo Calculator ---
   const [sueldoBase, setSueldoBase] = React.useState<number>(500000)
-  const [horasJornada, setHorasJornada] = React.useState<number>(44)
+  const [horasJornadaValue, setHorasJornadaValue] = React.useState<string>("44")
   const [horasTrabajadas, setHorasTrabajadas] = React.useState<number>(30)
+
+  const horasJornada = Number(horasJornadaValue)
 
   // --- State for Pensión de Alimentos Calculator ---
   const [ingresoPadre, setIngresoPadre] = React.useState<number>(800000)
-  const [cantidadHijos, setCantidadHijos] = React.useState<number>(1)
+  const [cantidadHijosValue, setCantidadHijosValue] = React.useState<string>("1")
   const [sueldoMinimoAlimentos, setSueldoMinimoAlimentos] = React.useState<number>(500000)
+
+  const cantidadHijos = Number(cantidadHijosValue)
 
   // --- Sueldo calculations ---
   const sueldoProporcionalBruto = Math.round(
@@ -27,22 +111,19 @@ export default function CalculadorasPage() {
   const valorHoraMinimo = Math.round(sueldoBase / (horasJornada * 4.16667))
 
   // --- Alimentos calculations ---
-  // 1 hijo: 40% del sueldo mínimo. 2 o más: 30% por cada hijo.
   const porcentajeMinimo = cantidadHijos === 1 ? 0.40 : 0.30
   const minimoLegalPorHijo = sueldoMinimoAlimentos * porcentajeMinimo
   const minimoLegalTotal = minimoLegalPorHijo * cantidadHijos
   const maximoLegalTotal = ingresoPadre * 0.50
-
   const superaMaximo = minimoLegalTotal > maximoLegalTotal
 
   // Format currency helpers
-  const formatCLP = (val: number) => {
-    return new Intl.NumberFormat("es-CL", {
+  const formatCLP = (val: number) =>
+    new Intl.NumberFormat("es-CL", {
       style: "currency",
       currency: "CLP",
       maximumFractionDigits: 0,
     }).format(val)
-  }
 
   return (
     <>
@@ -119,23 +200,19 @@ export default function CalculadorasPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Horas jornada completa */}
+                    {/* Horas jornada completa — AnimatedSelect */}
                     <div className="space-y-2">
-                      <label htmlFor="horasJornada" className="text-sm font-semibold text-primary">
+                      <label htmlFor="horasJornada" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
                         Horas Jornada Completa Semanal
                       </label>
-                      <select
+                      <AnimatedSelect
                         id="horasJornada"
-                        value={horasJornada}
-                        onChange={(e) => setHorasJornada(Number(e.target.value))}
-                        className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
-                      >
-                        <option value={44}>44 horas (Vigente)</option>
-                        <option value={42}>42 horas (Desde 2026)</option>
-                        <option value={40}>40 horas (Ley Completa)</option>
-                        <option value={45}>45 horas (Histórico)</option>
-                      </select>
-                      <p className="text-[11px] text-muted-foreground">
+                        options={horasJornadaOptions}
+                        value={horasJornadaValue}
+                        onChange={setHorasJornadaValue}
+                        label="Jornada Semanal"
+                      />
+                      <p className="text-[11px] text-muted-foreground px-1">
                         Base legal para el tope máximo semanal de trabajo.
                       </p>
                     </div>
@@ -151,7 +228,9 @@ export default function CalculadorasPage() {
                         min={0}
                         max={horasJornada}
                         value={horasTrabajadas}
-                        onChange={(e) => setHorasTrabajadas(Math.min(horasJornada, Math.max(0, Number(e.target.value))))}
+                        onChange={(e) =>
+                          setHorasTrabajadas(Math.min(horasJornada, Math.max(0, Number(e.target.value))))
+                        }
                         className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
                         placeholder="Ej. 30"
                       />
@@ -262,23 +341,19 @@ export default function CalculadorasPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Cantidad de hijos */}
+                    {/* Cantidad de hijos — AnimatedSelect */}
                     <div className="space-y-2">
-                      <label htmlFor="cantidadHijos" className="text-sm font-semibold text-primary">
+                      <label htmlFor="cantidadHijos" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
                         Cantidad de Hijos a Alimentar
                       </label>
-                      <select
+                      <AnimatedSelect
                         id="cantidadHijos"
-                        value={cantidadHijos}
-                        onChange={(e) => setCantidadHijos(Number(e.target.value))}
-                        className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
-                      >
-                        <option value={1}>1 hijo (40% de 1 sueldo mínimo)</option>
-                        <option value={2}>2 hijos (30% de 1 sueldo mínimo por hijo)</option>
-                        <option value={3}>3 hijos (30% de 1 sueldo mínimo por hijo)</option>
-                        <option value={4}>4 o más hijos (30% de 1 sueldo mínimo por hijo)</option>
-                      </select>
-                      <p className="text-[11px] text-muted-foreground">
+                        options={cantidadHijosOptions}
+                        value={cantidadHijosValue}
+                        onChange={setCantidadHijosValue}
+                        label="Número de Hijos"
+                      />
+                      <p className="text-[11px] text-muted-foreground px-1">
                         Determina el porcentaje mínimo obligatorio a pagar según la ley chilena.
                       </p>
                     </div>

@@ -13,11 +13,10 @@ export const metadata: Metadata = {
 const team = [
   { name: "Nicolás Yáñez Inostroza", role: "Abogado Jefe — Laboral y Administrativo", image: "/team/nicolas.webp", featured: true },
   { name: "Sebastián Pizarro", role: "Experto en Derecho Laboral", image: "/team/sebastian.webp" },
-  { name: "Angela Sanchez", role: "Abogada Penalista", image: "/team/angela.webp" },
-  { name: "Millaray Rohten", role: "Abogada de Familia", image: "/team/millaray.webp" },
-  { name: "Felipe Maripil", role: "Asesor Jurídico", image: "/team/felipe.webp" },
-  { name: "Carolina Arancibia", role: "Administradora", image: "/team/carolina.webp" },
-  { name: "Nataly Pérez", role: "Secretaria", image: "/team/nataly.webp" },
+  { name: "Millaray Rohten", role: "Abogada de Familia", image: "/team/millaray.jpeg" },
+  { name: "Carolina Arancibia", role: "Administradora", image: "/team/carolina.jpeg" },
+  { name: "Constanza Ampuero", role: "Abogada de Deudas", image: "/team/constanza-ampuero.jpeg" },
+  { name: "Génesis Carrillo", role: "Abogada Laboral", image: "/team/genesis-carrillo.jpeg" },
 ]
 
 export default function Page() {
@@ -69,7 +68,7 @@ export default function Page() {
               </div>
               <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-brand-navy/5 dark:bg-brand-on-navy-muted/5 text-center">
                 <Users className="size-8 text-brand-navy dark:text-brand-on-navy-muted mb-3" />
-                <p className="text-2xl font-bold text-primary">7</p>
+                <p className="text-2xl font-bold text-primary">6</p>
                 <p className="text-xs text-muted-foreground mt-1">Integrantes</p>
               </div>
               <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-brand-navy/5 dark:bg-brand-on-navy-muted/5 text-center">

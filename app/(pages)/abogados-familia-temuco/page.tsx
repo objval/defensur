@@ -28,15 +28,15 @@ const highlights = [
 const details = [
   {
     heading: "Divorcios de Mutuo Acuerdo y Unilaterales",
-    content: "El divorcio de mutuo acuerdo se tramita ante notario o ante el Tribunal de Familia, con una duración aproximada de 3 a 6 meses. Es necesario que hayan transcurrido al menos 1 año desde la separación.
+    content: `El divorcio de mutuo acuerdo se tramita ante notario o ante el Tribunal de Familia, con una duración aproximada de 3 a 6 meses. Es necesario que hayan transcurrido al menos 1 año desde la separación.
 
 El divorcio unilateral requiere acreditar al menos 3 años de separación y se tramita ante el Tribunal de Familia. Puede tomar entre 8 meses y 2 años dependiendo de la complejidad del caso.
 
-En ambos casos, es fundamental regular la situación de los hijos menores, la liquidación de la sociedad conyugal y el eventual derecho a alimentos entre cónyuges.",
+En ambos casos, es fundamental regular la situación de los hijos menores, la liquidación de la sociedad conyugal y el eventual derecho a alimentos entre cónyuges.`,
   },
   {
     heading: "Pensión de Alimentos",
-    content: "La pensión de alimentos es un derecho de los menores y del cónyuge que necesita protección. Calculamos el monto adecuado según las necesidades del alimentario y las capacidades del alimentante.
+    content: `La pensión de alimentos es un derecho de los menores y del cónyuge que necesita protección. Calculamos el monto adecuado según las necesidades del alimentario y las capacidades del alimentante.
 
 Para el cobro de pensiones atrasadas, iniciamos apremios judiciales que pueden incluir:
 
@@ -46,19 +46,19 @@ Para el cobro de pensiones atrasadas, iniciamos apremios judiciales que pueden i
 • Arraigo
 • Retención de devolución de impuestos
 
-También realizamos cobranza judicial y extrajudicial de deudas alimentarias.",
+También realizamos cobranza judicial y extrajudicial de deudas alimentarias.`,
   },
   {
     heading: "Cuidado Personal y Régimen de Visitas",
-    content: "El cuidado personal (antes tenencia) determina con quién vivirán los hijos menores después del divorcio o separación. El tribunal prioriza el interés superior del niño.
+    content: `El cuidado personal (antes tenencia) determina con quién vivirán los hijos menores después del divorcio o separación. El tribunal prioriza el interés superior del niño.
 
 El régimen de visitas establece cómo el padre o madre que no tiene el cuidado personal se relacionará con los hijos. Puede ser amplio, restringido o supervisado según las circunstancias.
 
-Ambos temas pueden modificarse si cambian las circunstancias que motivaron la decisión original.",
+Ambos temas pueden modificarse si cambian las circunstancias que motivaron la decisión original.`,
   },
   {
     heading: "Violencia Intrafamiliar (VIF) y Medidas de Protección",
-    content: "Ante situaciones de violencia intrafamiliar, solicitamos medidas de protección urgentes ante el Tribunal de Familia. Estas pueden incluir:
+    content: `Ante situaciones de violencia intrafamiliar, solicitamos medidas de protección urgentes ante el Tribunal de Familia. Estas pueden incluir:
 
 • Prohibición de acercamiento
 • Salida del hogar del agresor
@@ -67,13 +67,13 @@ Ambos temas pueden modificarse si cambian las circunstancias que motivaron la de
 • Retención de armas
 • Régimen de visitas supervisado
 
-Las medidas de protección se pueden solicitar de forma urgente y el tribunal debe pronunciarse en un plazo máximo de 24 a 48 horas.",
+Las medidas de protección se pueden solicitar de forma urgente y el tribunal debe pronunciarse en un plazo máximo de 24 a 48 horas.`,
   },
   {
     heading: "Adopciones y Autorizaciones de Viaje",
-    content: "Asesoramos en todo el proceso de adopción, desde la postulación hasta la sentencia definitiva. También gestionamos autorizaciones judiciales de viaje para menores cuando uno de los progenitores no da su consentimiento.
+    content: `Asesoramos en todo el proceso de adopción, desde la postulación hasta la sentencia definitiva. También gestionamos autorizaciones judiciales de viaje para menores cuando uno de los progenitores no da su consentimiento.
 
-En temas de adopción, acompañamos tanto a adoptantes nacionales como a aquellos que se encuentran en procesos de adopción internacional, asegurando el cumplimiento de todos los requisitos legales.",
+En temas de adopción, acompañamos tanto a adoptantes nacionales como a aquellos que se encuentran en procesos de adopción internacional, asegurando el cumplimiento de todos los requisitos legales.`,
   },
 ]
 

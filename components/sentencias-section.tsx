@@ -2,49 +2,10 @@
 
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight, Calendar, User } from "lucide-react"
+import { SENTENCIAS } from "@/lib/sentencias-data"
 
-const sentencias = [
-  {
-    slug: "tutela-laboral-municipalidad-temuco-14-millones",
-    title: "Municipalidad de Temuco condenada a pagar $14.500.000 por daño moral",
-    excerpt:
-      "Tribunal acoge acción de tutela laboral interpuesta en favor de funcionaria municipal que fue objeto de vulneración de derechos fundamentales.",
-    date: "2024-11-15",
-    author: "Nicolás Yañez",
-    category: "Tutela Laboral",
-    amount: "$14.500.000",
-  },
-  {
-    slug: "tutela-laboral-supermercado-lily-villarrica",
-    title: "Tribunal acoge tutela laboral contra Supermercado Lily en Villarrica",
-    excerpt:
-      "Práctica antisindical declarada por tribunal en causa seguida contra Supermercado Lily por represalias contra dirigente sindical.",
-    date: "2024-10-08",
-    author: "Nicolás Yañez",
-    category: "Práctica Antisindical",
-    amount: "$9.900.000",
-  },
-  {
-    slug: "vulneracion-derechos-municipalidad-gorbea",
-    title: "Condena a Municipalidad de Gorbea por vulneración de integridad",
-    excerpt:
-      "Tribunal condena a Municipalidad de Gorbea por afectar integridad física y psíquica de funcionaria a través de actos de acoso laboral sistemático.",
-    date: "2024-09-22",
-    author: "Sebastián Pizarro",
-    category: "Tutela Laboral",
-    amount: "$6.000.000",
-  },
-  {
-    slug: "indemnizacion-hospital-heyermann-angol",
-    title: "Hospital Heyermann de Angol condenado a pagar indemnización",
-    excerpt:
-      "Funcionaria del Hospital Heyermann obtiene indemnización por despido injustificado tras años de servicio dedicado.",
-    date: "2024-08-10",
-    author: "Nicolás Yañez",
-    category: "Despido Injustificado",
-    amount: "$15.000.000",
-  },
-]
+// Muestra las primeras 4 sentencias en el home
+const sentencias = SENTENCIAS.slice(0, 4)
 
 export function SentenciasSection() {
   return (

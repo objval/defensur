@@ -28,16 +28,16 @@ const highlights = [
 const details = [
   {
     heading: "¿Qué es la Ley de Insolvencia y Reemprendimiento?",
-    content: "La Ley 20.720 establece un procedimiento especial para personas y empresas que no pueden cumplir con sus obligaciones financieras. Esta ley reemplazó la antigua ley de quiebras y ofrece dos caminos principales:
+    content: `La Ley 20.720 establece un procedimiento especial para personas y empresas que no pueden cumplir con sus obligaciones financieras. Esta ley reemplazó la antigua ley de quiebras y ofrece dos caminos principales:
 
 1. Renegociación: Un proceso para reorganizar las deudas y establecer un plan de pago viable.
 2. Liquidación: Cuando la renegociación no es posible, se realiza un proceso ordenado de liquidación de activos con posibilidad de perdón de deudas.
 
-El objetivo de la ley es permitir el reemprendimiento, evitando que las personas queden atrapadas en deudas impagables de por vida.",
+El objetivo de la ley es permitir el reemprendimiento, evitando que las personas queden atrapadas en deudas impagables de por vida.`,
   },
   {
     heading: "Renegociación de Deudas",
-    content: "El procedimiento de renegociación se realiza ante un síndico de quiebras y permite:
+    content: `El procedimiento de renegociación se realiza ante un síndico de quiebras y permite:
 
 • Reducir el monto total de las deudas
 • Extender los plazos de pago
@@ -45,29 +45,29 @@ El objetivo de la ley es permitir el reemprendimiento, evitando que las personas
 • Condonar parte del capital adeudado
 • Establecer cuotas mensuales compatibles con tus ingresos
 
-Para acceder a la renegociación, debes tener al menos 2 deudas con distintos acreedores y encontrarte en cesación de pagos. El procedimiento dura aproximadamente 4 a 6 meses.",
+Para acceder a la renegociación, debes tener al menos 2 deudas con distintos acreedores y encontrarte en cesación de pagos. El procedimiento dura aproximadamente 4 a 6 meses.`,
   },
   {
     heading: "Liquidación Voluntaria",
-    content: "Cuando la renegociación no es viable, puedes solicitar la liquidación voluntaria de tu patrimonio. Este proceso:
+    content: `Cuando la renegociación no es viable, puedes solicitar la liquidación voluntaria de tu patrimonio. Este proceso:
 
 • Detiene todos los cobros y demandas en tu contra
 • Permite un proceso ordenado de liquidación de activos
 • Otorga el beneficio de desasimiento (mantienes ciertos bienes esenciales)
 • Al finalizar, puedes obtener el perdón de las deudas remanentes (fresh start)
 
-Es importante asesorarse antes de iniciar este proceso para maximizar la protección de tu patrimonio.",
+Es importante asesorarse antes de iniciar este proceso para maximizar la protección de tu patrimonio.`,
   },
   {
     heading: "Insolvencia Empresarial",
-    content: "Las empresas también pueden acogerse a los procedimientos de la Ley 20.720. La continuación del giro permite que la empresa siga operando mientras se renegocian las deudas, preservando empleos y valor.
+    content: `Las empresas también pueden acogerse a los procedimientos de la Ley 20.720. La continuación del giro permite que la empresa siga operando mientras se renegocian las deudas, preservando empleos y valor.
 
 Asesoramos a dueños de pymes y empresas en:
 
 • Renegociación empresarial con continuidad operativa
 • Liquidación voluntaria de empresas
 • Protección del patrimonio personal del empresario
-• Planificación de reestructuración preventiva",
+• Planificación de reestructuración preventiva`,
   },
 ]
 

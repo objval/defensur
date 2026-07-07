@@ -102,6 +102,13 @@ function DesktopNav() {
       >
         Sentencias
       </Link>
+
+      <Link
+        href="/calculadoras/"
+        className="font-[family-name:var(--font-heading)] text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors duration-300"
+      >
+        Calculadoras
+      </Link>
     </nav>
   )
 }
@@ -153,6 +160,9 @@ function MobileNav({ open, onToggle }: { open: boolean; onToggle: () => void }) 
           ))}
           <Link href="/sentencias/" className="text-base font-semibold text-foreground">
             Sentencias
+          </Link>
+          <Link href="/calculadoras/" className="text-base font-semibold text-foreground">
+            Calculadoras
           </Link>
           <Button asChild className="mt-2 h-12 rounded-full text-sm font-semibold">
             <Link href="/contacto/">Contáctanos</Link>

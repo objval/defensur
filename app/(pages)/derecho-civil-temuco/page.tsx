@@ -28,7 +28,7 @@ const highlights = [
 const details = [
   {
     heading: "Defensa de Deudores y Prescripción de Deudas",
-    content: "Muchas deudas prescriben con el tiempo, lo que significa que legalmente ya no son exigibles. Analizamos tu situación financiera y determinamos si tus deudas han prescrito o están próximas a prescribir.
+    content: `Muchas deudas prescriben con el tiempo, lo que significa que legalmente ya no son exigibles. Analizamos tu situación financiera y determinamos si tus deudas han prescrito o están próximas a prescribir.
 
 Los plazos de prescripción más comunes son:
 
@@ -37,11 +37,11 @@ Los plazos de prescripción más comunes son:
 • Deudas comerciales en general: 5 años
 • Contratos de mutuo: 5 años
 
-También defendemos contra cobranzas abusivas, embargos ilegales y prácticas de cobro que vulneren tus derechos como consumidor.",
+También defendemos contra cobranzas abusivas, embargos ilegales y prácticas de cobro que vulneren tus derechos como consumidor.`,
   },
   {
     heading: "Contratos y Conflictos Contractuales",
-    content: "Redactamos y revisamos todo tipo de contratos para proteger tus intereses:
+    content: `Redactamos y revisamos todo tipo de contratos para proteger tus intereses:
 
 • Contratos de compraventa (inmuebles, vehículos, comerciales)
 • Contratos de mutuo (préstamos de dinero)
@@ -49,11 +49,11 @@ También defendemos contra cobranzas abusivas, embargos ilegales y prácticas de
 • Contratos de prestación de servicios
 • Escrituras de sociedad y actas
 
-En caso de incumplimiento contractual, diseñamos la estrategia legal más adecuada, ya sea a través de demanda de cumplimiento, resolución del contrato o indemnización de perjuicios.",
+En caso de incumplimiento contractual, diseñamos la estrategia legal más adecuada, ya sea a través de demanda de cumplimiento, resolución del contrato o indemnización de perjuicios.`,
   },
   {
     heading: "Juicios Civiles y Litigación",
-    content: "Representamos en todo tipo de juicios civiles ante los tribunales de justicia:
+    content: `Representamos en todo tipo de juicios civiles ante los tribunales de justicia:
 
 • Juicios de mínima cuantía y cuantía ordinaria
 • Juicios ejecutivos (cobro de instrumentos)
@@ -61,18 +61,18 @@ En caso de incumplimiento contractual, diseñamos la estrategia legal más adecu
 • Incidentes y recursos procesales
 • Medidas precautorias y cautelares
 
-Nuestra prioridad es resolver el conflicto de la forma más eficiente posible, ya sea mediante negociación directa, mediación o litigio judicial.",
+Nuestra prioridad es resolver el conflicto de la forma más eficiente posible, ya sea mediante negociación directa, mediación o litigio judicial.`,
   },
   {
     heading: "Liquidación de Sociedades y Asesoría Patrimonial",
-    content: "Asesoramos en la constitución, administración y liquidación de sociedades comerciales. Gestionamos:
+    content: `Asesoramos en la constitución, administración y liquidación de sociedades comerciales. Gestionamos:
 
 • Constitución de SpA, SRL y SA
 • Modificación de estatutos
 • Disolución y liquidación de sociedades
 • Conflictos entre socios
 • Protección de patrimonio personal
-• Planificación sucesoria",
+• Planificación sucesoria`,
   },
 ]
 

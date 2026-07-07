@@ -28,13 +28,13 @@ const highlights = [
 const details = [
   {
     heading: "¿Qué es un Sumario Administrativo?",
-    content: "El sumario administrativo es un procedimiento investigativo que se sigue a funcionarios públicos cuando se denuncian faltas o irregularidades en el ejercicio de sus funciones. Puede derivar en amonestaciones, multas, suspensiones o destitución.
+    content: `El sumario administrativo es un procedimiento investigativo que se sigue a funcionarios públicos cuando se denuncian faltas o irregularidades en el ejercicio de sus funciones. Puede derivar en amonestaciones, multas, suspensiones o destitución.
 
-Es fundamental contar con asesoría legal desde el inicio del proceso, ya que los plazos son breves y las consecuencias pueden ser graves para tu carrera funcionaria.",
+Es fundamental contar con asesoría legal desde el inicio del proceso, ya que los plazos son breves y las consecuencias pueden ser graves para tu carrera funcionaria.`,
   },
   {
     heading: "Derechos del Sumariado",
-    content: "Como funcionario sumariado, tienes derechos fundamentales que deben ser respetados:
+    content: `Como funcionario sumariado, tienes derechos fundamentales que deben ser respetados:
 
 • Derecho a conocer los cargos formulados
 • Derecho a presentar descargos y pruebas
@@ -42,22 +42,22 @@ Es fundamental contar con asesoría legal desde el inicio del proceso, ya que lo
 • Derecho al debido proceso y plazo razonable
 • Derecho a impugnar la resolución final
 
-En Defensur garantizamos que se respeten todos tus derechos durante el procedimiento y diseñamos la mejor estrategia de defensa.",
+En Defensur garantizamos que se respeten todos tus derechos durante el procedimiento y diseñamos la mejor estrategia de defensa.`,
   },
   {
     heading: "Impugnación de Sanciones",
-    content: "Si ya fuiste sancionado, podemos impugnar la resolución a través de:
+    content: `Si ya fuiste sancionado, podemos impugnar la resolución a través de:
 
 • Recurso de reposición ante la misma autoridad
 • Recurso jerárquico ante el superior jerárquico
 • Recurso de protección ante la Corte de Apelaciones
 • Acción de nulidad ante los tribunales
 
-Cada vía tiene plazos específicos que es necesario respetar. Te recomendamos consultar lo antes posible para evaluar las opciones de impugnación disponibles.",
+Cada vía tiene plazos específicos que es necesario respetar. Te recomendamos consultar lo antes posible para evaluar las opciones de impugnación disponibles.`,
   },
   {
     heading: "Sanciones de Salud y Registro de Marcas",
-    content: "Además de sumarios administrativos, asesoramos en:
+    content: `Además de sumarios administrativos, asesoramos en:
 
 • Impugnación de sanciones de la Superintendencia de Salud
 • Defensa ante fiscalizaciones sanitarias
@@ -65,7 +65,7 @@ Cada vía tiene plazos específicos que es necesario respetar. Te recomendamos c
 • Oposición a registro de marcas de terceros
 • Renovación y protección de marca
 
-Contamos con experiencia en procedimientos ante múltiples organismos del Estado.",
+Contamos con experiencia en procedimientos ante múltiples organismos del Estado.`,
   },
 ]
 

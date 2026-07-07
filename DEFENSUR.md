@@ -27,9 +27,7 @@
 **Team:**
 - Nicolás Yañez Inostroza — Abogado Jefe (Laboral y Administrativo)
 - Sebastián Pizarro — Experto en Derecho Laboral
-- Angela Sanchez — Abogada Penalista
 - Millaray Rohten — Abogada de Familia
-- Felipe Maripil — Asesor Jurídico
 - Carolina Arancibia — Administradora
 - Nataly Pérez — Secretaria
 

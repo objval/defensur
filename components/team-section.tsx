@@ -26,34 +26,28 @@ const team: TeamMember[] = [
     image: "/team/sebastian.webp",
   },
   {
-    id: "as",
-    name: "Angela Sanchez",
-    role: "Abogada Penalista",
-    image: "/team/angela.webp",
-  },
-  {
     id: "mr",
     name: "Millaray Rohten",
     role: "Abogada de Familia",
-    image: "/team/millaray.webp",
-  },
-  {
-    id: "fm",
-    name: "Felipe Maripil",
-    role: "Asesor Jurídico",
-    image: "/team/felipe.webp",
+    image: "/team/millaray.jpeg",
   },
   {
     id: "ca",
     name: "Carolina Arancibia",
     role: "Administradora",
-    image: "/team/carolina.webp",
+    image: "/team/carolina.jpeg",
   },
   {
-    id: "np",
-    name: "Nataly Pérez",
-    role: "Secretaria",
-    image: "/team/nataly.webp",
+    id: "camp",
+    name: "Constanza Ampuero",
+    role: "Abogada de Deudas",
+    image: "/team/constanza-ampuero.jpeg",
+  },
+  {
+    id: "gc",
+    name: "Génesis Carrillo",
+    role: "Abogada Laboral",
+    image: "/team/genesis-carrillo.jpeg",
   },
 ]
 
@@ -147,7 +141,7 @@ export function TeamSection() {
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy dark:text-brand-on-navy-muted">
                 Equipo
               </p>
-              <p className="mt-2 text-sm text-muted-foreground">7 integrantes</p>
+              <p className="mt-2 text-sm text-muted-foreground">6 integrantes</p>
             </div>
 
             <div className="border-t border-border/70 pt-4">

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, Calendar, User } from "lucide-react"
 import { PageHero } from "@/components/page-hero"
+import { SENTENCIAS } from "@/lib/sentencias-data"
 
 export const metadata: Metadata = {
   title: "Sentencias Destacadas — Casos de Éxito | Defensur",
@@ -9,68 +10,7 @@ export const metadata: Metadata = {
     "Conoce nuestras sentencias destacadas y casos de éxito en derecho laboral, familiar y civil. Resultados reales que demuestran nuestro compromiso.",
 }
 
-const sentencias = [
-  {
-    slug: "tutela-laboral-municipalidad-temuco-14-millones",
-    title: "Municipalidad de Temuco condenada a pagar $14.500.000 por daño moral",
-    excerpt:
-      "Tribunal acoge acción de tutela laboral interpuesta en favor de funcionaria municipal que fue objeto de vulneración de derechos fundamentales. Se reconoce daño moral causado por actos de hostigamiento y discriminación en el lugar de trabajo.",
-    date: "2024-11-15",
-    author: "Nicolás Yáñez",
-    category: "Tutela Laboral",
-    amount: "$14.500.000",
-  },
-  {
-    slug: "tutela-laboral-supermercado-lily-villarrica",
-    title: "Tribunal acoge tutela laboral contra Supermercado Lily en Villarrica",
-    excerpt:
-      "Práctica antisindical declarada por tribunal en causa seguida contra Supermercado Lily por represalias contra dirigente sindical que ejercía funciones de representación gremial.",
-    date: "2024-10-08",
-    author: "Nicolás Yáñez",
-    category: "Práctica Antisindical",
-    amount: "$9.900.000",
-  },
-  {
-    slug: "tutela-laboral-aps-perquenco-acoso",
-    title: "Tutela por vulneración de derechos fundamentales en APS Perquenco",
-    excerpt:
-      "Tribunal acoge tutela laboral por acoso laboral y vulneración de derechos fundamentales contra la Administración de Programas Sanitarios de Perquenco.",
-    date: "2024-09-15",
-    author: "Nicolás Yáñez",
-    category: "Acoso Laboral",
-    amount: "$12.000.000",
-  },
-  {
-    slug: "vulneracion-derechos-municipalidad-gorbea",
-    title: "Condena a Municipalidad de Gorbea por vulneración de integridad",
-    excerpt:
-      "Tribunal condena a Municipalidad de Gorbea por afectar integridad física y psíquica de funcionaria municipal a través de actos de acoso laboral sistemático.",
-    date: "2024-08-22",
-    author: "Sebastián Pizarro",
-    category: "Tutela Laboral",
-    amount: "$6.000.000",
-  },
-  {
-    slug: "indemnizacion-hospital-heyermann-angol",
-    title: "Hospital Heyermann de Angol condenado a pagar indemnización",
-    excerpt:
-      "Funcionaria del Hospital Heyermann obtiene indemnización por despido injustificado tras años de servicio dedicado a la salud pública de la comuna.",
-    date: "2024-07-10",
-    author: "Nicolás Yáñez",
-    category: "Despido Injustificado",
-    amount: "$15.000.000",
-  },
-  {
-    slug: "condena-acoso-hospital-los-angeles",
-    title: "Hospital de Los Ángeles condenado por acoso laboral",
-    excerpt:
-      "Tribunal declara responsabilidad del Hospital de Los Ángeles por acoso laboral contra funcionaria, reconociendo vulneración de derechos fundamentales.",
-    date: "2024-06-18",
-    author: "Nicolás Yáñez",
-    category: "Acoso Laboral",
-    amount: "$8.000.000",
-  },
-]
+const sentencias = SENTENCIAS
 
 export default function Page() {
   return (

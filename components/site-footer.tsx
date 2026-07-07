@@ -22,6 +22,7 @@ const companyLinks = [
   { label: "Quiénes Somos", href: "/quienes-somos/" },
   { label: "Nicolás Yáñez", href: "/nicolas-yanez/" },
   { label: "Sentencias Destacadas", href: "/sentencias/" },
+  { label: "Calculadoras", href: "/calculadoras/" },
   { label: "Contacto", href: "/contacto/" },
 ]
 

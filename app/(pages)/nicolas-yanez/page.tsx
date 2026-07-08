@@ -5,7 +5,7 @@ import { ArrowRight, Award, BookOpen, Scale, Users } from "lucide-react"
 import { PageHero } from "@/components/page-hero"
 
 export const metadata: Metadata = {
-  title: "Nicolás Yáñez — Abogado Jefe Laboral y Administrativo | Defensur Araucanía",
+  title: "Nicolás Yáñez — Abogado Jefe Laboral y Administrativo",
   description: "Conoce a Nicolás Yáñez Inostroza, abogado jefe de Defensur. Especialista en derecho laboral y administrativo con más de 15 años de experiencia en Temuco y La Araucanía.",
 }
 

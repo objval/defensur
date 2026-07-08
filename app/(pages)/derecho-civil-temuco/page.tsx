@@ -3,11 +3,11 @@ import { PageHero } from "@/components/page-hero"
 import { ServicePageContent } from "@/components/service-page-content"
 
 export const metadata: Metadata = {
-  title: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción | Defensur",
+  title: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción",
   description: "Asesoría legal en derecho civil en Temuco, La Araucanía y todo el sur de Chile. Defensa de deudores, prescripción de deudas, contratos y juicios civiles. Consulta gratuita.",
   keywords: "abogado civil temuco, abogado civil araucanía, defensa deudores, prescripción deudas, contratos temuco, juicios civiles, abogados civiles temuco, abogado civil valdivia, abogado civil osorno, abogado civil puerto montt",
   openGraph: {
-    title: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción | Defensur",
+    title: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción",
     description: "Asesoría legal en derecho civil en Temuco, La Araucanía y todo el sur de Chile. Defensa de deudores, prescripción de deudas, contratos y juicios civiles. Consulta gratuita.",
     images: [{ url: "/og/civil.jpg", width: 1200, height: 630, alt: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción | Defensur" }],
   }

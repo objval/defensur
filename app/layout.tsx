@@ -134,10 +134,8 @@ export default function RootLayout({
         notoSerifHeading.variable
       )}
     >
-      <head>
-        <SchemaOrg />
-      </head>
       <body>
+        <SchemaOrg />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Contáctanos — Consulta Gratuita | Defensur Araucanía",
+  title: "Contáctanos — Consulta Gratuita",
   description:
     "Contacta a Defensur Estudio Jurídico en Temuco. Primera consulta gratuita y sin compromiso. WhatsApp, teléfono o presencial. Atendemos en La Araucanía y todo el sur de Chile.",
   openGraph: {

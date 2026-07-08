@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Calculadoras Legales — Sueldo Mínimo y Pensión de Alimentos | Defensur",
+  title: "Calculadoras Legales — Sueldo Mínimo y Pensión de Alimentos",
   description:
     "Calculadoras legales gratuitas para estimar tu sueldo proporcional y pensión de alimentos según la legislación chilena. Herramientas desarrolladas por Defensur Araucanía.",
   keywords:

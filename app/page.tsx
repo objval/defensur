@@ -10,7 +10,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 
 export const metadata: Metadata = {
-  title: "Defensur Araucanía — Abogados Laborales en Temuco y La Araucanía | Despidos y Finiquitos",
+  title: "Defensur Araucanía — Abogados Laborales en Temuco y La Araucanía",
   description:
     "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile. Más de 15 años de experiencia. Consulta gratuita por WhatsApp.",
   alternates: {

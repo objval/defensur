@@ -28,7 +28,7 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL("https://www.defensuraraucania.cl"),
-    title: `${s.title} | Defensur Araucanía`,
+    title: `${s.title}`,
     description: s.excerpt,
     alternates: {
       canonical: `https://www.defensuraraucania.cl/sentencias/${slug}`,

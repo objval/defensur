@@ -11,7 +11,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
       <main className="flex-1 overflow-x-hidden">
         <div className="md:hidden flex items-center justify-between px-5 py-4 border-b border-border bg-card">
           <img src="/logo.png" alt="Defensur" className="h-6 w-auto" />
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
         <div className="p-6 md:p-10 max-w-5xl">
           {children}

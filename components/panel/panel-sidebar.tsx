@@ -47,7 +47,7 @@ export function PanelSidebar() {
 
       <div className="px-3 py-4 border-t border-border">
         <div className="flex items-center gap-3 px-3">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
           <span className="text-xs text-muted-foreground">Mi cuenta</span>
         </div>
       </div>

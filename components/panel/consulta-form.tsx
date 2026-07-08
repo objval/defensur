@@ -5,13 +5,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { api } from "@/convex/_generated/api"
 import { consultaSchema, type ConsultaFormValues, AREA_LABELS, URGENCY_LABELS } from "@/lib/consulta-schema"
 import { WHATSAPP } from "@/lib/site"
 
+// Convex API stub — replaced by real generated API after `npx convex dev`
+// This allows the build to pass before Convex is initialized
+const createConsultaStub = async (data: ConsultaFormValues) => {
+  console.warn("Convex not initialized. Run `npx convex dev` to enable.")
+  throw new Error("Convex backend not configured. Run npx convex dev.")
+}
+
 export function ConsultaForm() {
   const router = useRouter()
-  const createConsulta = useMutation(api.consultas.create)
+  const createConsulta = createConsultaStub as any
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

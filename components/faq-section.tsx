@@ -3,50 +3,9 @@
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { WHATSAPP } from "@/lib/site"
+import { WHATSAPP, FAQS } from "@/lib/site"
 
-const faqs = [
-  {
-    question: "¿Cuánto cuesta la primera consulta?",
-    answer:
-      "La primera consulta tiene una duración de 30 minutos y es completamente gratuita. En esta evaluación inicial analizamos tu caso y te entregamos una orientación clara sobre tus opciones legales. Las consultas posteriores tienen tarifas transparentes según la complejidad del caso.",
-  },
-  {
-    question: "¿Qué documentos necesito para un caso de despido?",
-    answer:
-      "Debes reunir tu contrato de trabajo, últimas liquidaciones de sueldo, carta de despido, finiquito (si lo firmaste) y cualquier comunicación relevante con tu empleador. Si no tienes todos los documentos, podemos ayudarte a solicitarlos ante la Inspección del Trabajo.",
-  },
-  {
-    question: "¿Cuánto tiempo demora un divorcio?",
-    answer:
-      "Depende del tipo: un divorcio de mutuo acuerdo demora entre 3 y 6 meses aproximadamente. Un divorcio unilateral puede tomar desde 8 meses hasta 2 años, dependiendo de la complejidad y si hay bienes o hijos menores involucrados.",
-  },
-  {
-    question: "¿Cómo cobro una pensión de alimentos atrasada?",
-    answer:
-      "Iniciamos apremios judiciales contra el deudor, que pueden incluir retención de remuneraciones, arresto nocturno y prohibición de salir del país. También realizamos cobranza judicial y extrajudicial para recuperar las pensiones adeudadas.",
-  },
-  {
-    question: "¿Qué es la tutela laboral?",
-    answer:
-      "La tutela laboral es un mecanismo legal que protege los derechos fundamentales del trabajador cuando son vulnerados por el empleador. Incluye protección contra despidos discriminatorios, acoso laboral, vulneración de la libertad sindical y represalias por ejercer derechos legales.",
-  },
-  {
-    question: "¿Puedo renegociar mis deudas sin ir a juicio?",
-    answer:
-      "Sí. Existen mecanismos de renegociación extrajudicial y procedimientos ante la Superintendencia de Insolvencia. Evaluamos tu situación financiera y negociamos con tus acreedores las mejores condiciones para reorganizar tus deudas bajo la Ley 20.720.",
-  },
-  {
-    question: "¿Atienden funcionarios públicos en sumarios administrativos?",
-    answer:
-      "Sí, es una de nuestras especialidades. Defendemos a funcionarios públicos en todo tipo de sumarios administrativos, garantizando el debido proceso, el derecho a defensa y la impugnación de sanciones injustas. Acompañamos el proceso desde la notificación hasta la resolución final.",
-  },
-  {
-    question: "¿En qué zonas atienden?",
-    answer:
-      "Nuestra oficina principal está en Temuco, pero atendemos casos en toda la Región de La Araucanía, incluyendo Villarrica, Pucón, Angol, Lautaro, Nueva Imperial y ciudades cercanas. También ofrecemos atención por WhatsApp y videollamada para clientes de otras regiones.",
-  },
-]
+const faqs = FAQS
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = React.useState(false)

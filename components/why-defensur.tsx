@@ -3,21 +3,9 @@
 import { Scale, BriefcaseBusiness, ShieldCheck, Phone } from "lucide-react"
 import { Marquee } from "@/components/marquee"
 import { cn } from "@/lib/utils"
+import { MARQUEE_QUESTIONS } from "@/lib/site"
 
-const marqueeQuestions = [
-  "¿Me despidieron sin causa?",
-  "¿Cuánto me corresponde de indemnización?",
-  "¿Puedo demandar por acoso laboral?",
-  "¿Qué hacer si no me pagan cotizaciones?",
-  "¿Cómo iniciar un divorcio?",
-  "¿Cuánto es la pensión de alimentos?",
-  "¿Qué pasa si no puedo pagar mis deudas?",
-  "¿Puedo renegociar mis deudas?",
-  "¿Qué es un sumario administrativo?",
-  "¿Cuánto tiempo tengo para demandar?",
-  "¿Qué derechos tengo como trabajador?",
-  "¿Cómo protejo mi patrimonio?",
-]
+const marqueeQuestions = MARQUEE_QUESTIONS
 
 const values = [
   {

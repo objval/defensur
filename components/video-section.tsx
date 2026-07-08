@@ -2,16 +2,12 @@
 
 import * as React from "react"
 import { Play } from "lucide-react"
+import { STATS } from "@/lib/site"
+import { AnimatedCounter } from "@/components/ui/animated-counter"
 
 const VIDEO_ID = "44g_fgYZtEg"
 const THUMBNAIL = `https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`
-
-const stats = [
-  { value: "+15", label: "Años de experiencia" },
-  { value: "+500", label: "Casos resueltos" },
-  { value: "$150M+", label: "En indemnizaciones" },
-  { value: "98%", label: "Casos favorables" },
-]
+const stats = STATS
 
 export function VideoSection() {
   const [playing, setPlaying] = React.useState(false)
@@ -25,13 +21,12 @@ export function VideoSection() {
             Conoce nuestro trabajo
           </span>
           <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl sm:text-4xl lg:text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.15] text-white">
-            Asesoría legal en sumarios administrativos{" "}
-            <span className="italic font-normal text-white/60">de principio a fin.</span>
+            Defensa legal con{" "}
+            <span className="italic font-normal text-white/60">resultados comprobados.</span>
           </h2>
           <p className="mt-4 text-white/50 max-w-2xl mx-auto leading-relaxed">
-            En Defensur acompañamos a funcionarios públicos durante todo el proceso.
-            Desde la notificación hasta la defensa final, garantizamos el debido proceso
-            y la protección de tus derechos.
+            Conoce cómo trabajamos en Defensur. Desde la primera consulta hasta la sentencia
+            final, acompañamos a cada cliente con estrategia, transparencia y compromiso.
           </p>
         </div>
 
@@ -82,7 +77,7 @@ export function VideoSection() {
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl font-bold text-white">
-                {stat.value}
+                <AnimatedCounter value={stat.value} />
               </p>
               <p className="mt-1 text-xs md:text-sm text-white/40">{stat.label}</p>
             </div>

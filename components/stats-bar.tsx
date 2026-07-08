@@ -1,12 +1,8 @@
 import { MessageCircle, Phone } from "lucide-react"
-import { WHATSAPP, SITE } from "@/lib/site"
+import { WHATSAPP, SITE, STATS } from "@/lib/site"
+import { AnimatedCounter } from "@/components/ui/animated-counter"
 
-const stats = [
-  { value: "+15", label: "Años de experiencia" },
-  { value: "+500", label: "Casos resueltos" },
-  { value: "$150M+", label: "En indemnizaciones" },
-  { value: "98%", label: "Casos favorables" },
-]
+const stats = STATS
 
 export function StatsBar() {
   return (
@@ -16,7 +12,7 @@ export function StatsBar() {
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl font-bold text-white">
-                {stat.value}
+                <AnimatedCounter value={stat.value} />
               </p>
               <p className="mt-2 text-sm text-white/60">{stat.label}</p>
             </div>

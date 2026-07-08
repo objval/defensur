@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { SERVICES } from "@/lib/services-data"
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal"
 
 const featured = SERVICES["derecho-laboral"]
 const rest = [
@@ -45,10 +46,11 @@ export function ServicesGrid() {
         </div>
 
         {/* Featured card — full width, dark navy */}
-        <Link
-          href={HREFS[featured.slug]}
-          className="group relative flex flex-col md:flex-row md:items-center gap-6 md:gap-8 rounded-2xl bg-brand-navy p-7 md:p-9 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(8,24,107,0.25)] mb-4"
-        >
+        <Reveal>
+          <Link
+            href={HREFS[featured.slug]}
+            className="group relative flex flex-col md:flex-row md:items-center gap-6 md:gap-8 rounded-2xl bg-brand-navy p-7 md:p-9 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(8,24,107,0.25)] mb-4"
+          >
           <div className="shrink-0 flex size-14 items-center justify-center rounded-2xl bg-white/10 text-white">
             <FeaturedIcon className="size-6" aria-hidden="true" />
           </div>
@@ -64,14 +66,15 @@ export function ServicesGrid() {
             </p>
           </div>
         </Link>
+        </Reveal>
 
         {/* 2x2 grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <RevealGroup className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {rest.map((service) => {
             const Icon = service.icon
             return (
+              <RevealItem key={service.slug}>
               <Link
-                key={service.slug}
                 href={HREFS[service.slug]}
                 className="group relative flex items-start gap-5 rounded-2xl border border-border/60 bg-card p-6 transition-all duration-300 hover:border-brand-navy/25 hover:shadow-[0_8px_32px_rgba(8,24,107,0.06)]"
               >
@@ -90,9 +93,10 @@ export function ServicesGrid() {
                   </p>
                 </div>
               </Link>
+              </RevealItem>
             )
           })}
-        </div>
+        </RevealGroup>
       </div>
     </section>
   )

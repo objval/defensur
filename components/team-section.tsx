@@ -2,54 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-
-type TeamMember = {
-  id: string
-  name: string
-  role: string
-  image: string
-  featured?: boolean
-}
-
-const team: TeamMember[] = [
-  {
-    id: "ny",
-    name: "Nicolás Yáñez Inostroza",
-    role: "Abogado Jefe",
-    image: "/team/nicolas.webp",
-    featured: true,
-  },
-  {
-    id: "sp",
-    name: "Sebastián Pizarro",
-    role: "Experto en Derecho Laboral",
-    image: "/team/sebastian.webp",
-  },
-  {
-    id: "mr",
-    name: "Millaray Rohten",
-    role: "Abogada de Familia",
-    image: "/team/millaray.jpeg",
-  },
-  {
-    id: "ca",
-    name: "Carolina Arancibia",
-    role: "Administradora",
-    image: "/team/carolina.jpeg",
-  },
-  {
-    id: "camp",
-    name: "Constanza Ampuero",
-    role: "Abogada de Deudas",
-    image: "/team/constanza-ampuero.jpeg",
-  },
-  {
-    id: "gc",
-    name: "Génesis Carrillo",
-    role: "Abogada Laboral",
-    image: "/team/genesis-carrillo.jpeg",
-  },
-]
+import { TEAM, type TeamMember } from "@/lib/site"
 
 function TeamCard({ member }: { member: TeamMember }) {
   return (
@@ -112,8 +65,8 @@ function FeaturedCard({ member }: { member: TeamMember }) {
 }
 
 export function TeamSection() {
-  const featured = React.useMemo(() => team.find((m) => m.featured)!, [])
-  const rest = React.useMemo(() => team.filter((m) => !m.featured), [])
+  const featured = React.useMemo(() => TEAM.find((m) => m.featured)!, [])
+  const rest = React.useMemo(() => TEAM.filter((m) => !m.featured), [])
 
   return (
     <section className="py-16 md:py-28" aria-label="Nuestro equipo">

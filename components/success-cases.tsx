@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight, Building2, Heart, ShieldAlert, Siren, Stethoscope, Store, Users } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { SENTENCIAS } from "@/lib/sentencias-data"
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal"
 
 // Map categories to icons
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -78,39 +79,38 @@ export function SuccessCases() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <RevealGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {cases.map((item) => {
             const Icon = item.icon
             return (
-              <div
-                key={item.title}
-                className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)]"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
-                    <Icon className="size-5" aria-hidden="true" />
+              <RevealItem key={item.title}>
+                <div className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)]">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
+                      <Icon className="size-5" aria-hidden="true" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-sky px-2.5 py-1 rounded-full bg-brand-sky/10">
+                      {item.tag}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-sky px-2.5 py-1 rounded-full bg-brand-sky/10">
-                    {item.tag}
-                  </span>
-                </div>
 
-                <h3 className="font-[family-name:var(--font-heading)] text-base font-semibold text-primary mb-2 leading-snug">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-4">
-                  {item.description}
-                </p>
-
-                <div className="pt-4 border-t border-border/50">
-                  <p className="text-lg font-bold text-brand-navy">
-                    {item.amount}
+                  <h3 className="font-[family-name:var(--font-heading)] text-base font-semibold text-primary mb-2 leading-snug">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-4">
+                    {item.description}
                   </p>
+
+                  <div className="pt-4 border-t border-border/50">
+                    <p className="text-lg font-bold text-brand-navy">
+                      {item.amount}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </RevealItem>
             )
           })}
-        </div>
+        </RevealGroup>
       </div>
     </section>
   )

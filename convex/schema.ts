@@ -1,23 +1,24 @@
-import { defineSchema, s } from "convex/schema"
+import { defineSchema, defineTable } from "convex/server"
+import { v } from "convex/values"
 
 export default defineSchema({
   consultas: defineTable({
-    userId: s.string(),
-    userEmail: s.string(),
-    userName: s.string(),
-    area: s.string(),
-    subject: s.string(),
-    description: s.string(),
-    urgency: s.string(),
-    status: s.string(),
-    attachmentUrl: s.optional(s.string()),
-    responses: s.optional(s.array(s.object({
-      text: s.string(),
-      respondedBy: s.string(),
-      createdAt: s.number(),
+    userId: v.string(),
+    userEmail: v.string(),
+    userName: v.string(),
+    area: v.string(),
+    subject: v.string(),
+    description: v.string(),
+    urgency: v.string(),
+    status: v.string(),
+    attachmentUrl: v.optional(v.string()),
+    responses: v.optional(v.array(v.object({
+      text: v.string(),
+      respondedBy: v.string(),
+      createdAt: v.number(),
     }))),
-    createdAt: s.number(),
-    updatedAt: s.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_status", ["status"])
@@ -25,13 +26,13 @@ export default defineSchema({
     .index("by_area", ["area"]),
 
   users: defineTable({
-    clerkId: s.string(),
-    email: s.string(),
-    name: s.string(),
-    role: s.string(),
-    banned: s.boolean(),
-    createdAt: s.number(),
-    updatedAt: s.number(),
+    clerkId: v.string(),
+    email: v.string(),
+    name: v.string(),
+    role: v.string(),
+    banned: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
   })
     .index("by_clerk_id", ["clerkId"])
     .index("by_role", ["role"]),

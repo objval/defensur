@@ -41,11 +41,15 @@ export const listAll = query({
     const { role } = await getAuth(ctx)
     if (!isStaff(role)) return null
 
-    let q = ctx.db.query("consultas")
     if (status) {
-      q = q.withIndex("by_status", (q2) => q2.eq("status", status))
+      const results = await ctx.db.query("consultas")
+        .withIndex("by_status", (q) => q.eq("status", status))
+        .order("desc")
+        .collect()
+      if (area) return results.filter((c) => c.area === area)
+      return results
     }
-    const results = await q.order("desc").collect()
+    const results = await ctx.db.query("consultas").order("desc").collect()
     if (area) return results.filter((c) => c.area === area)
     return results
   },

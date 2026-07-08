@@ -1,9 +1,13 @@
 import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
 import { PanelShell } from "@/components/panel/panel-shell"
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  // Redirects to sign-in page if user is not authenticated
-  await auth.protect()
+  const { userId } = await auth()
+
+  if (!userId) {
+    redirect("/sign-in")
+  }
 
   return <PanelShell>{children}</PanelShell>
 }

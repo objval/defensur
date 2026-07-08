@@ -1,17 +1,8 @@
 import { query, mutation } from "./_generated/server"
 import { v } from "convex/values"
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Public queries ───────────────────────────────────────────────────────────
 
-type JwtIdentity = {
-  subject: string
-  email: string | null
-  name: string | null
-  tokenIdentifier: string
-  metadata?: { role?: string }
-}
-
-// Get all consultas for the authenticated user
 export const listMine = query({
   args: {},
   handler: async (ctx) => {
@@ -20,13 +11,12 @@ export const listMine = query({
 
     return await ctx.db
       .query("consultas")
-      .withIndex("by_user", (q: { eq: (field: string, value: string) => typeof q }) => q.eq("userId", identity.subject))
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
       .order("desc")
       .collect()
   },
 })
 
-// Get a single consulta by ID (must belong to the user, or staff)
 export const getMine = query({
   args: { id: v.id("consultas") },
   handler: async (ctx, { id }) => {
@@ -36,13 +26,19 @@ export const getMine = query({
     const consulta = await ctx.db.get(id)
     if (!consulta) return null
 
-    const role = (identity as unknown as JwtIdentity).metadata?.role || "client"
-    if (consulta.userId !== identity.subject && role !== "admin" && role !== "staff") return null
+    if (consulta.userId !== identity.subject) {
+      // Check if staff
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+        .first()
+      const role = user?.role || "client"
+      if (role !== "admin" && role !== "staff") return null
+    }
     return consulta
   },
 })
 
-// Create a new consulta — also syncs user record
 export const create = mutation({
   args: {
     area: v.string(),
@@ -54,12 +50,9 @@ export const create = mutation({
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new Error("Not authenticated")
 
-    const role = (identity as unknown as JwtIdentity).metadata?.role || "client"
-
-    // Sync user record for admin reference
     const existing = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q: { eq: (field: string, value: string) => typeof q }) => q.eq("clerkId", identity.subject))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .first()
 
     if (!existing) {
@@ -67,7 +60,7 @@ export const create = mutation({
         clerkId: identity.subject,
         email: identity.email || "",
         name: identity.name || "",
-        role,
+        role: "client",
         banned: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),

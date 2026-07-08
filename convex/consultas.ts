@@ -82,3 +82,36 @@ export const create = mutation({
     })
   },
 })
+
+// Cancel own consulta (only pending ones)
+export const cancel = mutation({
+  args: { id: v.id("consultas") },
+  handler: async (ctx, { id }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Not authenticated")
+    const consulta = await ctx.db.get(id)
+    if (!consulta) throw new Error("Not found")
+    if (consulta.userId !== identity.subject) throw new Error("Not authorized")
+    if (consulta.status !== "pendiente") throw new Error("Only pending consultas can be cancelled")
+    await ctx.db.patch(id, { status: "cancelada", updatedAt: Date.now() })
+    return { success: true as const }
+  },
+})
+
+// Add a note/reply to own consulta
+export const addNote = mutation({
+  args: { id: v.id("consultas"), text: v.string() },
+  handler: async (ctx, { id, text }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error("Not authenticated")
+    const consulta = await ctx.db.get(id)
+    if (!consulta) throw new Error("Not found")
+    if (consulta.userId !== identity.subject) throw new Error("Not authorized")
+    const existing = consulta.responses || []
+    await ctx.db.patch(id, {
+      responses: [...existing, { text, respondedBy: identity.name || identity.email || "Usuario", createdAt: Date.now() }],
+      updatedAt: Date.now(),
+    })
+    return { success: true as const }
+  },
+})

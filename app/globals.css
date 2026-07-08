@@ -114,6 +114,11 @@
   --color-brand-on-navy: var(--brand-on-navy);
   --color-brand-on-navy-muted: var(--brand-on-navy-muted);
 
+  /* Dashboard layout spacing */
+  --spacing-sidebar-w: 240px;
+  --spacing-sidebar-collapsed: 64px;
+  --spacing-content-max-w: 896px;
+
   /* shadcn tokens */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

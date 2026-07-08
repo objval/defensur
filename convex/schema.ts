@@ -11,12 +11,28 @@ export default defineSchema({
     description: v.string(),
     urgency: v.string(),
     status: v.string(),
-    attachmentUrl: v.optional(v.string()),
-    responses: v.optional(v.array(v.object({
-      text: v.string(),
-      respondedBy: v.string(),
-      createdAt: v.number(),
-    }))),
+    // File attachments (PDFs, images, documents)
+    files: v.optional(
+      v.array(
+        v.object({
+          storageId: v.string(),
+          fileName: v.string(),
+          fileType: v.string(),
+          fileSize: v.number(),
+          uploadedAt: v.number(),
+        })
+      )
+    ),
+    // Staff responses
+    responses: v.optional(
+      v.array(
+        v.object({
+          text: v.string(),
+          respondedBy: v.string(),
+          createdAt: v.number(),
+        })
+      )
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

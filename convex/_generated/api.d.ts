@@ -10,6 +10,7 @@
 
 import type * as admin from "../admin.js";
 import type * as consultas from "../consultas.js";
+import type * as files from "../files.js";
 
 import type {
   ApiFromModules,
@@ -20,6 +21,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   consultas: typeof consultas;
+  files: typeof files;
 }>;
 
 /**

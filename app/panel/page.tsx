@@ -35,7 +35,7 @@ export default function DashboardPage() {
     .slice(0, 5)
 
   return (
-    <div className="mx-auto max-w-[896px] w-full space-y-8">
+    <div className="w-full space-y-8">
       {/* Greeting header */}
       <PanelHeader />
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
 
       {/* Recent Consultas */}
       <section>
-        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
           {/* Section header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30">
             <h2 className="font-[family-name:var(--font-heading)] text-lg font-bold text-foreground">

@@ -28,7 +28,7 @@ export function PanelMetrics() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-2xl border border-border bg-card overflow-hidden animate-pulse">
+          <div key={i} className="rounded-xl border border-border bg-card overflow-hidden animate-pulse">
             <div className="h-1.5 w-full bg-muted" />
             <div className="p-5 space-y-3">
               <div className="flex justify-between items-start">
@@ -84,7 +84,7 @@ export function PanelMetrics() {
       {cards.map((card) => (
         <div
           key={card.label}
-          className="group flex flex-col rounded-2xl border border-border bg-card overflow-hidden transition-all duration-300 hover:border-brand-sky/30 hover:shadow-sm"
+          className="group flex flex-col rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 hover:border-brand-sky/30 hover:shadow-sm"
         >
           {/* Color bar at top */}
           <div className={cn("h-1.5 w-full", card.barColor)} />

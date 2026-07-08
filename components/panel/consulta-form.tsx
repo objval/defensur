@@ -251,7 +251,7 @@ export function ConsultaForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Step 1: Form fields */}
         {step === "form" && (
-          <div className="space-y-5 rounded-2xl border border-border bg-card p-6">
+          <div className="space-y-5 rounded-xl border border-border bg-card p-6">
             {/* Area */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-foreground">Área legal *</label>
@@ -337,7 +337,7 @@ export function ConsultaForm() {
 
         {/* Step 2: File upload */}
         {step === "files" && (
-          <div className="space-y-5 rounded-2xl border border-border bg-card p-6">
+          <div className="space-y-5 rounded-xl border border-border bg-card p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-semibold text-foreground">Evidencia y documentos</h2>

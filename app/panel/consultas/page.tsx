@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useCallback, type FormEvent } from "react"
+import { useState, useMemo, useCallback, type FormEvent } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import {
-  Clock, ArrowRight, FileText, Image, ChevronDown, Trash2, MessageSquare, Send,
-  Download, ExternalLink, AlertTriangle, X, Check
+  Search, X, Clock, Paperclip, ChevronDown, Plus, FolderOpen, FileText,
+  Download, MessageSquare, Send, AlertTriangle, Eye, CheckCircle, SearchX,
+  SlidersHorizontal, ArrowUpDown, Image
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -15,7 +16,6 @@ import { cn } from "@/lib/utils"
 
 type Consulta = {
   _id: string
-  _creationTime: number
   userId: string
   userEmail: string
   userName: string
@@ -30,21 +30,49 @@ type Consulta = {
   updatedAt: number
 }
 
-type ExpandedState = Record<string, "preview" | "full">
-
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const STATUS: Record<string, { label: string; color: string; dot: string }> = {
-  pendiente:    { label: "Pendiente",    color: "bg-amber-100 text-amber-800 border-amber-200", dot: "bg-amber-500" },
-  en_revision:  { label: "En revisión",  color: "bg-blue-100 text-blue-800 border-blue-200",   dot: "bg-blue-500" },
-  respondida:   { label: "Respondida",   color: "bg-green-100 text-green-800 border-green-200", dot: "bg-green-500" },
-  cerrada:      { label: "Cerrada",      color: "bg-gray-100 text-gray-600 border-gray-200",   dot: "bg-gray-400" },
-  cancelada:    { label: "Cancelada",    color: "bg-red-100 text-red-700 border-red-200",       dot: "bg-red-400" },
+const STATUS: Record<string, { label: string; color: string; icon: typeof Clock }> = {
+  pendiente:    { label: "Pendiente",    color: "bg-[#FEF3C7] text-[#92400E] border-[#92400E]/20", icon: Clock },
+  en_revision:  { label: "En revisión",  color: "bg-[#DBEAFE] text-[#1E40AF] border-[#1E40AF]/20", icon: Eye },
+  respondida:   { label: "Respondida",   color: "bg-[#DCFCE7] text-[#166534] border-[#166534]/20", icon: CheckCircle },
+  cerrada:      { label: "Cerrada",      color: "bg-[#F3F4F6] text-[#4B5563] border-[#4B5563]/20", icon: X },
+  cancelada:    { label: "Cancelada",    color: "bg-[#FEE2E2] text-[#B91C1C] border-[#B91C1C]/20", icon: X },
 }
 
 const AREA_LABELS: Record<string, string> = {
-  laboral: "Laboral", familia: "Familia", civil: "Civil",
+  laboral: "Derecho Laboral", familia: "Derecho de Familia", civil: "Derecho Civil",
   insolvencia: "Insolvencia", sumarios: "Sumarios",
+}
+
+const URGENCY_COLORS: Record<string, { dot: string; label: string; textColor: string }> = {
+  alta:  { dot: "bg-[#CF2E2E]", label: "Alta",  textColor: "text-[#B91C1C]" },
+  media: { dot: "bg-amber-500", label: "Media", textColor: "text-[#92400E]" },
+  baja:  { dot: "bg-[#64748B]", label: "Baja",  textColor: "text-[#64748B]" },
+}
+
+const STATUS_FILTERS = [
+  { value: "all", label: "Todos" },
+  { value: "pendiente", label: "Pendientes" },
+  { value: "en_revision", label: "En revisión" },
+  { value: "respondida", label: "Respondidas" },
+  { value: "cerrada", label: "Cerradas" },
+  { value: "cancelada", label: "Canceladas" },
+]
+
+const SORT_OPTIONS = [
+  { value: "recent", label: "Más recientes" },
+  { value: "oldest", label: "Más antiguos" },
+  { value: "urgency", label: "Urgencia" },
+]
+
+function timeAgo(ts: number): string {
+  const diff = Date.now() - ts
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `Hace ${mins} minuto${mins !== 1 ? "s" : ""}`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `Hace ${hours} hora${hours !== 1 ? "s" : ""}`
+  return new Date(ts).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric" })
 }
 
 function formatDate(ts: number) {
@@ -65,27 +93,62 @@ export default function ConsultasPage() {
   const addNote = useMutation(api.consultas.addNote)
   const getFileUrl = useMutation(api.files.getFileUrl)
 
-  const [expanded, setExpanded] = useState<ExpandedState>({})
+  // ── State ──────────────────────────────────────────────────────
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [areaFilter, setAreaFilter] = useState("all")
+  const [sort, setSort] = useState("recent")
+  const [expanded, setExpanded] = useState<string | null>(null)
   const [cancelTarget, setCancelTarget] = useState<string | null>(null)
   const [downloading, setDownloading] = useState<string | null>(null)
-  const [noteText, setNoteText] = useState<Record<string, string>>({})
-  const [sendingNote, setSendingNote] = useState<string | null>(null)
+  const [noteText, setNoteText] = useState("")
+  const [sendingNote, setSendingNote] = useState(false)
 
-  const toggle = useCallback((id: string) => {
-    setExpanded((prev) => {
-      const current = prev[id]
-      if (!current) return { ...prev, [id]: "preview" }
-      if (current === "preview") return { ...prev, [id]: "full" }
-      const next = { ...prev }
-      delete next[id]
-      return next
-    })
+  // ── Derived data ───────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    if (!consultas) return []
+    let result = [...consultas]
+
+    // Search
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      result = result.filter(c =>
+        c.subject.toLowerCase().includes(q) ||
+        c.description.toLowerCase().includes(q) ||
+        (AREA_LABELS[c.area] || c.area).toLowerCase().includes(q)
+      )
+    }
+
+    // Status filter
+    if (statusFilter !== "all") {
+      result = result.filter(c => c.status === statusFilter)
+    }
+
+    // Area filter
+    if (areaFilter !== "all") {
+      result = result.filter(c => c.area === areaFilter)
+    }
+
+    // Sort
+    if (sort === "recent") result.sort((a, b) => b.createdAt - a.createdAt)
+    else if (sort === "oldest") result.sort((a, b) => a.createdAt - b.createdAt)
+    else if (sort === "urgency") {
+      const order: Record<string, number> = { alta: 0, media: 1, baja: 2 }
+      result.sort((a, b) => (order[a.urgency] ?? 99) - (order[b.urgency] ?? 99))
+    }
+
+    return result
+  }, [consultas, search, statusFilter, areaFilter, sort])
+
+  const toggleExpand = useCallback((id: string) => {
+    setExpanded(prev => prev === id ? null : id)
   }, [])
 
   const handleCancel = useCallback(async () => {
     if (!cancelTarget) return
     await cancelConsulta({ id: cancelTarget as any })
     setCancelTarget(null)
+    setExpanded(null)
   }, [cancelTarget, cancelConsulta])
 
   const handleDownload = useCallback(async (storageId: string, fileName: string) => {
@@ -97,299 +160,394 @@ export default function ConsultasPage() {
     } catch {} finally { setDownloading(null) }
   }, [getFileUrl])
 
-  const handleAddNote = useCallback(async (e: FormEvent, consultaId: string) => {
+  const handleAddNote = useCallback(async (e: FormEvent) => {
     e.preventDefault()
-    const text = noteText[consultaId]?.trim()
-    if (!text) return
-    setSendingNote(consultaId)
+    if (!expanded || !noteText.trim()) return
+    setSendingNote(true)
     try {
-      await addNote({ id: consultaId as any, text })
-      setNoteText((prev) => { const n = { ...prev }; delete n[consultaId]; return n })
-    } catch {} finally { setSendingNote(null) }
-  }, [noteText, addNote])
+      await addNote({ id: expanded as any, text: noteText.trim() })
+      setNoteText("")
+    } catch {} finally { setSendingNote(false) }
+  }, [expanded, noteText, addNote])
 
-  // ── Loading ──────────────────────────────────────────────────────────────
+  const expandedConsulta = useMemo(
+    () => expanded ? filtered.find(c => c._id === expanded) : null,
+    [expanded, filtered]
+  )
 
+  // ── Loading ────────────────────────────────────────────────────
   if (!consultas) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin h-8 w-8 border-2 border-brand-navy border-t-transparent rounded-full" />
-      </div>
-    )
-  }
-
-  // ── Empty ────────────────────────────────────────────────────────────────
-
-  if (consultas.length === 0) {
-    return (
-      <div className="text-center py-20">
-        <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <h2 className="text-lg font-semibold text-foreground mb-2">No tienes consultas</h2>
-        <p className="text-muted-foreground mb-6">Envía tu primera consulta especializada</p>
-        <Link
-          href="/panel/consultas/nueva"
-          className="inline-flex items-center gap-2 rounded-lg bg-brand-navy px-6 py-2.5 text-white hover:bg-brand-navy/90"
-        >
-          Nueva consulta <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-    )
-  }
-
-  // ── Render ────────────────────────────────────────────────────────────────
-
-  return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground">Mis Consultas</h1>
-          <p className="text-sm text-muted-foreground mt-1">{consultas.length} consulta{consultas.length !== 1 ? "s" : ""}</p>
+      <div className="flex-1 md:ml-[240px] pt-16 md:pt-0 w-full max-w-[1440px] mx-auto min-h-screen">
+        <div className="p-4 md:p-8 w-full max-w-[896px] xl:max-w-7xl mx-auto space-y-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-48 bg-muted rounded" />
+            <div className="h-12 bg-muted rounded-xl" />
+            {[1,2,3,4].map(i => <div key={i} className="h-20 bg-muted rounded-xl" />)}
+          </div>
         </div>
-        <Link
-          href="/panel/consultas/nueva"
-          className="inline-flex items-center gap-2 rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white hover:bg-brand-navy/90"
-        >
-          Nueva consulta
-        </Link>
       </div>
+    )
+  }
 
-      {/* Consulta cards */}
-      <div className="space-y-3">
-        {consultas.map((c) => {
-          const isExpanded = !!expanded[c._id]
-          const isFull = expanded[c._id] === "full"
-          const status = STATUS[c.status] || STATUS.pendiente
-          const isCancellable = c.status === "pendiente"
+  // ── Render ─────────────────────────────────────────────────────
+  return (
+    <div className="flex-1 md:ml-[240px] pt-16 md:pt-0 w-full max-w-[1440px] mx-auto min-h-screen flex flex-col">
+      <div className="p-4 md:p-8 flex-1 w-full max-w-[896px] xl:max-w-7xl mx-auto flex flex-col gap-6">
 
-          return (
-            <div
-              key={c._id}
-              className={cn(
-                "rounded-2xl border bg-card transition-all duration-200",
-                isExpanded ? "border-brand-sky/30 shadow-sm" : "border-border hover:border-muted-foreground/20"
-              )}
-            >
-              {/* Card header — click to expand */}
+        {/* ── Page Header ──────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground">
+              Mis Consultas
+            </h2>
+            <span className="bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full text-xs font-medium border border-border">
+              {filtered.length} Total{filtered.length !== 1 ? "es" : ""}
+            </span>
+          </div>
+          <Link
+            href="/panel/consultas/nueva"
+            className="bg-brand-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-brand-navy/90 transition-colors shadow-sm w-full sm:w-auto justify-center"
+          >
+            <Plus className="h-5 w-5" />
+            Nueva consulta
+          </Link>
+        </div>
+
+        {/* ── Filters Section ───────────────────────────────────── */}
+        <div className="flex flex-col gap-4 bg-card p-4 rounded-xl border border-border">
+          {/* Search */}
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar por asunto, descripción o área..."
+              className="w-full pl-10 pr-10 py-2.5 bg-background border border-border rounded-lg focus:ring-2 focus:ring-brand-sky/20 focus:border-brand-sky transition-all outline-none text-sm text-foreground placeholder:text-muted-foreground"
+            />
+            {search && (
               <button
-                onClick={() => toggle(c._id)}
-                className="w-full flex items-center gap-4 p-5 text-left"
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="font-semibold text-foreground truncate">{c.subject}</span>
-                    <span className={cn("shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium", status.color)}>
-                      {status.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formatDate(c.createdAt)}
-                    </span>
-                    <span>{AREA_LABELS[c.area] || c.area}</span>
-                    {c.files && c.files.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <Paperclip className="h-3 w-3" />
-                        {c.files.length}
-                      </span>
-                    )}
-                    {c.responses && c.responses.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
-                        {c.responses.length}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                </motion.div>
+                <X className="h-5 w-5" />
               </button>
+            )}
+          </div>
 
-              {/* Expanded content */}
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="overflow-hidden"
+          {/* Chips & Dropdowns */}
+          <div className="flex flex-col lg:flex-row justify-between gap-4">
+            {/* Status filter chips */}
+            <div className="flex flex-wrap gap-2">
+              {STATUS_FILTERS.map(f => (
+                <button
+                  key={f.value}
+                  onClick={() => setStatusFilter(f.value)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                    statusFilter === f.value
+                      ? "bg-brand-navy text-white border-brand-navy"
+                      : "bg-background text-muted-foreground border-border hover:bg-muted"
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Area + Sort dropdowns */}
+            <div className="flex gap-2 w-full lg:w-auto">
+              <select
+                value={areaFilter}
+                onChange={e => setAreaFilter(e.target.value)}
+                className="flex-1 lg:flex-none bg-background border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:ring-2 focus:ring-brand-sky/20 focus:border-brand-sky outline-none"
+              >
+                <option value="all">Todas las áreas</option>
+                {Object.entries(AREA_LABELS).map(([v, l]) => (
+                  <option key={v} value={v}>{l}</option>
+                ))}
+              </select>
+              <select
+                value={sort}
+                onChange={e => setSort(e.target.value)}
+                className="flex-1 lg:flex-none bg-background border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:ring-2 focus:ring-brand-sky/20 focus:border-brand-sky outline-none"
+              >
+                {SORT_OPTIONS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Consultas List ────────────────────────────────────── */}
+        <div className="flex flex-col gap-3">
+          {filtered.length === 0 ? (
+            /* Empty state */
+            <div className="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-dashed border-border text-center mt-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+                <SearchX className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">No se encontraron consultas</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                {search || statusFilter !== "all" || areaFilter !== "all"
+                  ? "Intenta ajustar los filtros de búsqueda o limpia el texto para ver todos tus registros."
+                  : "Envía tu primera consulta especializada y nuestro equipo te responderá en menos de 24 horas."
+                }
+              </p>
+              {(search || statusFilter !== "all" || areaFilter !== "all") ? (
+                <button
+                  onClick={() => { setSearch(""); setStatusFilter("all"); setAreaFilter("all") }}
+                  className="mt-4 text-brand-sky font-medium text-sm hover:underline"
+                >
+                  Limpiar filtros
+                </button>
+              ) : (
+                <Link
+                  href="/panel/consultas/nueva"
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-navy/90"
+                >
+                  <Plus className="h-4 w-4" />
+                  Nueva consulta
+                </Link>
+              )}
+            </div>
+          ) : (
+            filtered.map(c => {
+              const status = STATUS[c.status] || STATUS.pendiente
+              const urgency = URGENCY_COLORS[c.urgency] || URGENCY_COLORS.media
+              const isExpanded = expanded === c._id
+              const StatusIcon = status.icon
+
+              return (
+                <div
+                  key={c._id}
+                  className="bg-card rounded-xl border border-border overflow-hidden hover:border-brand-sky/30 transition-colors shadow-sm group"
+                >
+                  {/* Row header — click to expand */}
+                  <div
+                    onClick={() => toggleExpand(c._id)}
+                    className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer"
                   >
-                    <div className="px-5 pb-5 space-y-5 border-t border-border pt-5">
-                      {/* Description */}
-                      <div className="space-y-2">
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Descripción</h4>
-                        <p className={cn("text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap", !isFull && "line-clamp-3")}>
-                          {c.description}
-                        </p>
-                        {c.description.length > 200 && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); toggle(c._id) }}
-                            className="text-xs text-brand-sky hover:underline"
-                          >
-                            {isFull ? "Mostrar menos" : "Leer más"}
-                          </button>
-                        )}
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-xs font-medium border border-border">
+                          {AREA_LABELS[c.area] || c.area}
+                        </span>
+                        <div className={cn("flex items-center gap-1 text-xs font-medium", urgency.textColor)}>
+                          <div className={cn("h-2 w-2 rounded-full", urgency.dot)} />
+                          {urgency.label}
+                        </div>
                       </div>
+                      <h3 className="font-semibold text-foreground truncate group-hover:text-foreground transition-colors">
+                        {c.subject}
+                      </h3>
+                    </div>
 
-                      {/* Attached files */}
-                      {c.files && c.files.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            Archivos adjuntos ({c.files.length})
-                          </h4>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {c.files.map((f) => {
-                              const isImage = f.fileType.startsWith("image/")
-                              return (
-                                <div
-                                  key={f.storageId}
-                                  className="flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2.5"
-                                >
-                                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-brand-navy/5">
-                                    {isImage ? <Image className="h-4 w-4 text-brand-sky" /> : <FileText className="h-4 w-4 text-brand-navy" />}
+                    <div className="flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-6 shrink-0 w-full md:w-auto">
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {timeAgo(c.createdAt)}
+                      </div>
+                      <div className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5",
+                        status.color
+                      )}>
+                        <StatusIcon className="h-3.5 w-3.5" />
+                        {status.label}
+                      </div>
+                      <div className="flex items-center gap-1 text-muted-foreground" title={`${c.files?.length || 0} archivos adjuntos`}>
+                        <Paperclip className="h-[18px] w-[18px]" />
+                        <span className="text-xs">{c.files?.length || 0}</span>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="ml-auto md:ml-0"
+                      >
+                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Detail panel */}
+                  <AnimatePresence>
+                    {isExpanded && expandedConsulta && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="border-t border-border bg-muted/20 p-4 md:p-6">
+                          <div className="flex flex-col lg:flex-row gap-6">
+                            {/* Left: Description + Files */}
+                            <div className="flex-1 flex flex-col gap-6">
+                              {/* Description */}
+                              <div>
+                                <h4 className="font-semibold text-foreground mb-2">Descripción de la consulta</h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                  {expandedConsulta.description}
+                                </p>
+                              </div>
+
+                              {/* Attached files */}
+                              {expandedConsulta.files && expandedConsulta.files.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                                    <FolderOpen className="h-[18px] w-[18px]" />
+                                    Archivos Adjuntos ({expandedConsulta.files.length})
+                                  </h4>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {expandedConsulta.files.map(f => {
+                                      const isImage = f.fileType.startsWith("image/")
+                                      return (
+                                        <div
+                                          key={f.storageId}
+                                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-brand-sky/30 transition-colors"
+                                        >
+                                          <div className="flex items-center gap-3 overflow-hidden">
+                                            <div className="p-2 rounded-md bg-brand-navy/10 text-brand-navy">
+                                              {isImage ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                                            </div>
+                                            <div className="truncate">
+                                              <p className="text-sm text-foreground truncate">{f.fileName}</p>
+                                              <p className="text-xs text-muted-foreground">{formatSize(f.fileSize)}</p>
+                                            </div>
+                                          </div>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleDownload(f.storageId, f.fileName) }}
+                                            className="p-1.5 rounded-md text-muted-foreground hover:text-brand-sky hover:bg-muted transition-colors"
+                                          >
+                                            {downloading === f.storageId ? (
+                                              <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand-sky border-t-transparent" />
+                                            ) : (
+                                              <Download className="h-5 w-5" />
+                                            )}
+                                          </button>
+                                        </div>
+                                      )
+                                    })}
                                   </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="truncate text-xs font-medium text-foreground">{f.fileName}</p>
-                                    <p className="text-xs text-muted-foreground">{formatSize(f.fileSize)}</p>
-                                  </div>
+                                </div>
+                              )}
+
+                              {/* Cancel button */}
+                              {c.status === "pendiente" && (
+                                <div className="mt-auto pt-4 flex gap-3">
                                   <button
-                                    onClick={(e) => { e.stopPropagation(); handleDownload(f.storageId, f.fileName) }}
-                                    className="shrink-0 rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-brand-sky transition-colors"
-                                    title="Descargar"
+                                    onClick={(e) => { e.stopPropagation(); setCancelTarget(c._id) }}
+                                    className="px-4 py-2 rounded-lg text-sm font-semibold border border-[#CF2E2E] text-[#CF2E2E] hover:bg-red-50 transition-colors flex items-center gap-2"
                                   >
-                                    {downloading === f.storageId ? (
-                                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-sky border-t-transparent" />
-                                    ) : (
-                                      <Download className="h-4 w-4" />
-                                    )}
+                                    <X className="h-[18px] w-[18px]" />
+                                    Cancelar consulta
                                   </button>
                                 </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      )}
+                              )}
+                            </div>
 
-                      {/* Responses / comments */}
-                      {c.responses && c.responses.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            Comentarios ({c.responses.length})
-                          </h4>
-                          <div className="space-y-2">
-                            {c.responses.map((r, i) => (
-                              <div key={i} className="rounded-lg border border-border bg-background p-3">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-xs font-medium text-foreground">{r.respondedBy}</span>
-                                  <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span>
-                                </div>
-                                <p className="text-sm text-foreground/80 whitespace-pre-wrap">{r.text}</p>
+                            {/* Right: Comments */}
+                            <div className="w-full lg:w-[320px] xl:w-[400px] flex flex-col border-t lg:border-t-0 lg:border-l border-border pt-6 lg:pt-0 lg:pl-6">
+                              <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                                <MessageSquare className="h-[18px] w-[18px]" />
+                                Comentarios y Seguimiento
+                              </h4>
+
+                              <div className="flex-1 flex flex-col gap-4 overflow-y-auto max-h-[300px] mb-4 pr-2">
+                                {expandedConsulta.responses && expandedConsulta.responses.length > 0 ? (
+                                  expandedConsulta.responses.map((r, i) => (
+                                    <div key={i} className="rounded-lg border border-border bg-card p-3">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-xs font-medium text-foreground">{r.respondedBy}</span>
+                                        <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span>
+                                      </div>
+                                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">{r.text}</p>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="text-center py-6 text-muted-foreground text-sm bg-muted/30 rounded-lg border border-dashed border-border">
+                                    No hay comentarios aún. Nuestro equipo se pondrá en contacto pronto.
+                                  </div>
+                                )}
                               </div>
-                            ))}
+
+                              <div className="mt-auto">
+                                <form onSubmit={handleAddNote} className="flex gap-2">
+                                  <input
+                                    value={noteText}
+                                    onChange={e => setNoteText(e.target.value)}
+                                    placeholder="Añadir un comentario..."
+                                    className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-brand-sky/20 focus:border-brand-sky outline-none"
+                                  />
+                                  <button
+                                    type="submit"
+                                    disabled={sendingNote || !noteText.trim()}
+                                    className="p-2 rounded-lg bg-brand-navy text-white hover:bg-brand-navy/90 transition-colors disabled:opacity-50"
+                                  >
+                                    <Send className="h-5 w-5" />
+                                  </button>
+                                </form>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      )}
-
-                      {/* Add note */}
-                      <form onSubmit={(e) => handleAddNote(e, c._id)} className="space-y-2">
-                        <div className="flex gap-2">
-                          <input
-                            value={noteText[c._id] || ""}
-                            onChange={(e) => setNoteText((prev) => ({ ...prev, [c._id]: e.target.value }))}
-                            placeholder="Añadir un comentario..."
-                            className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-brand-sky focus:outline-none focus:ring-2 focus:ring-brand-sky/20"
-                          />
-                          <button
-                            type="submit"
-                            disabled={sendingNote === c._id || !noteText[c._id]?.trim()}
-                            className="inline-flex items-center gap-1 rounded-lg bg-brand-navy px-3 py-2 text-xs font-medium text-white hover:bg-brand-navy/90 disabled:opacity-50"
-                          >
-                            {sendingNote === c._id ? (
-                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                            ) : (
-                              <Send className="h-4 w-4" />
-                            )}
-                          </button>
-                        </div>
-                      </form>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-2 pt-1">
-                        {isCancellable && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); setCancelTarget(c._id) }}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                            Cancelar consulta
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )
-        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )
+            })
+          )}
+        </div>
       </div>
 
-      {/* Cancel confirmation modal */}
+      {/* ── Cancel confirmation modal ─────────────────────────────── */}
       <AnimatePresence>
         {cancelTarget && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
             onClick={() => setCancelTarget(null)}
           >
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl border border-border"
+              onClick={e => e.stopPropagation()}
+              className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
-                  <AlertTriangle className="h-5 w-5 text-red-600" />
+              <div className="p-6 flex flex-col items-center text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FEE2E2] text-[#B91C1C] mb-4">
+                  <AlertTriangle className="h-6 w-6" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">Cancelar consulta</h3>
-                  <p className="text-sm text-muted-foreground">Esta acción no se puede deshacer</p>
+                <h3 className="font-[family-name:var(--font-heading)] text-xl font-bold text-foreground mb-2">
+                  ¿Cancelar consulta?
+                </h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Estás a punto de cancelar esta solicitud. Esta acción no se puede deshacer.
+                </p>
+                <div className="flex flex-col sm:flex-row w-full gap-3">
+                  <button
+                    onClick={() => setCancelTarget(null)}
+                    className="flex-1 px-4 py-2.5 rounded-lg border border-border text-foreground font-semibold text-sm hover:bg-muted transition-colors"
+                  >
+                    Volver
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="flex-1 px-4 py-2.5 rounded-lg bg-[#CF2E2E] text-white font-semibold text-sm hover:bg-[#CF2E2E]/90 transition-colors shadow-sm"
+                  >
+                    Sí, cancelar
+                  </button>
                 </div>
-              </div>
-              <div className="flex gap-2 justify-end">
-                <button
-                  onClick={() => setCancelTarget(null)}
-                  className="rounded-lg border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
-                >
-                  Volver
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-                >
-                  Sí, cancelar
-                </button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  )
-}
-
-// Paperclip icon inline — avoid extra import
-function Paperclip({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-    </svg>
   )
 }

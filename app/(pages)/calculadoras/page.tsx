@@ -2,25 +2,29 @@
 
 import * as React from "react"
 import { PageHero } from "@/components/page-hero"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Calculator,
-  Scale,
   Landmark,
   HelpCircle,
   AlertTriangle,
   ShieldCheck,
   Clock,
-  History,
   CalendarCheck,
   CalendarClock,
+  History,
   Baby,
   Users,
   Users2,
   UsersRound,
+  TrendingUp,
+  DollarSign,
+  ArrowRight,
+  Scale,
 } from "lucide-react"
 import { AnimatedSelect, type SelectOption } from "@/components/animated-select"
 
-// ── Options for selects ─────────────────────────────────────────────────────
+// ── Select Options ────────────────────────────────────────────────────────
 
 const horasJornadaOptions: SelectOption[] = [
   {
@@ -84,377 +88,618 @@ const cantidadHijosOptions: SelectOption[] = [
   },
 ]
 
+// ── Format helpers ────────────────────────────────────────────────────────
+
+const formatCLP = (val: number) =>
+  new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP",
+    maximumFractionDigits: 0,
+  }).format(val)
+
+const formatCompact = (val: number) =>
+  new Intl.NumberFormat("es-CL", { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(val)
+
+// ── Animated number counter ───────────────────────────────────────────────
+
+function AnimatedValue({ value, prefix = "", suffix = "" }: { value: string; prefix?: string; suffix?: string }) {
+  return (
+    <motion.span
+      key={value}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="inline-block"
+    >
+      {prefix}{value}{suffix}
+    </motion.span>
+  )
+}
+
+// ── RangeSlider component ─────────────────────────────────────────────────
+
+function RangeSlider({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  onChange,
+  unit,
+  presets,
+}: {
+  label: string
+  value: number
+  min: number
+  max: number
+  step?: number
+  onChange: (val: number) => void
+  unit?: string
+  presets?: { label: string; value: number }[]
+}) {
+  const pct = ((value - min) / (max - min)) * 100
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-semibold text-primary">{label}</label>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold text-brand-navy dark:text-brand-on-navy-muted tabular-nums">
+            {value.toLocaleString("es-CL")}
+            {unit && <span className="text-sm ml-1">{unit}</span>}
+          </span>
+        </div>
+      </div>
+      <div className="relative h-2 bg-muted rounded-full">
+        <div
+          className="absolute h-2 bg-brand-sky rounded-full transition-all"
+          style={{ width: `${pct}%` }}
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="absolute inset-0 w-full h-2 opacity-0 cursor-pointer z-10"
+        />
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-brand-sky rounded-full shadow-md pointer-events-none"
+          style={{ left: `calc(${pct}% - 10px)` }}
+        />
+      </div>
+      {presets && (
+        <div className="flex flex-wrap gap-2">
+          {presets.map((p) => (
+            <button
+              key={p.value}
+              type="button"
+              onClick={() => onChange(p.value)}
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                value === p.value
+                  ? "bg-brand-navy text-white border-brand-navy"
+                  : "bg-muted/50 text-muted-foreground border-border/60 hover:border-brand-navy/30 hover:text-brand-navy"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── NumberInput component ───────────────────────────────────────────────────
+
+function NumberInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+  min = 0,
+  helper,
+  prefix,
+}: {
+  label: string
+  value: number
+  onChange: (val: number) => void
+  placeholder?: string
+  min?: number
+  helper?: string
+  prefix?: string
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold text-primary">{label}</label>
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
+            {prefix}
+          </span>
+        )}
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(Math.max(min, Number(e.target.value)))}
+          placeholder={placeholder}
+          className={`w-full h-12 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm transition-shadow ${
+            prefix ? "pl-10 pr-4" : "px-4"
+          }`}
+        />
+      </div>
+      {helper && <p className="text-[11px] text-muted-foreground">{helper}</p>}
+    </div>
+  )
+}
+
+// ── Results card component ────────────────────────────────────────────────
+
+function ResultRow({
+  label,
+  value,
+  accent = false,
+  delay = 0,
+}: {
+  label: string
+  value: string
+  accent?: boolean
+  delay?: number
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay, duration: 0.35 }}
+      className="flex items-center justify-between"
+    >
+      <span className={`text-sm ${accent ? "text-white/80" : "text-white/60"}`}>{label}</span>
+      <span className={`font-semibold tabular-nums ${accent ? "text-brand-sky text-xl" : "text-white"}`}>
+        <AnimatedValue value={value} />
+      </span>
+    </motion.div>
+  )
+}
+
+// ── InfoTip component ─────────────────────────────────────────────────────
+
+function InfoTip({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-3 p-4 rounded-2xl bg-muted/40 border border-border/30">
+      <div className="shrink-0 mt-0.5">
+        <Icon className="size-4 text-brand-sky" />
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-primary">{title}</p>
+        <div className="text-xs text-muted-foreground leading-relaxed">{children}</div>
+      </div>
+    </div>
+  )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────
+
 export default function CalculadorasPage() {
   const [activeTab, setActiveTab] = React.useState<"sueldo" | "alimentos">("sueldo")
 
-  // --- State for Sueldo Mínimo Calculator ---
-  const [sueldoBase, setSueldoBase] = React.useState<number>(500000)
-  const [horasJornadaValue, setHorasJornadaValue] = React.useState<string>("44")
-  const [horasTrabajadas, setHorasTrabajadas] = React.useState<number>(30)
+  // ── Sueldo state ──────────────────────────────────────────────────────
+  const [sueldoBase, setSueldoBase] = React.useState(500000)
+  const [horasJornadaValue, setHorasJornadaValue] = React.useState("44")
+  const [horasTrabajadas, setHorasTrabajadas] = React.useState(30)
 
   const horasJornada = Number(horasJornadaValue)
 
-  // --- State for Pensión de Alimentos Calculator ---
-  const [ingresoPadre, setIngresoPadre] = React.useState<number>(800000)
-  const [cantidadHijosValue, setCantidadHijosValue] = React.useState<string>("1")
-  const [sueldoMinimoAlimentos, setSueldoMinimoAlimentos] = React.useState<number>(500000)
+  // ── Alimentos state ────────────────────────────────────────────────────
+  const [ingresoPadre, setIngresoPadre] = React.useState(800000)
+  const [cantidadHijosValue, setCantidadHijosValue] = React.useState("1")
+  const [sueldoMinimoAlimentos, setSueldoMinimoAlimentos] = React.useState(500000)
 
   const cantidadHijos = Number(cantidadHijosValue)
 
-  // --- Sueldo calculations ---
-  const sueldoProporcionalBruto = Math.round(
-    (horasTrabajadas / horasJornada) * sueldoBase
-  )
+  // ── Calculations ──────────────────────────────────────────────────────
+  const sueldoProporcionalBruto = Math.round((horasTrabajadas / horasJornada) * sueldoBase)
   const afpDeduction = Math.round(sueldoProporcionalBruto * 0.10)
   const saludDeduction = Math.round(sueldoProporcionalBruto * 0.07)
   const sueldoLiquidoEstimado = sueldoProporcionalBruto - afpDeduction - saludDeduction
   const valorHoraMinimo = Math.round(sueldoBase / (horasJornada * 4.16667))
 
-  // --- Alimentos calculations ---
   const porcentajeMinimo = cantidadHijos === 1 ? 0.40 : 0.30
   const minimoLegalPorHijo = sueldoMinimoAlimentos * porcentajeMinimo
   const minimoLegalTotal = minimoLegalPorHijo * cantidadHijos
   const maximoLegalTotal = ingresoPadre * 0.50
   const superaMaximo = minimoLegalTotal > maximoLegalTotal
 
-  // Format currency helpers
-  const formatCLP = (val: number) =>
-    new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
-      maximumFractionDigits: 0,
-    }).format(val)
+  const jornadaPct = Math.min(100, Math.round((horasTrabajadas / horasJornada) * 100))
 
   return (
     <>
       <PageHero
         title="Calculadoras Legales"
-        subtitle="Herramientas gratuitas para calcular tu sueldo mínimo proporcional y estimar el monto de pensión de alimentos en Chile."
+        subtitle="Herramientas gratuitas para estimar tu sueldo proporcional y pensión de alimentos según la legislación chilena."
         breadcrumbs={[{ label: "Calculadoras", href: "/calculadoras/" }]}
       />
 
-      <section className="py-12 md:py-20 bg-background text-foreground">
+      <section className="py-10 md:py-16 bg-background text-foreground">
         <div className="max-w-6xl mx-auto px-5 md:px-12">
-          {/* Navigation Tabs */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mb-10 md:mb-14">
-            <button
-              onClick={() => setActiveTab("sueldo")}
-              className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 ${
-                activeTab === "sueldo"
-                  ? "bg-brand-navy text-white shadow-md"
-                  : "bg-muted hover:bg-accent text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Calculator className="size-4" />
-              Sueldo Mínimo Proporcional
-            </button>
-            <button
-              onClick={() => setActiveTab("alimentos")}
-              className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 ${
-                activeTab === "alimentos"
-                  ? "bg-brand-navy text-white shadow-md"
-                  : "bg-muted hover:bg-accent text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Landmark className="size-4" />
-              Pensión de Alimentos
-            </button>
+          {/* ── Tab switcher ── */}
+          <div className="flex justify-center mb-10 md:mb-12">
+            <div className="inline-flex items-center p-1.5 rounded-full bg-muted/80 border border-border/40">
+              {[
+                { id: "sueldo" as const, label: "Sueldo Mínimo", icon: Calculator },
+                { id: "alimentos" as const, label: "Pensión Alimentos", icon: Landmark },
+              ].map((tab) => {
+                const isActive = activeTab === tab.id
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                      isActive ? "text-white" : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="calcTabBg"
+                        className="absolute inset-0 bg-brand-navy rounded-full"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Icon className="size-4" />
+                      {tab.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* CALCULADORA 1: SUELDO MINIMO PROPORCIONAL */}
+          {/* ── Animated tab content ── */}
+          <AnimatePresence mode="wait">
             {activeTab === "sueldo" && (
-              <>
-                {/* Inputs Area */}
-                <div className="lg:col-span-7 bg-card border border-border/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-                  <div className="flex items-center gap-3 border-b border-border/40 pb-4">
-                    <div className="p-2.5 rounded-xl bg-brand-navy/5 text-brand-navy dark:bg-brand-sky/10 dark:text-brand-sky">
-                      <Calculator className="size-6" />
+              <motion.div
+                key="sueldo"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8"
+              >
+                {/* ── Inputs ── */}
+                <div className="lg:col-span-7 space-y-6">
+                  <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
+                    <div className="flex items-center gap-3 pb-4 border-b border-border/40">
+                      <div className="p-2.5 rounded-xl bg-brand-navy/5 text-brand-navy dark:bg-brand-sky/10 dark:text-brand-sky">
+                        <Calculator className="size-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold">
+                          Datos del Contrato
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          Ajusta los valores para calcular tu sueldo proporcional
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-[family-name:var(--font-heading)] text-lg md:text-xl font-semibold">
-                        Datos del Contrato
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Ingresa los datos para calcular el sueldo bruto y líquido según tu jornada.
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Input sueldo mínimo mensual base */}
-                  <div className="space-y-2">
-                    <label htmlFor="sueldoBase" className="text-sm font-semibold text-primary">
-                      Sueldo Mínimo Mensual Base (CLP)
-                    </label>
-                    <input
-                      id="sueldoBase"
-                      type="number"
+                    <NumberInput
+                      label="Sueldo Mínimo Mensual (CLP)"
                       value={sueldoBase}
-                      onChange={(e) => setSueldoBase(Math.max(0, Number(e.target.value)))}
-                      className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
-                      placeholder="Ej. 500000"
+                      onChange={setSueldoBase}
+                      prefix="$"
+                      helper="Mínimo legal vigente: $500.000 para mayores de 18 años."
                     />
-                    <p className="text-[11px] text-muted-foreground">
-                      * El sueldo mínimo vigente en Chile es de <strong>$500.000 CLP</strong> para trabajadores mayores de 18 años y de hasta 65 años.
-                    </p>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Horas jornada completa — AnimatedSelect */}
+                    <RangeSlider
+                      label="Horas que trabajas por semana"
+                      value={horasTrabajadas}
+                      min={1}
+                      max={horasJornada}
+                      onChange={(v) => setHorasTrabajadas(Math.min(horasJornada, v))}
+                      unit="hrs"
+                      presets={[
+                        { label: "¼ tiempo", value: Math.round(horasJornada * 0.25) },
+                        { label: "½ tiempo", value: Math.round(horasJornada * 0.5) },
+                        { label: "¾ tiempo", value: Math.round(horasJornada * 0.75) },
+                        { label: "Full time", value: horasJornada },
+                      ]}
+                    />
+
+                    {/* Progress bar */}
                     <div className="space-y-2">
-                      <label htmlFor="horasJornada" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
-                        Horas Jornada Completa Semanal
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Progresión de jornada</span>
+                        <span className="font-semibold text-brand-navy dark:text-brand-on-navy-muted">
+                          {jornadaPct}%
+                        </span>
+                      </div>
+                      <div className="h-3 bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-brand-navy to-brand-sky"
+                          initial={false}
+                          animate={{ width: `${jornadaPct}%` }}
+                          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Jornada select */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-brand-navy tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
+                        Jornada Completa Semanal
                       </label>
                       <AnimatedSelect
-                        id="horasJornada"
                         options={horasJornadaOptions}
                         value={horasJornadaValue}
                         onChange={setHorasJornadaValue}
                         label="Jornada Semanal"
                       />
-                      <p className="text-[11px] text-muted-foreground px-1">
-                        Base legal para el tope máximo semanal de trabajo.
-                      </p>
-                    </div>
-
-                    {/* Horas trabajadas semanales */}
-                    <div className="space-y-2">
-                      <label htmlFor="horasTrabajadas" className="text-sm font-semibold text-primary">
-                        Horas que Trabajas a la Semana
-                      </label>
-                      <input
-                        id="horasTrabajadas"
-                        type="number"
-                        min={0}
-                        max={horasJornada}
-                        value={horasTrabajadas}
-                        onChange={(e) =>
-                          setHorasTrabajadas(Math.min(horasJornada, Math.max(0, Number(e.target.value))))
-                        }
-                        className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
-                        placeholder="Ej. 30"
-                      />
-                      <p className="text-[11px] text-muted-foreground">
-                        No puede exceder las horas de la jornada completa.
-                      </p>
                     </div>
                   </div>
+
+                  <InfoTip icon={HelpCircle} title="¿Cómo funciona?">
+                    El sueldo proporcional se calcula dividiendo tus horas semanales por el límite
+                    legal de la jornada completa, multiplicado por el sueldo mínimo base. Las
+                    deducciones son referenciales: 10% AFP y 7% salud (mínimos legales).
+                  </InfoTip>
                 </div>
 
-                {/* Results Area */}
+                {/* ── Results ── */}
                 <div className="lg:col-span-5 space-y-6">
-                  <div className="bg-brand-navy text-white rounded-3xl p-6 md:p-8 space-y-6 shadow-md relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-sky/10 rounded-full blur-2xl" />
+                  <div className="bg-brand-navy text-white rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-sky/10 rounded-full blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-brand-sky/5 rounded-full blur-2xl" />
 
-                    <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-brand-sky">
-                      Resultado Estimado
-                    </h3>
-
-                    <div className="space-y-4 border-b border-white/10 pb-5">
-                      <div>
-                        <p className="text-xs text-white/60 uppercase tracking-wider">
-                          Sueldo Mínimo Bruto Proporcional
-                        </p>
-                        <p className="text-3xl md:text-4xl font-bold tracking-tight mt-1">
-                          {formatCLP(sueldoProporcionalBruto)}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-xs text-white/70">
-                        <div>
-                          <p>Deducción AFP (10% est.)</p>
-                          <p className="font-semibold text-white mt-0.5">{formatCLP(afpDeduction)}</p>
-                        </div>
-                        <div>
-                          <p>Deducción Salud (7% est.)</p>
-                          <p className="font-semibold text-white mt-0.5">{formatCLP(saludDeduction)}</p>
-                        </div>
-                      </div>
+                    <div className="relative">
+                      <p className="text-xs text-brand-sky uppercase tracking-wider font-semibold mb-1">
+                        Sueldo Bruto Proporcional
+                      </p>
+                      <p className="text-3xl md:text-4xl font-bold tracking-tight">
+                        <AnimatedValue value={formatCLP(sueldoProporcionalBruto)} />
+                      </p>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
+                    <div className="space-y-3 border-t border-white/10 pt-4">
+                      <ResultRow label="Deducción AFP (10%)" value={formatCLP(afpDeduction)} delay={0.1} />
+                      <ResultRow label="Deducción Salud (7%)" value={formatCLP(saludDeduction)} delay={0.15} />
+                    </div>
+
+                    <div className="border-t border-white/10 pt-4 space-y-2">
+                      <div className="flex items-center justify-between">
                         <span className="text-sm text-white/80">Sueldo Líquido Estimado</span>
                         <span className="text-xl font-bold text-brand-sky">
-                          {formatCLP(sueldoLiquidoEstimado)}
+                          <AnimatedValue value={formatCLP(sueldoLiquidoEstimado)} />
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-xs text-white/60">
-                        <span>Valor Hora Mínimo Estimado</span>
-                        <span>{formatCLP(valorHoraMinimo)} / hora</span>
+                      <div className="flex items-center justify-between text-xs text-white/50">
+                        <span>Valor hora mínimo estimado</span>
+                        <span className="tabular-nums">{formatCLP(valorHoraMinimo)}/hr</span>
+                      </div>
+                    </div>
+
+                    {/* Visual comparison */}
+                    <div className="pt-2">
+                      <div className="flex items-end gap-3 h-24">
+                        <div className="flex-1 flex flex-col items-center gap-1">
+                          <span className="text-[10px] text-white/50">Base</span>
+                          <motion.div
+                            className="w-full bg-white/10 rounded-t-lg"
+                            initial={false}
+                            animate={{ height: "100%" }}
+                          />
+                          <span className="text-[10px] text-white/40">{formatCompact(sueldoBase)}</span>
+                        </div>
+                        <div className="flex-1 flex flex-col items-center gap-1">
+                          <span className="text-[10px] text-white/50">Bruto</span>
+                          <motion.div
+                            className="w-full bg-brand-sky/40 rounded-t-lg"
+                            initial={false}
+                            animate={{ height: `${Math.max(5, (sueldoProporcionalBruto / sueldoBase) * 100)}%` }}
+                            transition={{ type: "spring", stiffness: 100 }}
+                          />
+                          <span className="text-[10px] text-white/40">{formatCompact(sueldoProporcionalBruto)}</span>
+                        </div>
+                        <div className="flex-1 flex flex-col items-center gap-1">
+                          <span className="text-[10px] text-white/50">Líquido</span>
+                          <motion.div
+                            className="w-full bg-brand-sky/70 rounded-t-lg"
+                            initial={false}
+                            animate={{ height: `${Math.max(5, (sueldoLiquidoEstimado / sueldoBase) * 100)}%` }}
+                            transition={{ type: "spring", stiffness: 100 }}
+                          />
+                          <span className="text-[10px] text-white/40">{formatCompact(sueldoLiquidoEstimado)}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Informative Note */}
-                  <div className="bg-muted/50 border border-border/40 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 text-primary font-semibold text-sm">
-                      <HelpCircle className="size-4 text-brand-sky shrink-0" />
-                      ¿Cómo funciona el cálculo?
+                  <div className="bg-muted/40 border border-border/30 rounded-2xl p-5 space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <TrendingUp className="size-3.5 text-brand-sky" />
+                      <span>
+                        Trabajando <strong>{horasTrabajadas} de {horasJornada} horas</strong> semanales
+                        ({jornadaPct}% de jornada completa)
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      El sueldo proporcional se calcula dividiendo tu cantidad de horas semanales por el límite de horas legales del contrato full-time, y multiplicándolo por el sueldo mínimo base nacional.
-                    </p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      * Las deducciones previsionales son aproximadas y corresponden a los mínimos legales (salud 7% y previsión obligatoria de AFP estimada en 10%). Este monto neto final es referencial.
-                    </p>
                   </div>
                 </div>
-              </>
+              </motion.div>
             )}
 
-            {/* CALCULADORA 2: PENSION DE ALIMENTOS */}
             {activeTab === "alimentos" && (
-              <>
-                {/* Inputs Area */}
-                <div className="lg:col-span-7 bg-card border border-border/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-                  <div className="flex items-center gap-3 border-b border-border/40 pb-4">
-                    <div className="p-2.5 rounded-xl bg-brand-navy/5 text-brand-navy dark:bg-brand-sky/10 dark:text-brand-sky">
-                      <Landmark className="size-6" />
+              <motion.div
+                key="alimentos"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8"
+              >
+                {/* ── Inputs ── */}
+                <div className="lg:col-span-7 space-y-6">
+                  <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
+                    <div className="flex items-center gap-3 pb-4 border-b border-border/40">
+                      <div className="p-2.5 rounded-xl bg-brand-navy/5 text-brand-navy dark:bg-brand-sky/10 dark:text-brand-sky">
+                        <Landmark className="size-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold">
+                          Cálculo de Pensión
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          Según Ley N° 14.908 y normativa vigente
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-[family-name:var(--font-heading)] text-lg md:text-xl font-semibold">
-                        Cálculo de Pensión Alimenticia
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Determina los topes legales de pensión según la normativa de Chile.
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Ingreso mensual del padre */}
-                  <div className="space-y-2">
-                    <label htmlFor="ingresoPadre" className="text-sm font-semibold text-primary">
-                      Sueldo Líquido Mensual del Demandado/Padre (CLP)
-                    </label>
-                    <input
-                      id="ingresoPadre"
-                      type="number"
+                    <NumberInput
+                      label="Sueldo Líquido del Demandado (CLP)"
                       value={ingresoPadre}
-                      onChange={(e) => setIngresoPadre(Math.max(0, Number(e.target.value)))}
-                      className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
-                      placeholder="Ej. 800000"
+                      onChange={setIngresoPadre}
+                      prefix="$"
+                      helper="Ingresos mensuales netos del padre o madre que pagará la pensión."
                     />
-                    <p className="text-[11px] text-muted-foreground">
-                      Corresponde a los ingresos del padre o madre que pagará la pensión de alimentos, descontadas sus cotizaciones obligatorias.
-                    </p>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Cantidad de hijos — AnimatedSelect */}
                     <div className="space-y-2">
-                      <label htmlFor="cantidadHijos" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
+                      <label className="text-xs font-bold text-brand-navy tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
                         Cantidad de Hijos a Alimentar
                       </label>
                       <AnimatedSelect
-                        id="cantidadHijos"
                         options={cantidadHijosOptions}
                         value={cantidadHijosValue}
                         onChange={setCantidadHijosValue}
                         label="Número de Hijos"
                       />
-                      <p className="text-[11px] text-muted-foreground px-1">
-                        Determina el porcentaje mínimo obligatorio a pagar según la ley chilena.
-                      </p>
                     </div>
 
-                    {/* Sueldo mínimo base */}
-                    <div className="space-y-2">
-                      <label htmlFor="sueldoMinimoAlimentos" className="text-sm font-semibold text-primary">
-                        Sueldo Mínimo de Referencia (CLP)
-                      </label>
-                      <input
-                        id="sueldoMinimoAlimentos"
-                        type="number"
-                        value={sueldoMinimoAlimentos}
-                        onChange={(e) => setSueldoMinimoAlimentos(Math.max(0, Number(e.target.value)))}
-                        className="w-full h-12 px-4 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent text-sm"
-                      />
-                      <p className="text-[11px] text-muted-foreground">
-                        Utilizado para calcular la base del mínimo legal ($500.000 CLP).
-                      </p>
-                    </div>
+                    <NumberInput
+                      label="Sueldo Mínimo de Referencia (CLP)"
+                      value={sueldoMinimoAlimentos}
+                      onChange={setSueldoMinimoAlimentos}
+                      prefix="$"
+                      helper="Base para calcular el mínimo legal. Vigente: $500.000."
+                    />
                   </div>
+
+                  <InfoTip icon={Scale} title="Normativa aplicable">
+                    <strong>1 hijo:</strong> mínimo 40% de un sueldo mínimo.
+                    <strong> 2+ hijos:</strong> mínimo 30% por cada uno.
+                    El tope máximo legal es el <strong>50% de los ingresos netos</strong> del demandado,
+                    independientemente del número de hijos.
+                  </InfoTip>
                 </div>
 
-                {/* Results Area */}
+                {/* ── Results ── */}
                 <div className="lg:col-span-5 space-y-6">
-                  <div className="bg-brand-navy text-white rounded-3xl p-6 md:p-8 space-y-6 shadow-md relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-sky/10 rounded-full blur-2xl" />
+                  <div className="bg-brand-navy text-white rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-sky/10 rounded-full blur-3xl" />
 
-                    <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-brand-sky">
-                      Estimación Legal (Ley N° 14.908)
-                    </h3>
-
-                    <div className="space-y-4 border-b border-white/10 pb-5">
-                      <div>
-                        <p className="text-xs text-white/60 uppercase tracking-wider">
-                          Monto Mínimo Legal Total
-                        </p>
-                        <p className="text-2xl md:text-3xl font-bold tracking-tight mt-1 text-white">
-                          {formatCLP(minimoLegalTotal)}
-                        </p>
-                        <p className="text-[11px] text-white/50 mt-1">
-                          Equivale a {formatCLP(minimoLegalPorHijo)} mensual por cada hijo.
-                        </p>
-                      </div>
+                    <div className="relative">
+                      <p className="text-xs text-brand-sky uppercase tracking-wider font-semibold mb-1">
+                        Pensión Mínima Legal
+                      </p>
+                      <p className="text-3xl md:text-4xl font-bold tracking-tight">
+                        <AnimatedValue value={formatCLP(minimoLegalTotal)} />
+                      </p>
+                      <p className="text-xs text-white/50 mt-1">
+                        {formatCLP(minimoLegalPorHijo)} por cada hijo
+                      </p>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-white/80">Límite Máximo Legal (50%)</span>
-                        <span className="text-lg font-bold text-white">
-                          {formatCLP(maximoLegalTotal)}
+                    <div className="space-y-3 border-t border-white/10 pt-4">
+                      <ResultRow
+                        label={`Porcentaje mínimo (${cantidadHijos === 1 ? "40%" : "30%"} × ${cantidadHijos})`}
+                        value={formatCLP(minimoLegalTotal)}
+                        delay={0.1}
+                      />
+                      <ResultRow label="Límite máximo legal (50% ingresos)" value={formatCLP(maximoLegalTotal)} delay={0.15} />
+                    </div>
+
+                    {/* Comparison gauge */}
+                    <div className="pt-2 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-white/50">Mínimo vs. Máximo</span>
+                        <span className="text-white/70">
+                          {Math.round((minimoLegalTotal / maximoLegalTotal) * 100)}% del tope
                         </span>
+                      </div>
+                      <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+                        <motion.div
+                          className={`h-full rounded-full ${superaMaximo ? "bg-brand-red" : "bg-brand-sky"}`}
+                          initial={false}
+                          animate={{ width: `${Math.min(100, (minimoLegalTotal / maximoLegalTotal) * 100)}%` }}
+                          transition={{ type: "spring", stiffness: 100 }}
+                        />
                       </div>
                     </div>
 
                     {superaMaximo && (
-                      <div className="flex gap-2 bg-brand-red/10 border border-brand-red/20 rounded-xl p-3 text-xs text-brand-red">
-                        <AlertTriangle className="size-4 shrink-0 mt-0.5" />
-                        <div>
-                          <strong>Atención:</strong> El mínimo legal calculado supera el 50% de los ingresos totales del demandado. El tribunal reajustará el monto para no superar el límite del 50%.
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="flex gap-2.5 bg-brand-red/15 border border-brand-red/25 rounded-xl p-3.5"
+                      >
+                        <AlertTriangle className="size-4 shrink-0 text-brand-red mt-0.5" />
+                        <div className="text-xs text-brand-red leading-relaxed">
+                          <strong>Supera el límite legal.</strong> El tribunal ajustará el monto para
+                          no exceder el 50% de los ingresos del demandado.
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                   </div>
 
-                  {/* Informative Note */}
-                  <div className="bg-muted/50 border border-border/40 rounded-2xl p-5 space-y-3">
-                    <div className="flex items-center gap-2 text-primary font-semibold text-sm">
-                      <Scale className="size-4 text-brand-sky shrink-0" />
-                      Normativa de Alimentos en Chile
+                  <div className="bg-muted/40 border border-border/30 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <DollarSign className="size-3.5 text-brand-sky" />
+                      <span>
+                        Rango legal: <strong>{formatCLP(minimoLegalTotal)}</strong> —{" "}
+                        <strong>{formatCLP(maximoLegalTotal)}</strong>
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      El monto mínimo a pagar está fijado por ley: si es 1 hijo, no puede ser menos del <strong>40% de un sueldo mínimo</strong>. Si son 2 o más, no puede ser inferior al <strong>30% por cada uno</strong>.
-                    </p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      * Sin importar el número de hijos, la pensión mensual decretada por el juez no puede exceder el <strong>50% de los ingresos mensuales netos</strong> del demandado.
-                    </p>
                   </div>
                 </div>
-              </>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
 
-          {/* Call to Action Legal Guidance */}
-          <div className="mt-16 bg-muted/30 border border-border/50 rounded-3xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10">
-            <div className="space-y-2">
-              <h4 className="font-[family-name:var(--font-heading)] text-lg md:text-xl font-bold text-primary flex items-center gap-2">
-                <ShieldCheck className="size-5 text-brand-sky" />
-                ¿Necesitas formalizar o ajustar tu pensión?
-              </h4>
-              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-3xl">
-                Los cálculos son referenciales basados en la legislación vigente. Cada caso particular requiere evaluar los gastos acreditables de los hijos, la capacidad de pago del demandado y otros factores. Consúltanos directamente para diseñar tu estrategia legal.
-              </p>
+          {/* ── CTA ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-12 md:mt-16"
+          >
+            <div className="relative bg-brand-navy rounded-3xl p-6 md:p-10 overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-brand-sky/8 rounded-full blur-[80px]" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-sky/5 rounded-full blur-[60px]" />
+
+              <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-2 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-2 text-brand-sky">
+                    <ShieldCheck className="size-5" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Asesoría legal</span>
+                  </div>
+                  <h3 className="font-[family-name:var(--font-heading)] text-xl md:text-2xl font-semibold text-white">
+                    ¿Necesitas formalizar tu pensión o revisar tu contrato?
+                  </h3>
+                  <p className="text-sm text-white/50 max-w-xl">
+                    Estas calculadoras son referenciales. Cada caso requiere evaluación personalizada.
+                    Tu primera consulta es gratuita y sin compromiso.
+                  </p>
+                </div>
+                <a
+                  href="/contacto/"
+                  className="group inline-flex items-center gap-2 h-12 px-6 rounded-full bg-white text-brand-navy font-semibold text-sm hover:bg-brand-sky hover:text-white transition-colors shrink-0"
+                >
+                  Consultar ahora
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </a>
+              </div>
             </div>
-            <a
-              href="/contacto/"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-brand-navy hover:bg-brand-navy/90 px-6 text-sm font-semibold text-white transition-all whitespace-nowrap"
-            >
-              Consultar con un Abogado
-            </a>
-          </div>
+          </motion.div>
         </div>
       </section>
     </>

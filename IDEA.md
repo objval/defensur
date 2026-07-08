@@ -1,0 +1,1 @@
+Defensur is a modern rebuild of the Defensur law firm website for Temuco, Chile, built in nextjs, using tailwind, we can take in inquiries about cases, display articles for existing and past cases and automate certain aspects of the services

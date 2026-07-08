@@ -3,11 +3,9 @@ import { PageHero } from "@/components/page-hero"
 import { ServicePageContent } from "@/components/service-page-content"
 
 export const metadata: Metadata = {
-  title: "Abogados de Familia en Temuco — Divorcios, Alimentos, Custodia | Defensur",
-  description:
-    "Abogados especialistas en derecho de familia en Temuco. Divorcios, pensión de alimentos, cuidado personal, régimen de visitas y medidas de protección. Consulta gratuita.",
-  keywords:
-    "abogado familia temuco, divorcio temuco, pensión alimentos, cuidado personal, régimen visitas, violencia intrafamiliar, abogados familia temuco",
+  title: "Abogados de Familia en Temuco y La Araucanía — Divorcios, Alimentos, Custodia | Defensur",
+  description: "Abogados especialistas en derecho de familia en Temuco, La Araucanía y todo el sur de Chile. Divorcios, pensión de alimentos, cuidado personal, régimen de visitas y medidas de protección. Consulta gratuita.",
+  keywords: "abogado familia temuco, abogado familia araucanía, divorcio temuco, pensión alimentos, cuidado personal, régimen visitas, violencia intrafamiliar, abogados familia temuco, abogado familia valdivia, abogado familia osorno",
 }
 
 const highlights = [

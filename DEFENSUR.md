@@ -29,7 +29,8 @@
 - Sebastián Pizarro — Experto en Derecho Laboral
 - Millaray Rohten — Abogada de Familia
 - Carolina Arancibia — Administradora
-- Nataly Pérez — Secretaria
+- Constanza Ampuero — Abogada de Deudas
+- Génesis Carrillo — Abogada Laboral
 
 ---
 

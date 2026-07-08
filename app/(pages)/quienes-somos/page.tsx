@@ -5,9 +5,8 @@ import { ArrowRight, MapPin, Users, Award, Clock } from "lucide-react"
 import { PageHero } from "@/components/page-hero"
 
 export const metadata: Metadata = {
-  title: "Quiénes Somos — Estudio Jurídico Defensur en Temuco",
-  description:
-    "Conoce al equipo de Defensur Estudio Jurídico. Más de 15 años asesorando en derecho laboral, civil, de familia e insolvencia en Temuco y La Araucanía.",
+  title: "Quiénes Somos — Estudio Jurídico Defensur en Temuco y La Araucanía",
+  description: "Conoce al equipo de Defensur Estudio Jurídico. Más de 15 años asesorando en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile.",
 }
 
 const team = [

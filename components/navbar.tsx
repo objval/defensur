@@ -2,21 +2,18 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useTheme } from "next-themes"
 import {
   ArrowRight,
   ChevronDown,
   Gavel,
   Menu,
-  MoonStar,
-  SunMedium,
   X,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-// ─── Data ───────────────────────────────────────────────────────────────────
+// ─── Data ───────────────────────────────────────────────────────────────────────────────────
 
 const navGroups = [
   {
@@ -40,23 +37,7 @@ const navGroups = [
   },
 ]
 
-// ─── Theme toggle ───────────────────────────────────────────────────────────
-
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme()
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      aria-label={resolvedTheme === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
-      className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-background/60 text-foreground/60 transition-colors duration-150 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      {resolvedTheme === "dark" ? <SunMedium className="size-4" /> : <MoonStar className="size-4" />}
-    </button>
-  )
-}
-
-// ─── Desktop nav ────────────────────────────────────────────────────────────
+// ─── Desktop nav ───────────────────────────────────────────────────────────────────────────────────
 
 function DesktopNav() {
   return (
@@ -191,7 +172,6 @@ export function Navbar() {
       <DesktopNav />
 
       <div className="flex items-center gap-2 md:gap-3">
-        <ThemeToggle />
         {/* Mobile: WhatsApp quick CTA */}
         <a
           href="https://wa.me/56959937355?text=Hola%20Defensur%2C%20necesito%20orientaci%C3%B3n%20jur%C3%ADdica."

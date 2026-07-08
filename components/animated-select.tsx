@@ -78,7 +78,7 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                 {selected.label}
               </span>
               {selected.description && (
-                <span className="text-xs text-muted-foreground truncate mt-0.5">
+                <span className="text-xs text-muted-foreground leading-snug mt-0.5">
                   {selected.description}
                 </span>
               )}
@@ -157,7 +157,7 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                       <div className="flex flex-col min-w-0 flex-1">
                         <span
                           className={cn(
-                            "text-sm font-semibold truncate",
+                            "text-sm font-semibold leading-snug",
                             isSelected
                               ? "text-brand-navy dark:text-brand-on-navy-muted"
                               : "text-foreground group-hover:text-brand-navy dark:group-hover:text-brand-on-navy-muted"
@@ -166,7 +166,7 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                           {option.label}
                         </span>
                         {option.description && (
-                          <span className="text-xs text-muted-foreground truncate mt-0.5">
+                          <span className="text-xs text-muted-foreground leading-snug mt-0.5">
                             {option.description}
                           </span>
                         )}

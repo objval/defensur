@@ -3,11 +3,9 @@ import { PageHero } from "@/components/page-hero"
 import { ServicePageContent } from "@/components/service-page-content"
 
 export const metadata: Metadata = {
-  title: "Sumarios Administrativos en Temuco — Defensa de Funcionarios Públicos | Defensur",
-  description:
-    "Defensa legal en sumarios administrativos en Temuco. Asesoría a funcionarios públicos, sanciones de salud y registro de marcas INAPI. Consulta gratuita.",
-  keywords:
-    "sumario administrativo temuco, funcionarios públicos, defensa administrativa, sanciones salud, registro marcas INAPI",
+  title: "Sumarios Administrativos en Temuco y La Araucanía — Defensa de Funcionarios Públicos | Defensur",
+  description: "Defensa legal en sumarios administrativos en Temuco, La Araucanía y todo el sur de Chile. Asesoría a funcionarios públicos, sanciones de salud y registro de marcas INAPI. Consulta gratuita.",
+  keywords: "sumario administrativo temuco, sumario administrativo araucanía, funcionarios públicos, defensa administrativa, sanciones salud, registro marcas INAPI, abogado administrativo valdivia, abogado administrativo osorno",
 }
 
 const highlights = [

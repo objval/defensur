@@ -5,9 +5,8 @@ import { PageHero } from "@/components/page-hero"
 import { SENTENCIAS } from "@/lib/sentencias-data"
 
 export const metadata: Metadata = {
-  title: "Sentencias Destacadas — Casos de Éxito | Defensur",
-  description:
-    "Conoce nuestras sentencias destacadas y casos de éxito en derecho laboral, familiar y civil. Resultados reales que demuestran nuestro compromiso.",
+  title: "Sentencias Destacadas — Casos de Éxito en La Araucanía | Defensur",
+  description: "Conoce nuestras sentencias destacadas y casos de éxito en derecho laboral, familiar y civil en Temuco, La Araucanía y todo el sur de Chile. Resultados reales que demuestran nuestro compromiso.",
 }
 
 const sentencias = SENTENCIAS

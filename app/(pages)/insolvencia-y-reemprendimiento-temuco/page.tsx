@@ -3,11 +3,9 @@ import { PageHero } from "@/components/page-hero"
 import { ServicePageContent } from "@/components/service-page-content"
 
 export const metadata: Metadata = {
-  title: "Insolvencia y Reemprendimiento en Temuco — Ley 20.720 | Defensur",
-  description:
-    "Asesoría legal en insolvencia personal y empresarial en Temuco. Renegociación de deudas, liquidación voluntaria y protección patrimonial bajo Ley 20.720.",
-  keywords:
-    "insolvencia temuco, quiebra personal, renegociación deudas, liquidación voluntaria, ley 20.720, reemprendimiento temuco",
+  title: "Insolvencia y Reemprendimiento en Temuco y La Araucanía — Ley 20.720 | Defensur",
+  description: "Asesoría legal en insolvencia personal y empresarial en Temuco, La Araucanía y todo el sur de Chile. Renegociación de deudas, liquidación voluntaria y protección patrimonial bajo Ley 20.720.",
+  keywords: "insolvencia temuco, insolvencia araucanía, quiebra personal, renegociación deudas, liquidación voluntaria, ley 20.720, reemprendimiento temuco, insolvencia valdivia, insolvencia osorno, insolvencia puerto montt",
 }
 
 const highlights = [

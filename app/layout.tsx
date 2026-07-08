@@ -19,14 +19,16 @@ const fontMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Defensur — Abogados Laborales en Temuco | Despidos y Finiquitos",
-    template: "%s | Defensur",
+    default: "Defensur Araucanía — Abogados Laborales en Temuco | Despidos y Finiquitos",
+    template: "%s | Defensur Araucanía",
   },
   description:
-    "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco. Más de 15 años de experiencia. Consulta gratuita por WhatsApp.",
+    "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile. Más de 15 años de experiencia. Consulta gratuita por WhatsApp.",
   keywords: [
     "abogados temuco",
     "abogado laboral temuco",
+    "abogados araucanía",
+    "abogados sur de chile",
     "despido injustificado",
     "derecho laboral",
     "derecho familia",
@@ -35,24 +37,34 @@ export const metadata: Metadata = {
     "sumarios administrativos",
     "tutela laboral",
     "pensión alimentos",
+    "abogado valdivia",
+    "abogado osorno",
+    "abogado puerto montt",
+    "abogado punta arenas",
   ],
   authors: [{ name: "Defensur Estudio Jurídico" }],
   creator: "Defensur",
-  metadataBase: new URL("https://www.defensur.cl"),
+  metadataBase: new URL("https://www.defensuraraucania.cl"),
+  alternates: {
+    canonical: "https://www.defensuraraucania.cl",
+    languages: {
+      "es-CL": "https://www.defensuraraucania.cl",
+    },
+  },
   openGraph: {
     type: "website",
     locale: "es_CL",
-    url: "https://www.defensur.cl",
-    siteName: "Defensur",
-    title: "Defensur — Abogados Laborales en Temuco",
+    url: "https://www.defensuraraucania.cl",
+    siteName: "Defensur Araucanía",
+    title: "Defensur Araucanía — Abogados Laborales en Temuco",
     description:
-      "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco. Consulta gratuita.",
+      "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile. Consulta gratuita.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Defensur — Abogados Laborales en Temuco",
+    title: "Defensur Araucanía — Abogados Laborales en Temuco",
     description:
-      "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco.",
+      "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco y La Araucanía.",
   },
   robots: {
     index: true,
@@ -64,6 +76,16 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  },
+  other: {
+    "og:locale:alternate": "es_CL",
+    "business:contact_data:locality": "Temuco",
+    "business:contact_data:region": "La Araucanía",
+    "business:contact_data:country_name": "Chile",
+    "business:contact_data:phone_number": "+56959937355",
+    "business:contact_data:street_address": "Antonio Varas 687, Oficina 1405",
+    "place:location:latitude": "-38.7359",
+    "place:location:longitude": "-72.5904",
   },
 }
 

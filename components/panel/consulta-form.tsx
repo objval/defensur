@@ -2,22 +2,23 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { consultaSchema, type ConsultaFormValues, AREA_LABELS, URGENCY_LABELS } from "@/lib/consulta-schema"
 import { WHATSAPP } from "@/lib/site"
 
-// Convex API stub — replaced by real generated API after `npx convex dev`
-// This allows the build to pass before Convex is initialized
-const createConsultaStub = async (data: ConsultaFormValues) => {
+// Type for the Convex mutation function — replaced by real generated API after `npx convex dev`
+type CreateConsultaFn = (data: ConsultaFormValues) => Promise<string>
+
+// Stub — allows build to pass before Convex is initialized
+const createConsultaStub: CreateConsultaFn = async () => {
   console.warn("Convex not initialized. Run `npx convex dev` to enable.")
   throw new Error("Convex backend not configured. Run npx convex dev.")
 }
 
 export function ConsultaForm() {
   const router = useRouter()
-  const createConsulta = createConsultaStub as any
+  const createConsulta: CreateConsultaFn = createConsultaStub
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,7 +30,7 @@ export function ConsultaForm() {
     resolver: zodResolver(consultaSchema),
   })
 
-  const onSubmit = async (data: ConsultaFormValues) => {
+  const onSubmit = useCallback(async (data: ConsultaFormValues) => {
     setSubmitting(true)
     setError(null)
     try {
@@ -39,7 +40,7 @@ export function ConsultaForm() {
       setError(e instanceof Error ? e.message : "Error al enviar la consulta")
       setSubmitting(false)
     }
-  }
+  }, [createConsulta, router])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">

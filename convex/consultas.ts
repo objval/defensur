@@ -1,6 +1,15 @@
-import { query, mutation, internalAction } from "./_generated/server"
+import { query, mutation } from "./_generated/server"
 import { v } from "convex/values"
-import { api, internal } from "./_generated/api"
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type JwtIdentity = {
+  subject: string
+  email: string | null
+  name: string | null
+  tokenIdentifier: string
+  metadata?: { role?: string }
+}
 
 // Get all consultas for the authenticated user
 export const listMine = query({
@@ -11,7 +20,7 @@ export const listMine = query({
 
     return await ctx.db
       .query("consultas")
-      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .withIndex("by_user", (q: { eq: (field: string, value: string) => typeof q }) => q.eq("userId", identity.subject))
       .order("desc")
       .collect()
   },
@@ -27,13 +36,13 @@ export const getMine = query({
     const consulta = await ctx.db.get(id)
     if (!consulta) return null
 
-    const role = (identity as any)?.metadata?.role || "client"
+    const role = (identity as unknown as JwtIdentity).metadata?.role || "client"
     if (consulta.userId !== identity.subject && role !== "admin" && role !== "staff") return null
     return consulta
   },
 })
 
-// Create a new consulta
+// Create a new consulta — also syncs user record
 export const create = mutation({
   args: {
     area: v.string(),
@@ -45,26 +54,25 @@ export const create = mutation({
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new Error("Not authenticated")
 
-    const role = (identity as any)?.metadata?.role || "client"
+    const role = (identity as unknown as JwtIdentity).metadata?.role || "client"
 
     // Sync user record for admin reference
-    await ctx.db
+    const existing = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .withIndex("by_clerk_id", (q: { eq: (field: string, value: string) => typeof q }) => q.eq("clerkId", identity.subject))
       .first()
-      .then(async (existing) => {
-        if (!existing) {
-          await ctx.db.insert("users", {
-            clerkId: identity.subject,
-            email: identity.email || "",
-            name: identity.name || "",
-            role,
-            banned: false,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-          })
-        }
+
+    if (!existing) {
+      await ctx.db.insert("users", {
+        clerkId: identity.subject,
+        email: identity.email || "",
+        name: identity.name || "",
+        role,
+        banned: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       })
+    }
 
     const now = Date.now()
     return await ctx.db.insert("consultas", {

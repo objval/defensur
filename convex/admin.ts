@@ -3,18 +3,44 @@
 
 import { query, mutation, internalMutation } from "./_generated/server"
 import { v } from "convex/values"
-import type { DocId } from "./_generated/dataModel"
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+type JwtIdentity = {
+  subject: string
+  email: string | null
+  name: string | null
+  tokenIdentifier: string
+  metadata?: { role?: string }
+}
+
+type ConsultaWithResponses = {
+  _id: string
+  _creationTime: number
+  userId: string
+  userEmail: string
+  userName: string
+  area: string
+  subject: string
+  description: string
+  urgency: string
+  status: string
+  attachmentUrl?: string
+  responses?: Array<{ text: string; respondedBy: string; createdAt: number }>
+  createdAt: number
+  updatedAt: number
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-async function getIdentity(ctx: any) {
+async function getIdentity(ctx: any): Promise<JwtIdentity> {
   const identity = await ctx.auth.getUserIdentity()
   if (!identity) throw new Error("Not authenticated")
-  return identity
+  return identity as unknown as JwtIdentity
 }
 
-function getRole(identity: any): string {
-  return (identity as any)?.metadata?.role || "client"
+function getRole(identity: JwtIdentity): string {
+  return identity.metadata?.role || "client"
 }
 
 function isStaff(role: string): boolean {
@@ -36,10 +62,10 @@ export const listAll = query({
 
     let q = ctx.db.query("consultas")
     if (status) {
-      q = q.withIndex("by_status", (q2) => q2.eq("status", status))
+      q = q.withIndex("by_status", (q2: { eq: (field: string, value: string) => typeof q }) => q2.eq("status", status))
     }
     const results = await q.order("desc").collect()
-    if (area) return results.filter((c) => c.area === area)
+    if (area) return results.filter((c: ConsultaWithResponses) => c.area === area)
     return results
   },
 })
@@ -67,7 +93,7 @@ export const updateStatus = mutation({
     if (!isStaff(role)) throw new Error("Not authorized")
 
     await ctx.db.patch(id, { status, updatedAt: Date.now() })
-    return { success: true }
+    return { success: true as const }
   },
 })
 
@@ -86,19 +112,19 @@ export const addResponse = mutation({
     const consulta = await ctx.db.get(id)
     if (!consulta) throw new Error("Consulta not found")
 
-    const responses = (consulta as any).responses || []
-    responses.push({
+    const existingResponses = consulta.responses || []
+    const responses = [...existingResponses, {
       text: response,
       respondedBy,
       createdAt: Date.now(),
-    })
+    }]
 
     await ctx.db.patch(id, {
       status: "respondida",
       responses,
       updatedAt: Date.now(),
     })
-    return { success: true }
+    return { success: true as const }
   },
 })
 
@@ -111,7 +137,7 @@ export const remove = mutation({
     if (role !== "admin") throw new Error("Admin only")
 
     await ctx.db.delete(id)
-    return { success: true }
+    return { success: true as const }
   },
 })
 
@@ -128,16 +154,16 @@ export const getStats = query({
     const all = await ctx.db.query("consultas").collect()
     return {
       total: all.length,
-      pendiente: all.filter((c) => c.status === "pendiente").length,
-      en_revision: all.filter((c) => c.status === "en_revision").length,
-      respondida: all.filter((c) => c.status === "respondida").length,
-      cerrada: all.filter((c) => c.status === "cerrada").length,
+      pendiente: all.filter((c: ConsultaWithResponses) => c.status === "pendiente").length,
+      en_revision: all.filter((c: ConsultaWithResponses) => c.status === "en_revision").length,
+      respondida: all.filter((c: ConsultaWithResponses) => c.status === "respondida").length,
+      cerrada: all.filter((c: ConsultaWithResponses) => c.status === "cerrada").length,
       byArea: {
-        laboral: all.filter((c) => c.area === "laboral").length,
-        familia: all.filter((c) => c.area === "familia").length,
-        civil: all.filter((c) => c.area === "civil").length,
-        insolvencia: all.filter((c) => c.area === "insolvencia").length,
-        sumarios: all.filter((c) => c.area === "sumarios").length,
+        laboral: all.filter((c: ConsultaWithResponses) => c.area === "laboral").length,
+        familia: all.filter((c: ConsultaWithResponses) => c.area === "familia").length,
+        civil: all.filter((c: ConsultaWithResponses) => c.area === "civil").length,
+        insolvencia: all.filter((c: ConsultaWithResponses) => c.area === "insolvencia").length,
+        sumarios: all.filter((c: ConsultaWithResponses) => c.area === "sumarios").length,
       },
     }
   },
@@ -145,8 +171,7 @@ export const getStats = query({
 
 // ── User sync (internal) ─────────────────────────────────────────────────────
 
-/** Sync user info from Clerk JWT on first consulta creation.
- *  Stores a lightweight user record for staff reference. */
+/** Sync user info from Clerk JWT on first consulta creation. */
 export const syncUser = internalMutation({
   args: {
     userId: v.string(),
@@ -157,18 +182,16 @@ export const syncUser = internalMutation({
   handler: async (ctx, { userId, email, name, role }) => {
     const existing = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", userId))
+      .withIndex("by_clerk_id", (q: { eq: (field: string, value: string) => typeof q }) => q.eq("clerkId", userId))
       .first()
 
     if (existing) {
-      // Update if changed
       if (existing.email !== email || existing.name !== name || existing.role !== role) {
         await ctx.db.patch(existing._id, { email, name, role, updatedAt: Date.now() })
       }
       return existing._id
     }
 
-    // Create new
     return await ctx.db.insert("users", {
       clerkId: userId,
       email,
@@ -205,7 +228,7 @@ export const toggleBan = mutation({
     if (role !== "admin") throw new Error("Admin only")
 
     await ctx.db.patch(userId, { banned, updatedAt: Date.now() })
-    return { success: true }
+    return { success: true as const }
   },
 })
 
@@ -223,6 +246,6 @@ export const updateUserRole = mutation({
     if (currentRole !== "admin") throw new Error("Admin only")
 
     await ctx.db.patch(userId, { role, updatedAt: Date.now() })
-    return { success: true }
+    return { success: true as const }
   },
 })

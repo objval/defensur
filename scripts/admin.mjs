@@ -9,8 +9,6 @@
 //   ban-user <clerk_user_id>            Ban user in Clerk
 //   unban-user <clerk_user_id>          Unban user in Clerk
 //   whoami <clerk_user_id>              Show user's current metadata + role
-//   convex-tables                       List all Convex tables + counts
-//   convex-query <table> [limit]        Query rows from a Convex table
 //   help                                Show this help
 
 import { createClerkClient } from "@clerk/backend"
@@ -20,13 +18,20 @@ const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL
 
 if (!CLERK_SECRET_KEY) {
   console.error("❌ CLERK_SECRET_KEY not set in environment")
+  console.error("   Create a .env.local file with CLERK_SECRET_KEY=sk_test_xxx")
+  console.error("   Or run: CLERK_SECRET_KEY=sk_test_xxx node scripts/admin.mjs <command>")
   process.exit(1)
 }
 
+/** @type {import('@clerk/backend').ClerkClient} */
 const clerk = createClerkClient({ secretKey: CLERK_SECRET_KEY })
 
 // ── Commands ────────────────────────────────────────────────────────────────
 
+/**
+ * @param {string} userId
+ * @param {string} role
+ */
 async function setRole(userId, role) {
   const validRoles = ["admin", "client", "staff"]
   if (!validRoles.includes(role)) {
@@ -46,6 +51,9 @@ async function setRole(userId, role) {
   }
 }
 
+/**
+ * @param {string} userId
+ */
 async function getUser(userId) {
   try {
     const user = await clerk.users.getUser(userId)
@@ -67,9 +75,10 @@ async function getUser(userId) {
 async function listUsers() {
   try {
     const response = await clerk.users.getUserList({ limit: 100 })
-    console.log(`\n📋 Clerk Users (${response.data.length} total)\n`)
+    const users = response.data
+    console.log(`\n📋 Clerk Users (${users.length} total)\n`)
     console.log("─".repeat(80))
-    for (const user of response.data) {
+    for (const user of users) {
       const email = user.emailAddresses?.[0]?.emailAddress || "N/A"
       const name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "N/A"
       const role = user.publicMetadata?.role || "client"
@@ -83,6 +92,9 @@ async function listUsers() {
   }
 }
 
+/**
+ * @param {string} userId
+ */
 async function banUser(userId) {
   try {
     await clerk.users.updateUser(userId, { banned: true })
@@ -93,48 +105,15 @@ async function banUser(userId) {
   }
 }
 
+/**
+ * @param {string} userId
+ */
 async function unbanUser(userId) {
   try {
     await clerk.users.updateUser(userId, { banned: false })
     console.log(`✅ Unbanned user ${userId}`)
   } catch (e) {
     console.error(`❌ Failed to unban user: ${e.message}`)
-    process.exit(1)
-  }
-}
-
-async function whoami(userId) {
-  await getUser(userId)
-}
-
-async function convexQuery(table, limit = 20) {
-  if (!CONVEX_URL) {
-    console.error("❌ NEXT_PUBLIC_CONVEX_URL not set in environment")
-    process.exit(1)
-  }
-
-  // Use Convex HTTP API for direct queries
-  const url = `${CONVEX_URL}/api/query`
-  try {
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        path: "admin/listAll",
-        args: {},
-        format: "json",
-      }),
-    })
-    if (!resp.ok) {
-      console.error(`❌ Convex query failed: ${resp.status} ${resp.statusText}`)
-      process.exit(1)
-    }
-    const data = await resp.json()
-    const rows = Array.isArray(data) ? data.slice(0, limit) : data
-    console.log(`\n📊 Convex query result (${Array.isArray(data) ? data.length : 1} rows, showing ${Array.isArray(rows) ? rows.length : 1}):\n`)
-    console.log(JSON.stringify(rows, null, 2))
-  } catch (e) {
-    console.error(`❌ Convex query error: ${e.message}`)
     process.exit(1)
   }
 }
@@ -150,7 +129,6 @@ function help() {
 ║  ban-user <user_id>           Ban user in Clerk                   ║
 ║  unban-user <user_id>         Unban user in Clerk                 ║
 ║  whoami <user_id>             Show user's metadata + role         ║
-║  convex-query [limit]         Query consultas from Convex         ║
 ║  help                         Show this help                      ║
 ╚══════════════════════════════════════════════════════════════╝
 
@@ -158,7 +136,7 @@ Usage: node scripts/admin.mjs <command> [args]
 
 Environment required:
   CLERK_SECRET_KEY=sk_test_xxx
-  NEXT_PUBLIC_CONVEX_URL=https://xxx.convex.cloud
+  NEXT_PUBLIC_CONVEX_URL=https://xxx.convex.cloud (optional, for convex queries)
 `)
 }
 
@@ -188,10 +166,7 @@ switch (cmd) {
     break
   case "whoami":
     if (!args[0]) { console.error("Usage: whoami <user_id>"); process.exit(1) }
-    await whoami(args[0])
-    break
-  case "convex-query":
-    await convexQuery("consultas", parseInt(args[0] || "20"))
+    await getUser(args[0])
     break
   case "help":
   case "--help":

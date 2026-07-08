@@ -4,6 +4,7 @@ import { Geist_Mono, Manrope, Noto_Serif } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SchemaOrg } from "@/components/schema-org"
+import { SITE } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 const notoSerifHeading = Noto_Serif({
@@ -92,7 +93,7 @@ export const metadata: Metadata = {
     "business:contact_data:locality": "Temuco",
     "business:contact_data:region": "La Araucanía",
     "business:contact_data:country_name": "Chile",
-    "business:contact_data:phone_number": "+56959937355",
+    "business:contact_data:phone_number": SITE.phone.e164,
     "business:contact_data:street_address": "Antonio Varas 687, Oficina 1405",
     "place:location:latitude": "-38.7359",
     "place:location:longitude": "-72.5904",

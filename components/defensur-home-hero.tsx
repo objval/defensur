@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { Clock, Phone } from "lucide-react"
 
@@ -7,24 +5,25 @@ import { Navbar } from "@/components/navbar"
 import { WhyDefensur } from "@/components/why-defensur"
 import { TeamSection } from "@/components/team-section"
 import { ContactForm } from "@/components/contact-form"
+import { AREAS_DE_PRACTICA, SITE } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
-// ─── Main hero ──────────────────────────────────────────────────────────────
+// —— Main hero ————————————————————————————————————————————————
 
 export function DefensurHomeHero() {
   return (
     <div className="bg-background text-foreground min-h-screen relative overflow-x-hidden">
       <Navbar />
 
-      {/* ── Hero section ─────────────────────────────────────────────────── */}
+      {/* —— Hero section ——————————————————————————————————————————————— */}
       <main>
         <section className="relative z-10 pt-24 md:pt-32 pb-16 md:pb-24 px-5 md:px-12 lg:px-24 max-w-7xl mx-auto" aria-label="Inicio">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start lg:items-center">
-            {/* ── Left column ───────────────────────────────────────────────── */}
+            {/* —— Left column —————————————————————————————————————————————— */}
             <div className="lg:col-span-7 flex flex-col gap-8">
               {/* Service tags — horizontally scrollable on mobile */}
               <ul className="flex flex-nowrap md:flex-wrap gap-3 overflow-x-auto pb-2 -mx-5 px-5 md:mx-0 md:px-0 md:overflow-visible scrollbar-none list-none" aria-label="Áreas de práctica">
-                {["DERECHO LABORAL", "DERECHO DE FAMILIA", "DERECHO CIVIL"].map((tag) => (
+                {AREAS_DE_PRACTICA.map((tag) => (
                   <li
                     key={tag}
                     className="bg-brand-navy/8 text-brand-navy px-4 py-1.5 rounded-full text-[11px] leading-none tracking-[0.1em] font-bold hover:-translate-y-0.5 transition-transform cursor-default whitespace-nowrap shrink-0"
@@ -46,15 +45,15 @@ export function DefensurHomeHero() {
                 {/* Mobile: quick contact */}
                 <div className="flex flex-col gap-3 md:hidden">
                   <a
-                    href="tel:+569****7355"
+                    href={`tel:${SITE.phone.e164}`}
                     className="inline-flex items-center gap-2 text-sm font-medium text-brand-navy"
                     aria-label="Llamar ahora"
                   >
                     <Phone className="size-4" aria-hidden="true" />
-                    +56 9 5993 7355
+                    {SITE.phone.local}
                   </a>
                   <p className="text-xs text-muted-foreground">
-                    Atención presencial y por WhatsApp · Lun–Vie 09:00–18:00
+                    Atención presencial y por WhatsApp · {SITE.hours.display}
                   </p>
                 </div>
               </div>
@@ -88,17 +87,17 @@ export function DefensurHomeHero() {
               </div>
             </div>
 
-            {/* ── Right column: form card ───────────────────────────────────── */}
+            {/* —— Right column: form card —————————————————————————————————————————————— */}
             <div className="lg:col-span-5 relative lg:-ml-12">
               <ContactForm />
             </div>
           </div>
         </section>
 
-        {/* ── Why Defensur (marquee + values) ──────────────────────────────── */}
+        {/* —— Why Defensur (marquee + values) ————————————————————————————————————— */}
         <WhyDefensur />
 
-        {/* ── Team ──────────────────────────────────────────────────────────── */}
+        {/* —— Team ————————————————————————————————————————————————————— */}
         <TeamSection />
       </main>
     </div>

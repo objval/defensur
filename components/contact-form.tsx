@@ -83,7 +83,7 @@ function SuccessOverlay({ onReset }: { onReset: () => void }) {
         <button
           type="button"
           onClick={onReset}
-          className="mt-2 text-sm font-medium text-brand-navy hover:text-brand-sky-secondary transition-colors dark:text-brand-on-navy-muted dark:hover:text-white"
+          className="mt-2 text-sm font-medium text-brand-navy hover:text-brand-sky-secondary transition-colors"
         >
           Enviar otra consulta
         </button>
@@ -126,7 +126,7 @@ export function ContactForm() {
   }
 
   return (
-    <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40 dark:bg-white/[0.06] dark:border-white/10 dark:shadow-[0px_32px_64px_rgba(0,0,0,0.35)]">
+    <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
       {submitted && <SuccessOverlay onReset={handleReset} />}
 
       <div className="mb-6 md:mb-8">
@@ -140,7 +140,7 @@ export function ContactForm() {
 
       <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit} noValidate>
         <div className="space-y-1.5">
-          <label htmlFor="form-name" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
+          <label htmlFor="form-name" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">
             Nombre completo *
           </label>
           <input
@@ -168,7 +168,7 @@ export function ContactForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="form-email" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
+          <label htmlFor="form-email" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">
             Correo electrónico *
           </label>
           <input
@@ -196,7 +196,7 @@ export function ContactForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="form-phone" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
+          <label htmlFor="form-phone" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">
             Teléfono *
           </label>
           <input
@@ -224,7 +224,7 @@ export function ContactForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="area-select" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase dark:text-brand-on-navy-muted">
+          <label htmlFor="area-select" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase">
             Área de interés
           </label>
           <AnimatedSelect
@@ -244,8 +244,8 @@ export function ContactForm() {
         </button>
       </form>
 
-      <div className="mt-8 flex items-start gap-3 p-4 rounded-xl bg-brand-navy/5 dark:bg-brand-on-navy-muted/5">
-        <CheckCircle2 className="size-5 text-brand-navy shrink-0 mt-0.5 dark:text-brand-on-navy-muted" aria-hidden="true" />
+      <div className="mt-8 flex items-start gap-3 p-4 rounded-xl bg-brand-navy/5">
+        <CheckCircle2 className="size-5 text-brand-navy shrink-0 mt-0.5" aria-hidden="true" />
         <p className="text-xs text-muted-foreground leading-relaxed">
           Sus datos están protegidos bajo estrictos protocolos de confidencialidad y secreto profesional.
         </p>

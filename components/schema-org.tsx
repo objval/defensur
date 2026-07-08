@@ -1,6 +1,7 @@
 "use client"
 
 import Script from "next/script"
+import { SITE, WHATSAPP } from "@/lib/site"
 
 interface SchemaOrgProps {
   type?: "LocalBusiness" | "LegalService" | "WebSite" | "FAQPage" | "Article"
@@ -24,28 +25,28 @@ export function SchemaOrg({
   const baseSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": type,
-    name: "Defensur Araucanía — Estudio Jurídico",
-    alternateName: "Defensur",
-    url: url || "https://www.defensuraraucania.cl",
-    logo: "https://www.defensuraraucania.cl/icon-512.png",
-    image: image || "https://www.defensuraraucania.cl/og/default.jpg",
-    telephone: "+569****7355",
-    email: "consultas@defensur.cl",
+    name: SITE.fullName,
+    alternateName: SITE.name,
+    url: url || SITE.domain,
+    logo: `${SITE.domain}/icon-512.png`,
+    image: image || `${SITE.domain}/og/default.jpg`,
+    telephone: SITE.phone.e164,
+    email: SITE.email,
     description:
       description ||
       "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile.",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Antonio Varas 687, Oficina 1405",
-      addressLocality: "Temuco",
-      addressRegion: "La Araucanía",
-      addressCountry: "CL",
-      postalCode: "4810365",
+      streetAddress: SITE.addressStructured.streetAddress,
+      addressLocality: SITE.addressStructured.addressLocality,
+      addressRegion: SITE.addressStructured.addressRegion,
+      addressCountry: SITE.addressStructured.addressCountry,
+      postalCode: SITE.addressStructured.postalCode,
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: -38.7359,
-      longitude: -72.5904,
+      latitude: SITE.geo.latitude,
+      longitude: SITE.geo.longitude,
     },
     areaServed: [
       { "@type": "City", name: "Temuco" },
@@ -66,13 +67,11 @@ export function SchemaOrg({
       "Insolvencia y Reemprendimiento",
       "Sumarios Administrativos",
     ],
-    priceRange: "$$",
-    currenciesAccepted: "CLP",
-    paymentAccepted: "Efectivo, Transferencia bancaria",
-    openingHours: ["Mo-Fr 09:00-14:00", "Mo-Fr 15:00-18:00"],
-    sameAs: [
-      "https://wa.me/56959937355",
-    ],
+    priceRange: SITE.priceRange,
+    currenciesAccepted: SITE.currency,
+    paymentAccepted: SITE.paymentAccepted,
+    openingHours: SITE.hours.openingHours,
+    sameAs: [WHATSAPP.url()],
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Servicios Jurídicos",
@@ -126,8 +125,8 @@ export function SchemaOrg({
     baseSchema.author = { "@type": "Person", name: author }
     baseSchema.publisher = {
       "@type": "LegalService",
-      name: "Defensur Araucanía",
-      logo: { "@type": "ImageObject", url: "https://www.defensuraraucania.cl/icon-512.png" },
+      name: SITE.name,
+      logo: { "@type": "ImageObject", url: `${SITE.domain}/icon-512.png` },
     }
   }
 

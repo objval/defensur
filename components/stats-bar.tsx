@@ -1,7 +1,5 @@
-"use client"
-
-import Link from "next/link"
 import { MessageCircle, Phone } from "lucide-react"
+import { WHATSAPP, SITE } from "@/lib/site"
 
 const stats = [
   { value: "+15", label: "Años de experiencia" },
@@ -13,17 +11,6 @@ const stats = [
 export function StatsBar() {
   return (
     <section className="relative bg-brand-navy overflow-hidden" aria-label="Estadísticas">
-      {/* Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-          backgroundSize: "32px 32px",
-        }}
-        aria-hidden="true"
-      />
-      <div className="absolute -top-32 -right-32 w-[400px] h-[400px] bg-brand-sky/10 rounded-full blur-[100px]" aria-hidden="true" />
-
       <div className="relative max-w-7xl mx-auto px-5 md:px-12 lg:px-24 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {stats.map((stat) => (
@@ -53,7 +40,7 @@ export function CTASection() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
-            href="https://wa.me/56959937355?text=Hola%20Defensur%2C%20necesito%20orientaci%C3%B3n%20jur%C3%ADdica."
+            href={WHATSAPP.url()}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-brand-sky text-white font-semibold shadow-[0_4px_16px_rgba(63,173,254,0.35)] hover:shadow-[0_6px_24px_rgba(63,173,254,0.5)] transition-all hover:-translate-y-0.5 active:scale-95"
@@ -62,7 +49,7 @@ export function CTASection() {
             Consulta por WhatsApp
           </a>
           <a
-            href="tel:+56959937355"
+            href={`tel:${SITE.phone.e164}`}
             className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full border border-border bg-card text-primary font-semibold hover:bg-accent transition-colors"
           >
             <Phone className="size-5" />
@@ -70,8 +57,7 @@ export function CTASection() {
           </a>
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          Atención presencial en Antonio Varas 687, Oficina 1405, Temuco · Lun–Vie
-          09:00–18:00
+          Atención presencial en {SITE.address} · {SITE.hours.display}
         </p>
       </div>
     </section>

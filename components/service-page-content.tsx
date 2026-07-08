@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { WhatsAppCta, ContactInfo } from "@/components/ui/whatsapp-cta"
 
 type ServicePageProps = {
   title: string
@@ -108,20 +109,8 @@ export function ServicePageContent({
                   Cuéntanos tu caso y te responderemos en menos de 24 horas. Primera
                   consulta gratuita.
                 </p>
-                <a
-                  href={`https://wa.me/56959937355?text=${encodeURIComponent(
-                    `Hola Defensur, necesito asesoría en ${title}.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-brand-sky text-white font-semibold shadow-[0_4px_16px_rgba(63,173,254,0.3)] hover:shadow-[0_6px_24px_rgba(63,173,254,0.5)] transition-all hover:-translate-y-0.5 active:scale-95"
-                >
-                  Consultar por WhatsApp
-                </a>
-                <div className="text-xs text-muted-foreground text-center">
-                  <p>+56 9 5993 7355</p>
-                  <p>consultas@defensur.cl</p>
-                </div>
+                <WhatsAppCta context={title} className="w-full" />
+                <ContactInfo />
               </div>
             </aside>
           </div>

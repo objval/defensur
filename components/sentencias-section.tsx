@@ -14,7 +14,7 @@ export function SentenciasSection() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div className="space-y-4">
-            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy dark:text-brand-on-navy-muted">
+            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy">
               Blog jurídico
             </span>
             <h2 className="max-w-2xl font-[family-name:var(--font-heading)] text-3xl font-semibold leading-[1.15] text-primary sm:text-4xl lg:text-[clamp(2.4rem,4.5vw,3.5rem)]">
@@ -24,7 +24,7 @@ export function SentenciasSection() {
           </div>
           <Link
             href="/sentencias/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-brand-navy hover:text-brand-sky transition-colors dark:text-brand-on-navy-muted dark:hover:text-white shrink-0"
+            className="inline-flex items-center gap-2 text-sm font-medium text-brand-navy hover:text-brand-sky transition-colors shrink-0"
           >
             Ver todas
             <ArrowRight className="size-4" />
@@ -37,18 +37,18 @@ export function SentenciasSection() {
             <Link
               key={s.slug}
               href={`/sentencias/${s.slug}`}
-              className="group flex flex-col rounded-2xl border border-border/60 bg-card p-6 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
+              className="group flex flex-col rounded-2xl border border-border/60 bg-card p-6 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)]"
             >
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-sky px-2.5 py-1 rounded-full bg-brand-sky/10">
                   {s.category}
                 </span>
-                <span className="text-[10px] font-bold text-brand-navy dark:text-brand-on-navy-muted px-2.5 py-1 rounded-full bg-brand-navy/8 dark:bg-brand-on-navy-muted/10">
+                <span className="text-[10px] font-bold text-brand-navy px-2.5 py-1 rounded-full bg-brand-navy/8">
                   {s.amount}
                 </span>
               </div>
 
-              <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-primary mb-2 leading-snug group-hover:text-brand-navy transition-colors dark:group-hover:text-brand-on-navy-muted">
+              <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-primary mb-2 leading-snug group-hover:text-brand-navy transition-colors">
                 {s.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">

@@ -61,20 +61,20 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
           className={cn(
             "flex w-full items-center justify-between gap-3 rounded-full border px-5 py-3.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             open
-              ? "border-brand-navy/25 bg-white shadow-[0_2px_12px_rgba(8,24,107,0.08)] dark:bg-white/[0.08] dark:border-brand-on-navy-muted/30"
-              : "border-border bg-muted/40 hover:bg-muted/70 hover:border-brand-navy/15 dark:hover:border-brand-on-navy-muted/20"
+              ? "border-brand-navy/25 bg-white shadow-[0_2px_12px_rgba(8,24,107,0.08)]"
+              : "border-border bg-muted/40 hover:bg-muted/70 hover:border-brand-navy/15"
           )}
           aria-expanded={open}
           aria-haspopup="listbox"
         >
           <div className="flex items-center gap-3">
             {selected.icon && (
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-brand-navy/12 bg-brand-navy/[0.06] text-brand-navy dark:border-brand-on-navy-muted/15 dark:bg-brand-on-navy-muted/8 dark:text-brand-on-navy-muted">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-brand-navy/12 bg-brand-navy/[0.06] text-brand-navy">
                 <selected.icon className="size-4" />
               </div>
             )}
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold text-brand-navy dark:text-brand-on-navy-muted truncate">
+              <span className="text-sm font-semibold text-brand-navy truncate">
                 {selected.label}
               </span>
               {selected.description && (
@@ -97,12 +97,12 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border border-border/70 bg-white dark:bg-[#1a1a2e] shadow-[0_16px_48px_rgba(8,24,107,0.12)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
+              className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border border-border/70 bg-white shadow-[0_16px_48px_rgba(8,24,107,0.12)]"
               role="listbox"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/40">
-                <span className="text-[11px] font-bold text-brand-navy tracking-[0.12em] uppercase dark:text-brand-on-navy-muted">
+                <span className="text-[11px] font-bold text-brand-navy tracking-[0.12em] uppercase">
                   {label}
                 </span>
                 <button
@@ -138,8 +138,8 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                       className={cn(
                         "group flex w-full items-center gap-3.5 px-5 py-3.5 text-left transition-colors duration-100",
                         isSelected
-                          ? "bg-brand-navy/[0.04] dark:bg-brand-on-navy-muted/[0.06]"
-                          : "hover:bg-muted/60 dark:hover:bg-white/[0.04]"
+                          ? "bg-brand-navy/[0.04]"
+                          : "hover:bg-muted/60"
                       )}
                     >
                       {Icon && (
@@ -147,8 +147,8 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                           className={cn(
                             "flex size-10 shrink-0 items-center justify-center rounded-full border transition-colors duration-150",
                             isSelected
-                              ? "border-brand-navy/15 bg-brand-navy/[0.07] text-brand-navy dark:border-brand-on-navy-muted/20 dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted"
-                              : "border-border/70 bg-muted/40 text-muted-foreground group-hover:border-brand-navy/12 group-hover:bg-brand-navy/[0.04] group-hover:text-brand-navy dark:group-hover:text-brand-on-navy-muted"
+                              ? "border-brand-navy/15 bg-brand-navy/[0.07] text-brand-navy"
+                              : "border-border/70 bg-muted/40 text-muted-foreground group-hover:border-brand-navy/12 group-hover:bg-brand-navy/[0.04] group-hover:text-brand-navy"
                           )}
                         >
                           <Icon className="size-4" />
@@ -159,8 +159,8 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                           className={cn(
                             "text-sm font-semibold leading-snug",
                             isSelected
-                              ? "text-brand-navy dark:text-brand-on-navy-muted"
-                              : "text-foreground group-hover:text-brand-navy dark:group-hover:text-brand-on-navy-muted"
+                              ? "text-brand-navy"
+                              : "text-foreground group-hover:text-brand-navy"
                           )}
                         >
                           {option.label}
@@ -172,7 +172,7 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
                         )}
                       </div>
                       {isSelected && (
-                        <Check className="size-4 shrink-0 text-brand-navy dark:text-brand-on-navy-muted" />
+                        <Check className="size-4 shrink-0 text-brand-navy" />
                       )}
                     </button>
                   )

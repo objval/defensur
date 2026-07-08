@@ -1,30 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { Clock, Gavel, Mail, MapPin, Phone } from "lucide-react"
+import { Clock, Mail, MapPin, Phone } from "lucide-react"
 
-const socialLinks = [
-  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=100057113543073" },
-  { label: "Instagram", href: "https://www.instagram.com/defensur.estudiojuridico/" },
-  { label: "TikTok", href: "https://www.tiktok.com/@defensur.estudiojuridico" },
-  { label: "WhatsApp", href: "https://wa.me/56959937355" },
-]
-
-const serviceLinks = [
-  { label: "Derecho Laboral", href: "/derecho-laboral-temuco/" },
-  { label: "Derecho de Familia", href: "/abogados-familia-temuco/" },
-  { label: "Derecho Civil", href: "/derecho-civil-temuco/" },
-  { label: "Insolvencia", href: "/insolvencia-y-reemprendimiento-temuco/" },
-  { label: "Sumarios Administrativos", href: "/sumarios-administrativos-temuco/" },
-]
-
-const companyLinks = [
-  { label: "Quiénes Somos", href: "/quienes-somos/" },
-  { label: "Nicolás Yáñez", href: "/nicolas-yanez/" },
-  { label: "Sentencias Destacadas", href: "/sentencias/" },
-  { label: "Calculadoras", href: "/calculadoras/" },
-  { label: "Contacto", href: "/contacto/" },
-]
+import { COMPANY_LINKS, NAV_LINKS, SITE, SOCIAL_LINKS, WHATSAPP } from "@/lib/site"
 
 export function SiteFooter() {
   return (
@@ -36,7 +15,7 @@ export function SiteFooter() {
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Defensur" className="h-6 w-auto" />
               <span className="font-[family-name:var(--font-heading)] text-xl font-bold text-primary">
-                Defensur
+                {SITE.name}
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-6 max-w-[28ch]">
@@ -44,14 +23,14 @@ export function SiteFooter() {
               e insolvencia en Temuco.
             </p>
             <div className="flex gap-2">
-              {socialLinks.map((link) => (
+              {SOCIAL_LINKS.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={link.label}
-                  className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-brand-navy/20 hover:text-brand-navy hover:bg-brand-navy/5 dark:hover:text-brand-on-navy-muted"
+                  className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-brand-navy/20 hover:text-brand-navy hover:bg-brand-navy/5"
                 >
                   <span className="text-xs font-bold">{link.label.charAt(0)}</span>
                 </a>
@@ -66,7 +45,7 @@ export function SiteFooter() {
             </h5>
             <nav aria-label="Enlaces de servicios">
               <ul className="space-y-3">
-                {serviceLinks.map((link) => (
+                {NAV_LINKS.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
@@ -87,7 +66,7 @@ export function SiteFooter() {
             </h5>
             <nav aria-label="Enlaces de empresa">
               <ul className="space-y-3">
-                {companyLinks.map((link) => (
+                {COMPANY_LINKS.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
@@ -109,29 +88,29 @@ export function SiteFooter() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:+56959937355"
+                  href={`tel:${SITE.phone.e164}`}
                   className="flex items-center gap-2.5 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Phone className="size-4 text-brand-sky shrink-0" aria-hidden="true" />
-                  +56 9 5993 7355
+                  {SITE.phone.local}
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:consultas@defensur.cl"
+                  href={`mailto:${SITE.email}`}
                   className="flex items-center gap-2.5 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Mail className="size-4 text-brand-sky shrink-0" aria-hidden="true" />
-                  consultas@defensur.cl
+                  {SITE.email}
                 </a>
               </li>
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <MapPin className="size-4 text-brand-sky shrink-0 mt-0.5" aria-hidden="true" />
-                <span>Antonio Varas 687, Oficina 1405, Temuco</span>
+                <span>{SITE.address}</span>
               </li>
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Clock className="size-4 text-brand-sky shrink-0" aria-hidden="true" />
-                <span>Lun–Vie 09:00–14:00 y 15:00–18:00</span>
+                <span>{SITE.hours.display}</span>
               </li>
             </ul>
           </div>
@@ -140,7 +119,7 @@ export function SiteFooter() {
         {/* Sub-footer */}
         <div className="mt-12 pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Defensur Estudio Jurídico. Todos los derechos
+            © {new Date().getFullYear()} {SITE.fullName}. Todos los derechos
             reservados.
           </p>
           <div className="flex gap-6">

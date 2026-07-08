@@ -130,8 +130,8 @@ export function SentenciaDetail({ s }: { s: Sentencia }) {
         <LawyerCard author={s.author} authorRole={s.authorRole} label="Abogado a cargo del caso" />
 
         {/* Sentencia condenatoria */}
-        <div className="rounded-2xl border border-amber-200/60 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-800/30 p-6 md:p-8">
-          <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-amber-800 dark:text-amber-400 mb-3">
+        <div className="rounded-2xl border border-amber-200/60 bg-amber-50/60 p-6 md:p-8">
+          <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-amber-800 mb-3">
             Sentencia Condenatoria
           </h2>
           <p className="text-sm md:text-base text-foreground/80 leading-relaxed">
@@ -222,13 +222,13 @@ export function SentenciaDetail({ s }: { s: Sentencia }) {
 
         {/* Resultado */}
         {s.outcomePoints.length > 0 && (
-          <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/60 dark:bg-emerald-950/20 dark:border-emerald-800/30 p-6 md:p-8">
-            <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-emerald-800 dark:text-emerald-400 mb-4">
+          <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/60 p-6 md:p-8">
+            <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-emerald-800 mb-4">
               Resultado
             </h2>
             <ul className="space-y-2">
               {s.outcomePoints.map((point, i) => (
-                <li key={i} className="flex gap-2 text-sm md:text-base text-emerald-900 dark:text-emerald-300">
+                <li key={i} className="flex gap-2 text-sm md:text-base text-emerald-900">
                   <span className="mt-0.5 shrink-0 font-bold" aria-hidden="true">•</span>
                   <span className="font-semibold">{point}</span>
                 </li>

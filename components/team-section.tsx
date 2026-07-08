@@ -120,7 +120,7 @@ export function TeamSection() {
       <div className="mx-auto max-w-7xl px-5 md:px-12 lg:px-24">
         <div className="mb-12 grid gap-8 border-b border-border/70 pb-10 md:mb-16 md:pb-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.9fr)] lg:items-end">
           <div className="space-y-4">
-            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy dark:text-brand-on-navy-muted">
+            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy">
               Nuestro equipo
             </span>
 
@@ -131,21 +131,21 @@ export function TeamSection() {
 
           <div className="grid gap-3 sm:grid-cols-3 lg:pl-8">
             <div className="border-t border-border/70 pt-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy dark:text-brand-on-navy-muted">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy">
                 Base
               </p>
               <p className="mt-2 text-sm text-muted-foreground">Temuco</p>
             </div>
 
             <div className="border-t border-border/70 pt-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy dark:text-brand-on-navy-muted">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy">
                 Equipo
               </p>
               <p className="mt-2 text-sm text-muted-foreground">6 integrantes</p>
             </div>
 
             <div className="border-t border-border/70 pt-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy dark:text-brand-on-navy-muted">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-navy">
                 Áreas
               </p>
               <p className="mt-2 text-sm text-muted-foreground">5 áreas</p>

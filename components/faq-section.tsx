@@ -90,7 +90,7 @@ export function FAQSection() {
           {/* Left: heading */}
           <div className="lg:col-span-4">
             <div className="lg:sticky lg:top-32 space-y-4">
-              <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy dark:text-brand-on-navy-muted">
+              <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy">
                 FAQ
               </span>
               <h2 className="font-[family-name:var(--font-heading)] text-3xl font-semibold leading-[1.15] text-primary sm:text-4xl">
@@ -105,7 +105,7 @@ export function FAQSection() {
                 href="https://wa.me/56959937355?text=Hola%20Defensur%2C%20tengo%20una%20consulta."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-full bg-brand-navy text-white text-sm font-semibold hover:bg-brand-navy/90 transition-colors dark:bg-brand-on-navy-muted dark:text-brand-on-navy dark:hover:bg-brand-on-navy-muted/90"
+                className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-full bg-brand-navy text-white text-sm font-semibold hover:bg-brand-navy/90 transition-colors"
               >
                 Hacer una consulta
               </a>

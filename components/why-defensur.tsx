@@ -77,7 +77,7 @@ export function WhyDefensur() {
               {m1.map((q) => (
                 <span
                   key={q}
-                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80 dark:border-brand-on-navy-muted/10 dark:bg-brand-on-navy-muted/[0.06] dark:text-brand-on-navy-muted/70"
+                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
                 >
                   {q}
                 </span>
@@ -92,7 +92,7 @@ export function WhyDefensur() {
               {m2.map((q) => (
                 <span
                   key={q}
-                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80 dark:border-brand-on-navy-muted/10 dark:bg-brand-on-navy-muted/[0.06] dark:text-brand-on-navy-muted/70"
+                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
                 >
                   {q}
                 </span>
@@ -103,7 +103,7 @@ export function WhyDefensur() {
               {m3.map((q) => (
                 <span
                   key={q}
-                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80 dark:border-brand-on-navy-muted/10 dark:bg-brand-on-navy-muted/[0.06] dark:text-brand-on-navy-muted/70"
+                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
                 >
                   {q}
                 </span>
@@ -134,7 +134,7 @@ export function WhyDefensur() {
                     !isLast && "lg:border-r"
                   )}
                 >
-                  <Icon className="size-10 text-brand-navy/40 dark:text-brand-on-navy-muted/30" aria-hidden="true" />
+                  <Icon className="size-10 text-brand-navy/40" aria-hidden="true" />
 
                   <div className="flex flex-col gap-2.5 pt-6 sm:pt-10 lg:pt-16">
                     <h3 className="font-[family-name:var(--font-heading)] font-semibold text-xl sm:text-2xl text-primary leading-tight">

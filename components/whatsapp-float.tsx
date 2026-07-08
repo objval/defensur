@@ -1,9 +1,9 @@
-"use client"
+import { WHATSAPP } from "@/lib/site"
 
 export function WhatsAppFloat() {
   return (
     <a
-      href="https://wa.me/56959937355?text=Hola%20Defensur%2C%20necesito%20orientaci%C3%B3n%20jur%C3%ADdica."
+      href={WHATSAPP.url()}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactar por WhatsApp"

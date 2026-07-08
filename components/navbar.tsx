@@ -5,15 +5,13 @@ import Link from "next/link"
 import {
   ArrowRight,
   ChevronDown,
-  Gavel,
   Menu,
   X,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-// ─── Data ───────────────────────────────────────────────────────────────────────────────────
+import { NAV_LINKS, SITE, WHATSAPP } from "@/lib/site"
 
 const navGroups = [
   {
@@ -27,13 +25,7 @@ const navGroups = [
   {
     label: "Servicios",
     href: "/derecho-laboral-temuco/",
-    items: [
-      { label: "Derecho Laboral", href: "/derecho-laboral-temuco/" },
-      { label: "Derecho de Familia", href: "/abogados-familia-temuco/" },
-      { label: "Derecho Civil", href: "/derecho-civil-temuco/" },
-      { label: "Insolvencia y Reemprendimiento", href: "/insolvencia-y-reemprendimiento-temuco/" },
-      { label: "Sumarios Administrativos", href: "/sumarios-administrativos-temuco/" },
-    ],
+    items: NAV_LINKS.map((l) => ({ label: l.label, href: l.href })),
   },
 ]
 
@@ -166,7 +158,7 @@ export function Navbar() {
     >
       <Link href="/" className="text-2xl font-bold text-primary flex items-center gap-2 font-[family-name:var(--font-heading)]">
         <img src="/logo.png" alt="Defensur" className="h-7 w-auto" />
-        Defensur
+        {SITE.name}
       </Link>
 
       <DesktopNav />
@@ -174,7 +166,7 @@ export function Navbar() {
       <div className="flex items-center gap-2 md:gap-3">
         {/* Mobile: WhatsApp quick CTA */}
         <a
-          href="https://wa.me/56959937355?text=Hola%20Defensur%2C%20necesito%20orientaci%C3%B3n%20jur%C3%ADdica."
+          href={WHATSAPP.url()}
           target="_blank"
           rel="noreferrer"
           aria-label="Contactar por WhatsApp"

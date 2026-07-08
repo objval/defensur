@@ -2,7 +2,9 @@ import type { Metadata } from "next"
 import { Geist_Mono, Manrope, Noto_Serif } from "next/font/google"
 
 import "./globals.css"
+import { ClerkProvider } from "@clerk/nextjs"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ConvexClientProvider } from "@/components/convex-client-provider"
 import { SchemaOrg } from "@/components/schema-org"
 import { SITE } from "@/lib/site"
 import { cn } from "@/lib/utils"
@@ -136,8 +138,12 @@ export default function RootLayout({
       )}
     >
       <body>
-        <SchemaOrg />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ClerkProvider>
+          <ConvexClientProvider>
+            <SchemaOrg />
+            <ThemeProvider>{children}</ThemeProvider>
+          </ConvexClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   )

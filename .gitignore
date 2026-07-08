@@ -1,15 +1,5 @@
 # dependencies
 /node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
 
 # next.js
 /.next/
@@ -18,27 +8,29 @@
 # production
 /build
 
-# misc
-.DS_Store
-*.pem
+# env files
+.env
+.env.local
+.env*.local
+
+# convex
+/.convex/
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# env files
-.env*.local
+# os
+.DS_Store
+*.pem
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# local AI/dev tooling
-.agents/
-skills/
-skills-lock.json
-.impeccable.md
-STITCH-HERO-PROMPT.md
-.github/copilot-instructions.md
+# misc
+*.swp
+*.swo
+.idea/
+.vscode/

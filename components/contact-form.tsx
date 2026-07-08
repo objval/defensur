@@ -5,6 +5,7 @@ import { BriefcaseBusiness, CheckCircle2, Clock, Landmark, Scale, ShieldCheck, U
 
 import { AnimatedSelect, type SelectOption } from "@/components/animated-select"
 import { cn } from "@/lib/utils"
+import { WHATSAPP } from "@/lib/site"
 
 const formAreas: SelectOption[] = [
   { id: "laboral", label: "Derecho Laboral", value: "laboral", icon: Scale, description: "Despidos, tutela, acoso" },
@@ -36,7 +37,8 @@ function buildWhatsAppLink(values: FormValues) {
     values.email ? `Correo: ${values.email}.` : "",
     values.phone ? `Teléfono: ${values.phone}.` : "",
   ].filter(Boolean)
-  return `https://wa.me/56959937355?text=${encodeURIComponent(lines.join("\n"))}`
+  const base = WHATSAPP.url().split("?")[0]
+  return `${base}?text=${encodeURIComponent(lines.join("\n"))}`
 }
 
 function validateForm(values: Omit<FormValues, "area">): FormErrors {

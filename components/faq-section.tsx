@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { WHATSAPP } from "@/lib/site"
 
 const faqs = [
   {
@@ -102,7 +103,7 @@ export function FAQSection() {
                 Si no encuentras tu respuesta, contáctanos directamente.
               </p>
               <a
-                href="https://wa.me/56959937355?text=Hola%20Defensur%2C%20tengo%20una%20consulta."
+                href={WHATSAPP.url("tengo una consulta")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-full bg-brand-navy text-white text-sm font-semibold hover:bg-brand-navy/90 transition-colors"

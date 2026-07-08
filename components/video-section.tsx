@@ -18,10 +18,6 @@ export function VideoSection() {
 
   return (
     <section className="relative bg-brand-navy overflow-hidden" aria-label="Conoce nuestro trabajo">
-      {/* Decorative blurs */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-brand-sky/8 rounded-full blur-[120px]" aria-hidden="true" />
-      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-brand-sky/5 rounded-full blur-[120px]" aria-hidden="true" />
-
       <div className="relative max-w-7xl mx-auto px-5 md:px-12 lg:px-24 py-16 md:py-24">
         {/* Header */}
         <div className="text-center mb-10 md:mb-14">

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft, Calendar, Mail, Phone, Scale } from "lucide-react"
 import type { Sentencia } from "@/lib/sentencias-data"
+import { WHATSAPP, SITE } from "@/lib/site"
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -276,20 +277,20 @@ export function SentenciaDetail({ s }: { s: Sentencia }) {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm">
             <a
-              href="mailto:consultas@defensur.cl"
+              href={`mailto:${SITE.email}`}
               className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
             >
               <Mail className="size-4 shrink-0 text-brand-sky" aria-hidden="true" />
-              consultas@defensur.cl
+              {SITE.email}
             </a>
             <a
-              href="https://wa.me/56959937355"
+              href={WHATSAPP.url()}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
             >
               <Phone className="size-4 shrink-0 text-brand-sky" aria-hidden="true" />
-              +56 9 5993 7355
+              {SITE.phone.local}
             </a>
           </div>
         </div>

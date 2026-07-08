@@ -3,6 +3,7 @@ import { Geist_Mono, Manrope, Noto_Serif } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SchemaOrg } from "@/components/schema-org"
 import { cn } from "@/lib/utils"
 
 const notoSerifHeading = Noto_Serif({
@@ -59,12 +60,21 @@ export const metadata: Metadata = {
     title: "Defensur Araucanía — Abogados Laborales en Temuco",
     description:
       "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile. Consulta gratuita.",
+    images: [
+      {
+        url: "/og/default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Defensur Araucanía — Abogados Laborales en Temuco y La Araucanía",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Defensur Araucanía — Abogados Laborales en Temuco",
     description:
       "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco y La Araucanía.",
+    images: ["/og/default.jpg"],
   },
   robots: {
     index: true,
@@ -86,6 +96,24 @@ export const metadata: Metadata = {
     "business:contact_data:street_address": "Antonio Varas 687, Oficina 1405",
     "place:location:latitude": "-38.7359",
     "place:location:longitude": "-72.5904",
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-title": "Defensur",
+    "application-name": "Defensur",
+    "msapplication-TileColor": "#08186B",
+    "theme-color": "#08186B",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon-192.png", sizes: "192x192" },
+    ],
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
+  },
+  manifest: "/manifest.json",
+  verification: {
+    google: undefined, // Add when Search Console verification is done
   },
 }
 
@@ -106,6 +134,9 @@ export default function RootLayout({
         notoSerifHeading.variable
       )}
     >
+      <head>
+        <SchemaOrg />
+      </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>

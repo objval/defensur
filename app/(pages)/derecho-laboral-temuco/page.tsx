@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: "Abogados Laborales en Temuco y La Araucanía — Despidos, Tutela y Acoso | Defensur",
   description: "Especialistas en derecho laboral en Temuco, La Araucanía y todo el sur de Chile. Despidos injustificados, tutela laboral, acoso, indemnizaciones y defensa de funcionarios públicos. Consulta gratuita.",
   keywords: "abogado laboral temuco, abogado laboral araucanía, despido injustificado, tutela laboral, acoso laboral, indemnización laboral, abogados laborales temuco, abogado laboral valdivia, abogado laboral osorno, abogado laboral puerto montt",
+  openGraph: {
+    title: "Abogados Laborales en Temuco y La Araucanía — Despidos, Tutela y Acoso | Defensur",
+    description: "Especialistas en derecho laboral en Temuco, La Araucanía y todo el sur de Chile. Despidos injustificados, tutela laboral, acoso, indemnizaciones y defensa de funcionarios públicos. Consulta gratuita.",
+    images: [{ url: "/og/laboral.png", width: 1200, height: 630, alt: "Abogados Laborales en Temuco y La Araucanía — Despidos, Tutela y Acoso | Defensur" }],
+  }
 }
 
 const highlights = [

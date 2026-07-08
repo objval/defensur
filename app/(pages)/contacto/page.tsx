@@ -30,19 +30,19 @@ export default function Page() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
                     <Phone className="size-5" />
                   </div>
                   <div>
                     <p className="font-semibold text-primary text-sm">Teléfono</p>
-                    <a href="tel:+569****7355" className="text-muted-foreground hover:text-primary transition-colors">
+                    <a href="tel:+56959937355" className="text-muted-foreground hover:text-primary transition-colors">
                       +56 9 5993 7355
                     </a>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
                     <Mail className="size-5" />
                   </div>
                   <div>
@@ -54,7 +54,7 @@ export default function Page() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
                     <MapPin className="size-5" />
                   </div>
                   <div>
@@ -66,7 +66,7 @@ export default function Page() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
                     <Clock className="size-5" />
                   </div>
                   <div>

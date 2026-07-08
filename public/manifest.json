@@ -1,0 +1,36 @@
+{
+  "name": "Defensur Araucanía — Estudio Jurídico",
+  "short_name": "Defensur",
+  "description": "Abogados laborales, civiles y de familia en Temuco y La Araucanía. Consulta gratuita.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#08186B",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es-CL",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "legal"],
+  "screenshots": [
+    {
+      "src": "/og/default.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Defensur Araucanía — Abogados en Temuco"
+    }
+  ]
+}

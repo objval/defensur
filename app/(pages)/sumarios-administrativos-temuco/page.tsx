@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sumarios Administrativos en Temuco y La Araucanía — Defensa de Funcionarios Públicos | Defensur",
     description: "Defensa legal en sumarios administrativos en Temuco, La Araucanía y todo el sur de Chile. Asesoría a funcionarios públicos, sanciones de salud y registro de marcas INAPI. Consulta gratuita.",
-    images: [{ url: "/og/default.png", width: 1200, height: 630, alt: "Sumarios Administrativos en Temuco y La Araucanía — Defensa de Funcionarios Públicos | Defensur" }],
+    images: [{ url: "/og/default.jpg", width: 1200, height: 630, alt: "Sumarios Administrativos en Temuco y La Araucanía — Defensa de Funcionarios Públicos | Defensur" }],
   }
 }
 

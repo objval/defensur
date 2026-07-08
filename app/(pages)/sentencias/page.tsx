@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sentencias Destacadas — Casos de Éxito en La Araucanía",
     description: "Conoce nuestras sentencias destacadas y casos de éxito en derecho laboral, familiar y civil.",
-    images: [{ url: "/og/sentencias.png", width: 1200, height: 630, alt: "Sentencias Destacadas Defensur" }],
+    images: [{ url: "/og/sentencias.jpg", width: 1200, height: 630, alt: "Sentencias Destacadas Defensur" }],
   },
 }
 

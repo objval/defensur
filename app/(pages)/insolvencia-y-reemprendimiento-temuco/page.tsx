@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Insolvencia y Reemprendimiento en Temuco y La Araucanía — Ley 20.720 | Defensur",
     description: "Asesoría legal en insolvencia personal y empresarial en Temuco, La Araucanía y todo el sur de Chile. Renegociación de deudas, liquidación voluntaria y protección patrimonial bajo Ley 20.720.",
-    images: [{ url: "/og/insolvencia.png", width: 1200, height: 630, alt: "Insolvencia y Reemprendimiento en Temuco y La Araucanía — Ley 20.720 | Defensur" }],
+    images: [{ url: "/og/insolvencia.jpg", width: 1200, height: 630, alt: "Insolvencia y Reemprendimiento en Temuco y La Araucanía — Ley 20.720 | Defensur" }],
   }
 }
 

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción | Defensur",
     description: "Asesoría legal en derecho civil en Temuco, La Araucanía y todo el sur de Chile. Defensa de deudores, prescripción de deudas, contratos y juicios civiles. Consulta gratuita.",
-    images: [{ url: "/og/civil.png", width: 1200, height: 630, alt: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción | Defensur" }],
+    images: [{ url: "/og/civil.jpg", width: 1200, height: 630, alt: "Abogados Civiles en Temuco y La Araucanía — Contratos, Deudas, Prescripción | Defensur" }],
   }
 }
 

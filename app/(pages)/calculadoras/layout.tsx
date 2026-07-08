@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: "Calculadoras Legales — Sueldo Mínimo y Pensión de Alimentos",
     description:
       "Calculadoras legales gratuitas para estimar tu sueldo proporcional y pensión de alimentos según la legislación chilena.",
-    images: [{ url: "/og/calculadoras.png", width: 1200, height: 630, alt: "Calculadoras Legales Defensur" }],
+    images: [{ url: "/og/calculadoras.jpg", width: 1200, height: 630, alt: "Calculadoras Legales Defensur" }],
   },
 }
 

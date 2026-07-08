@@ -10,7 +10,7 @@ export const metadata: Metadata = {
       "Contacta a Defensur Estudio Jurídico. Primera consulta gratuita y sin compromiso.",
     images: [
       {
-        url: "/og/contacto.png",
+        url: "/og/contacto.jpg",
         width: 1200,
         height: 630,
         alt: "Contacto Defensur Araucanía",

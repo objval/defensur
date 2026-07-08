@@ -165,7 +165,7 @@ export function Navbar() {
       aria-label="Barra de navegación"
     >
       <Link href="/" className="text-2xl font-bold text-primary flex items-center gap-2 font-[family-name:var(--font-heading)]">
-        <Gavel className="size-6" aria-hidden="true" />
+        <img src="/logo.png" alt="Defensur" className="h-7 w-auto" />
         Defensur
       </Link>
 

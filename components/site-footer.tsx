@@ -34,7 +34,7 @@ export function SiteFooter() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Gavel className="size-5 text-brand-navy" aria-hidden="true" />
+              <img src="/logo.png" alt="Defensur" className="h-6 w-auto" />
               <span className="font-[family-name:var(--font-heading)] text-xl font-bold text-primary">
                 Defensur
               </span>

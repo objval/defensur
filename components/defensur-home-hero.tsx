@@ -89,9 +89,9 @@ export function DefensurHomeHero() {
               </div>
             </div>
 
-            {/* —— Right column: form (disabled — Convex offline) ——— */}
+            {/* —— Right column: form */}
             <div className="lg:col-span-5 relative lg:-ml-12">
-              <ContactForm disabled />
+              <ContactForm />
             </div>
           </div>
         </section>

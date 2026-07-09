@@ -67,9 +67,9 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Right: form (disabled — Convex offline) */}
+            {/* Right: form */}
             <div className="lg:col-span-7">
-              <ContactForm disabled />
+              <ContactForm />
             </div>
           </div>
         </div>

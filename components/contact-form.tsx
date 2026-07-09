@@ -1,11 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
-import { useMutation, useConvexAuth } from "convex/react"
-import { useUser } from "@clerk/nextjs"
-import { BriefcaseBusiness, CheckCircle2, Clock, Landmark, Scale, ShieldCheck, Users, Loader2 } from "lucide-react"
-import { api } from "@/convex/_generated/api"
+import { BriefcaseBusiness, CheckCircle2, Clock, Landmark, Scale, ShieldCheck, Users } from "lucide-react"
+
 import { AnimatedSelect, type SelectOption } from "@/components/animated-select"
 import { cn } from "@/lib/utils"
 import { WHATSAPP } from "@/lib/site"
@@ -18,432 +15,243 @@ const formAreas: SelectOption[] = [
   { id: "sumarios", label: "Sumarios", value: "sumarios", icon: ShieldCheck, description: "Defensa administrativa" },
 ]
 
-const URGENCY_OPTIONS = [
-  { value: "baja", label: "Baja — Informativa" },
-  { value: "media", label: "Media — Esta semana" },
-  { value: "alta", label: "Alta — Urgente" },
-]
-
 type FormValues = {
   name: string
   email: string
   phone: string
   area: string
-  subject: string
-  description: string
-  urgency: string
 }
 
-type FormErrors = Partial<Record<keyof FormValues, string>>
+type FormErrors = {
+  name?: string
+  email?: string
+  phone?: string
+}
 
-function validateForm(values: FormValues): FormErrors {
+function buildWhatsAppLink(values: FormValues) {
+  const areaLabel = formAreas.find((a) => a.value === values.area)?.label ?? values.area
+  const lines = [
+    "Hola Defensur, necesito orientación jurídica.",
+    values.area ? `Área: ${areaLabel}.` : "",
+    values.name ? `Nombre: ${values.name}.` : "",
+    values.email ? `Correo: ${values.email}.` : "",
+    values.phone ? `Teléfono: ${values.phone}.` : "",
+  ].filter(Boolean)
+  const base = WHATSAPP.url().split("?")[0]
+  return `${base}?text=${encodeURIComponent(lines.join("\n"))}`
+}
+
+function validateForm(values: Omit<FormValues, "area">): FormErrors {
   const errors: FormErrors = {}
   if (!values.name.trim()) errors.name = "Ingresa tu nombre"
-  if (!values.email.trim()) errors.email = "Ingresa tu correo"
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Correo inválido"
-  if (!values.phone.trim()) errors.phone = "Ingresa tu teléfono"
-  else if (!/^[+]?[\d\s()-]{8,}$/.test(values.phone)) errors.phone = "Teléfono inválido"
-  if (!values.subject.trim()) errors.subject = "Describe tu caso brevemente"
-  if (!values.description.trim()) errors.description = "Cuéntanos los detalles"
+  if (!values.email.trim()) {
+    errors.email = "Ingresa tu correo"
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    errors.email = "Ingresa un correo válido"
+  }
+  if (!values.phone.trim()) {
+    errors.phone = "Ingresa tu teléfono"
+  } else if (!/^[+]?[\d\s()-]{8,}$/.test(values.phone)) {
+    errors.phone = "Ingresa un teléfono válido"
+  }
   return errors
 }
 
-function SuccessState({ consultaId, onReset }: { consultaId: string; onReset: () => void }) {
+function SuccessOverlay({ onReset }: { onReset: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-5 px-8 py-10 text-center">
-      <div className="flex size-16 items-center justify-center rounded-full bg-green-100 text-green-700">
-        <CheckCircle2 className="size-8" />
-      </div>
-      <div className="space-y-2">
-        <h4 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-primary">Consulta recibida</h4>
-        <p className="text-sm leading-6 text-muted-foreground max-w-[42ch]">
-          Tu consulta ha sido registrada con éxito. Nuestro equipo la revisará y te responderá en menos de 24 horas al correo o teléfono proporcionado.
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">
-          Referencia: <code className="bg-muted px-2 py-0.5 rounded text-brand-navy font-mono text-xs">{consultaId.slice(0, 8)}</code>
-        </p>
-      </div>
-      <div className="flex flex-col items-center gap-3 mt-2">
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-card/95 backdrop-blur-xl">
+      <div className="flex flex-col items-center gap-5 px-8 text-center">
+        <div className="flex size-16 items-center justify-center rounded-full bg-brand-sky/10 text-brand-sky">
+          <CheckCircle2 className="size-8" />
+        </div>
+        <div className="space-y-2">
+          <h4 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-primary">
+            Consulta enviada
+          </h4>
+          <p className="text-sm leading-6 text-muted-foreground max-w-[36ch]">
+            Te redirigimos a WhatsApp para completar el envío. Nuestro equipo revisará tu caso y te responderá en menos de 24 horas.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="size-3.5" aria-hidden="true" />
+            Respuesta en 24h
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5" aria-hidden="true" />
+            Confidencial
+          </span>
+        </div>
         <button
+          type="button"
           onClick={onReset}
-          className="text-sm font-medium text-brand-navy hover:text-brand-sky transition-colors"
+          className="mt-2 text-sm font-medium text-brand-navy hover:text-brand-sky-secondary transition-colors"
         >
           Enviar otra consulta
         </button>
-        <a
-          href={WHATSAPP.url()}
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm text-brand-sky hover:underline"
-        >
-          También puedes contactarnos por WhatsApp
-        </a>
       </div>
     </div>
   )
 }
 
-export function ContactForm({ disabled }: { disabled?: boolean }) {
-  if (disabled) {
-    return <ContactFormDisabled />
+export function ContactForm() {
+  const [selectedArea, setSelectedArea] = React.useState(formAreas[0].value)
+  const [formValues, setFormValues] = React.useState<Omit<FormValues, "area">>({ name: "", email: "", phone: "" })
+  const [touched, setTouched] = React.useState<Record<string, boolean>>({})
+  const [submitted, setSubmitted] = React.useState(false)
+
+  const errors = React.useMemo(() => {
+    if (Object.keys(touched).length === 0) return {}
+    return validateForm(formValues)
+  }, [formValues, touched])
+
+  function handleBlur(field: keyof Omit<FormValues, "area">) {
+    setTouched((t) => ({ ...t, [field]: true }))
   }
 
-  // Full live version with Convex + Clerk hooks
-  return <ContactFormLive />
-}
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setTouched({ name: true, email: true, phone: true })
 
-// ── Disabled / offline version — no Convex/Clerk hooks — static form ────────
+    const validationErrors = validateForm(formValues)
+    if (Object.keys(validationErrors).length > 0) return
 
-const INITIAL_VALUES: FormValues = {
-  name: "",
-  email: "",
-  phone: "",
-  area: formAreas[0].value,
-  subject: "",
-  description: "",
-  urgency: "media",
-}
+    const fullValues: FormValues = { ...formValues, area: selectedArea }
+    window.open(buildWhatsAppLink(fullValues), "_blank", "noopener,noreferrer")
+    setSubmitted(true)
+  }
 
-function ContactFormDisabled() {
-  const [selectedArea] = React.useState(formAreas[0].value)
-  const [formValues] = React.useState<FormValues>(INITIAL_VALUES)
+  function handleReset() {
+    setFormValues({ name: "", email: "", phone: "" })
+    setTouched({})
+    setSubmitted(false)
+  }
 
   return (
     <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
+      {submitted && <SuccessOverlay onReset={handleReset} />}
+
       <div className="mb-6 md:mb-8">
         <h3 className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl font-semibold text-primary mb-2">
           Consulta Especializada
         </h3>
         <p className="text-muted-foreground text-sm md:text-base">
-          Cuéntanos tu caso. Primera consulta gratuita y sin compromiso.
+          Inicie su proceso legal con una evaluación estratégica de su caso.
         </p>
       </div>
 
-      <form className="space-y-4 md:space-y-5" noValidate>
-        {/* Name */}
+      <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit} noValidate>
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Nombre completo *</label>
+          <label htmlFor="form-name" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">
+            Nombre completo *
+          </label>
           <input
+            id="form-name"
+            name="name"
+            required
             value={formValues.name}
-            disabled
-            className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm transition-all placeholder:text-muted-foreground/50 border-transparent cursor-not-allowed opacity-60"
+            onChange={(e) => setFormValues((v) => ({ ...v, name: e.target.value }))}
+            onBlur={() => handleBlur("name")}
+            aria-required="true"
+            aria-invalid={touched.name && !!errors.name}
+            aria-describedby={errors.name ? "error-name" : undefined}
+            className={cn(
+              "w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all duration-200 placeholder:text-muted-foreground/50",
+              touched.name && errors.name
+                ? "border-destructive focus:border-destructive"
+                : "border-transparent focus:border-brand-navy"
+            )}
             placeholder="Ej. Javier Mendoza"
+            type="text"
+          />
+          {touched.name && errors.name && (
+            <p id="error-name" className="text-xs text-destructive px-4 mt-1" role="alert">{errors.name}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="form-email" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">
+            Correo electrónico *
+          </label>
+          <input
+            id="form-email"
+            name="email"
+            required
+            value={formValues.email}
+            onChange={(e) => setFormValues((v) => ({ ...v, email: e.target.value }))}
+            onBlur={() => handleBlur("email")}
+            aria-required="true"
+            aria-invalid={touched.email && !!errors.email}
+            aria-describedby={errors.email ? "error-email" : undefined}
+            className={cn(
+              "w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all duration-200 placeholder:text-muted-foreground/50",
+              touched.email && errors.email
+                ? "border-destructive focus:border-destructive"
+                : "border-transparent focus:border-brand-navy"
+            )}
+            placeholder="javier@empresa.com"
+            type="email"
+          />
+          {touched.email && errors.email && (
+            <p id="error-email" className="text-xs text-destructive px-4 mt-1" role="alert">{errors.email}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="form-phone" className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">
+            Teléfono *
+          </label>
+          <input
+            id="form-phone"
+            name="phone"
+            required
+            value={formValues.phone}
+            onChange={(e) => setFormValues((v) => ({ ...v, phone: e.target.value }))}
+            onBlur={() => handleBlur("phone")}
+            aria-required="true"
+            aria-invalid={touched.phone && !!errors.phone}
+            aria-describedby={errors.phone ? "error-phone" : undefined}
+            className={cn(
+              "w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all duration-200 placeholder:text-muted-foreground/50",
+              touched.phone && errors.phone
+                ? "border-destructive focus:border-destructive"
+                : "border-transparent focus:border-brand-navy"
+            )}
+            placeholder="+56 9 ..."
+            type="tel"
+          />
+          {touched.phone && errors.phone && (
+            <p id="error-phone" className="text-xs text-destructive px-4 mt-1" role="alert">{errors.phone}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="area-select" className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase">
+            Área de interés
+          </label>
+          <AnimatedSelect
+            id="area-select"
+            options={formAreas}
+            value={selectedArea}
+            onChange={setSelectedArea}
+            label="Área de Interés"
           />
         </div>
 
-        {/* Email + Phone row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Correo *</label>
-            <input type="email" value={formValues.email} disabled className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm border-transparent cursor-not-allowed opacity-60" placeholder="javier@empresa.com" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Teléfono *</label>
-            <input type="tel" value={formValues.phone} disabled className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm border-transparent cursor-not-allowed opacity-60" placeholder="+56 9 ..." />
-          </div>
-        </div>
-
-        {/* Area */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase">Área de interés</label>
-          <AnimatedSelect id="area-select-disabled" options={formAreas} value={selectedArea} onChange={() => {}} label="Área" disabled />
-        </div>
-
-        {/* Subject */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Asunto *</label>
-          <input value={formValues.subject} disabled className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm border-transparent cursor-not-allowed opacity-60" placeholder="Ej. Despido injustificado, deuda impaga..." />
-        </div>
-
-        {/* Description */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Describe tu caso *</label>
-          <textarea rows={4} value={formValues.description} disabled className="w-full bg-muted/50 border rounded-2xl px-6 py-4 text-sm resize-none border-transparent cursor-not-allowed opacity-60" placeholder="Cuéntanos qué ocurrió, fechas relevantes, personas involucradas..." />
-        </div>
-
-        {/* Urgency */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Urgencia</label>
-          <div className="flex gap-2">
-            {URGENCY_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                type="button"
-                disabled
-                className="flex-1 h-12 rounded-full text-xs font-medium border border-border text-muted-foreground/50 cursor-not-allowed opacity-60"
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Submit */}
         <button
-          type="button"
-          disabled
-          className="w-full h-14 bg-brand-navy/60 text-white rounded-full font-semibold shadow-[0px_8px_24px_rgba(8,24,107,0.2)] cursor-not-allowed inline-flex items-center justify-center gap-2"
+          type="submit"
+          className="w-full h-14 bg-primary text-primary-foreground rounded-full font-semibold shadow-[0px_8px_24px_rgba(63,173,254,0.3)] hover:shadow-[0px_8px_32px_rgba(63,173,254,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.98] mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          Enviar consulta
+          Solicitar Diagnóstico Legal
         </button>
       </form>
 
-      <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-4 text-center">
-        <p className="text-xs text-amber-700 leading-relaxed">
-          El formulario de contacto está en mantenimiento. Por ahora puedes escribirnos directamente por{" "}
-          <a href={WHATSAPP.url()} target="_blank" rel="noreferrer" className="font-semibold text-amber-800 underline hover:text-amber-900">WhatsApp</a>.
-        </p>
-      </div>
-
-      <div className="mt-6 flex items-start gap-3 p-4 rounded-xl bg-brand-navy/5">
-        <CheckCircle2 className="size-5 text-brand-navy shrink-0 mt-0.5" />
+      <div className="mt-8 flex items-start gap-3 p-4 rounded-xl bg-brand-navy/5">
+        <CheckCircle2 className="size-5 text-brand-navy shrink-0 mt-0.5" aria-hidden="true" />
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Sus datos están protegidos bajo estrictos protocolos de confidencialidad. La primera consulta es gratuita.
+          Sus datos están protegidos bajo estrictos protocolos de confidencialidad y secreto profesional.
         </p>
       </div>
-    </div>
-  )
-}
-
-// ── Live version (with Convex + Clerk hooks) ─────────────────────────────────
-
-function ContactFormLive() {
-  const [hydrated, setHydrated] = React.useState(false)
-  React.useEffect(() => { setHydrated(true) }, [])
-
-  const { isLoading: convexLoading } = useConvexAuth()
-  const { isLoaded: clerkLoaded } = useUser()
-
-  // Prevent hydration mismatch: server always renders skeleton, and so does
-  // the first client render. Once hydrated, wait for Clerk + Convex too.
-  if (!hydrated || !clerkLoaded || convexLoading) {
-    return (
-      <div className="rounded-2xl bg-white/85 backdrop-blur-xl p-6 md:p-10 border border-white/40 animate-pulse space-y-4">
-        <div className="h-8 w-48 bg-muted rounded" />
-        <div className="h-14 bg-muted rounded-full" />
-        <div className="h-14 bg-muted rounded-full" />
-        <div className="h-14 bg-muted rounded-full" />
-      </div>
-    )
-  }
-
-  return <ContactFormLiveInner />
-}
-
-function ContactFormLiveInner() {
-  const router = useRouter()
-  const submitPublic = useMutation(api.consultas.submitPublic)
-  const { user, isSignedIn } = useUser()
-
-  const [selectedArea, setSelectedArea] = React.useState(formAreas[0].value)
-  const [formValues, setFormValues] = React.useState<FormValues>({
-    name: user?.fullName ?? "",
-    email: user?.primaryEmailAddress?.emailAddress ?? "",
-    phone: "",
-    area: formAreas[0].value,
-    subject: "",
-    description: "",
-    urgency: "media",
-  })
-  const [touched, setTouched] = React.useState<Record<string, boolean>>({})
-  const [submitted, setSubmitted] = React.useState(false)
-  const [submitting, setSubmitting] = React.useState(false)
-  const [error, setError] = React.useState<string | null>(null)
-  const [consultaId, setConsultaId] = React.useState("")
-
-  // Pre-fill from Clerk when user becomes available
-  React.useEffect(() => {
-    if (isSignedIn && user) {
-      setFormValues(prev => ({
-        ...prev,
-        name: prev.name || user.fullName || "",
-        email: prev.email || user.primaryEmailAddress?.emailAddress || "",
-      }))
-    }
-  }, [isSignedIn, user])
-
-  const errors = React.useMemo(() => {
-    if (Object.keys(touched).length === 0) return {}
-    return validateForm({ ...formValues, area: selectedArea })
-  }, [formValues, selectedArea, touched])
-
-  function handleBlur(field: keyof FormValues) {
-    setTouched(t => ({ ...t, [field]: true }))
-  }
-
-  function update(field: keyof FormValues, value: string) {
-    setFormValues(v => ({ ...v, [field]: value }))
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setTouched({ name: true, email: true, phone: true, subject: true, description: true, area: true, urgency: true })
-
-    const values = { ...formValues, area: selectedArea }
-    const validationErrors = validateForm(values)
-    if (Object.keys(validationErrors).length > 0) return
-
-    setSubmitting(true)
-    setError(null)
-    try {
-      const id = await submitPublic(values)
-      setConsultaId(id as string)
-      setSubmitted(true)
-    } catch {
-      setError("Error al enviar. Intenta de nuevo o contáctanos por WhatsApp.")
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  function handleReset() {
-    setFormValues({ name: user?.fullName ?? "", email: user?.primaryEmailAddress?.emailAddress ?? "", phone: "", area: formAreas[0].value, subject: "", description: "", urgency: "media" })
-    setTouched({})
-    setSubmitted(false)
-    setError(null)
-  }
-
-  return (
-    <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
-      {submitted ? (
-        <SuccessState consultaId={consultaId} onReset={handleReset} />
-      ) : (
-        <>
-          <div className="mb-6 md:mb-8">
-            <h3 className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl font-semibold text-primary mb-2">
-              Consulta Especializada
-            </h3>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Cuéntanos tu caso. Primera consulta gratuita y sin compromiso.
-            </p>
-          </div>
-
-          {error && (
-            <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
-          )}
-
-          <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit} noValidate>
-            {/* Name */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Nombre completo *</label>
-              <input
-                value={formValues.name}
-                onChange={e => update("name", e.target.value)}
-                onBlur={() => handleBlur("name")}
-                className={cn("w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all placeholder:text-muted-foreground/50", touched.name && errors.name ? "border-red-300 focus:border-red-400" : "border-transparent focus:border-brand-navy")}
-                placeholder="Ej. Javier Mendoza"
-              />
-              {touched.name && errors.name && <p className="text-xs text-red-500 px-4">{errors.name}</p>}
-            </div>
-
-            {/* Email + Phone row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Correo *</label>
-                <input
-                  type="email"
-                  value={formValues.email}
-                  onChange={e => update("email", e.target.value)}
-                  onBlur={() => handleBlur("email")}
-                  className={cn("w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all placeholder:text-muted-foreground/50", touched.email && errors.email ? "border-red-300" : "border-transparent focus:border-brand-navy")}
-                  placeholder="javier@empresa.com"
-                />
-                {touched.email && errors.email && <p className="text-xs text-red-500 px-4">{errors.email}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Teléfono *</label>
-                <input
-                  type="tel"
-                  value={formValues.phone}
-                  onChange={e => update("phone", e.target.value)}
-                  onBlur={() => handleBlur("phone")}
-                  className={cn("w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all placeholder:text-muted-foreground/50", touched.phone && errors.phone ? "border-red-300" : "border-transparent focus:border-brand-navy")}
-                  placeholder="+56 9 ..."
-                />
-                {touched.phone && errors.phone && <p className="text-xs text-red-500 px-4">{errors.phone}</p>}
-              </div>
-            </div>
-
-            {/* Area */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase">Área de interés</label>
-              <AnimatedSelect id="area-select" options={formAreas} value={selectedArea} onChange={setSelectedArea} label="Área" />
-            </div>
-
-            {/* Subject */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Asunto *</label>
-              <input
-                value={formValues.subject}
-                onChange={e => update("subject", e.target.value)}
-                onBlur={() => handleBlur("subject")}
-                className={cn("w-full h-14 bg-muted border rounded-full px-6 text-sm transition-all placeholder:text-muted-foreground/50", touched.subject && errors.subject ? "border-red-300" : "border-transparent focus:border-brand-navy")}
-                placeholder="Ej. Despido injustificado, deuda impaga..."
-              />
-              {touched.subject && errors.subject && <p className="text-xs text-red-500 px-4">{errors.subject}</p>}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Describe tu caso *</label>
-              <textarea
-                rows={4}
-                value={formValues.description}
-                onChange={e => update("description", e.target.value)}
-                onBlur={() => handleBlur("description")}
-                className={cn("w-full bg-muted border rounded-2xl px-6 py-4 text-sm transition-all placeholder:text-muted-foreground/50 resize-none", touched.description && errors.description ? "border-red-300" : "border-transparent focus:border-brand-navy")}
-                placeholder="Cuéntanos qué ocurrió, fechas relevantes, personas involucradas..."
-              />
-              {touched.description && errors.description && <p className="text-xs text-red-500 px-4">{errors.description}</p>}
-            </div>
-
-            {/* Urgency */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Urgencia</label>
-              <div className="flex gap-2">
-                {URGENCY_OPTIONS.map(opt => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => update("urgency", opt.value)}
-                    className={cn(
-                      "flex-1 h-12 rounded-full text-xs font-medium border transition-all",
-                      formValues.urgency === opt.value
-                        ? "border-brand-sky bg-brand-sky/5 text-brand-navy"
-                        : "border-border text-muted-foreground hover:border-muted-foreground/30"
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-14 bg-brand-navy text-white rounded-full font-semibold shadow-[0px_8px_24px_rgba(8,24,107,0.2)] hover:shadow-[0px_8px_32px_rgba(8,24,107,0.3)] transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Enviando...
-                </>
-              ) : (
-                "Enviar consulta"
-              )}
-            </button>
-          </form>
-
-          <div className="mt-8 flex items-start gap-3 p-4 rounded-xl bg-brand-navy/5">
-            <CheckCircle2 className="size-5 text-brand-navy shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Sus datos están protegidos bajo estrictos protocolos de confidencialidad. La primera consulta es gratuita.
-            </p>
-          </div>
-        </>
-      )}
     </div>
   )
 }

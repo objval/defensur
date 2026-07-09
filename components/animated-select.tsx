@@ -20,16 +20,17 @@ type AnimatedSelectProps = {
   onChange: (value: string) => void
   id?: string
   label?: string
+  disabled?: boolean
 }
 
-export function AnimatedSelect({ options, value, onChange, id, label = "Seleccionar opción" }: AnimatedSelectProps) {
+export function AnimatedSelect({ options, value, onChange, id, label = "Seleccionar opción", disabled }: AnimatedSelectProps) {
   const [open, setOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const selected = options.find((o) => o.value === value) ?? options[0]
 
   // Close on outside click
   React.useEffect(() => {
-    if (!open) return
+    if (!open || disabled) return
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false)
@@ -41,7 +42,7 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
 
   // Close on Escape
   React.useEffect(() => {
-    if (!open) return
+    if (!open || disabled) return
     function handleKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false)
     }
@@ -57,12 +58,15 @@ export function AnimatedSelect({ options, value, onChange, id, label = "Seleccio
         <button
           id={id}
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => !disabled && setOpen((v) => !v)}
+          disabled={disabled}
           className={cn(
             "flex w-full items-center justify-between gap-3 rounded-full border px-5 py-3.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             open
               ? "border-brand-navy/25 bg-white shadow-[0_2px_12px_rgba(8,24,107,0.08)]"
-              : "border-border bg-muted/40 hover:bg-muted/70 hover:border-brand-navy/15"
+              : disabled
+                ? "border-border/50 bg-muted/20 cursor-not-allowed opacity-60"
+                : "border-border bg-muted/40 hover:bg-muted/70 hover:border-brand-navy/15"
           )}
           aria-expanded={open}
           aria-haspopup="listbox"

@@ -189,3 +189,41 @@ export const updateUserRole = mutation({
     return { success: true as const }
   },
 })
+
+// ── Bulk operations (staff/admin) ─────────────────────────────────────────────
+
+export const bulkUpdateStatus = mutation({
+  args: { ids: v.array(v.id("consultas")), status: v.string() },
+  handler: async (ctx, { ids, status }) => {
+    const { role } = await getAuth(ctx)
+    if (!isStaff(role)) throw new Error("Not authorized")
+    for (const id of ids) {
+      await ctx.db.patch(id, { status, updatedAt: Date.now() })
+    }
+    return { success: true as const, count: ids.length }
+  },
+})
+
+export const bulkCancel = mutation({
+  args: { ids: v.array(v.id("consultas")) },
+  handler: async (ctx, { ids }) => {
+    const { role } = await getAuth(ctx)
+    if (!isStaff(role)) throw new Error("Not authorized")
+    for (const id of ids) {
+      await ctx.db.patch(id, { status: "cancelada", updatedAt: Date.now() })
+    }
+    return { success: true as const, count: ids.length }
+  },
+})
+
+export const bulkDelete = mutation({
+  args: { ids: v.array(v.id("consultas")) },
+  handler: async (ctx, { ids }) => {
+    const { role } = await getAuth(ctx)
+    if (role !== "admin") throw new Error("Admin only")
+    for (const id of ids) {
+      await ctx.db.delete(id)
+    }
+    return { success: true as const, count: ids.length }
+  },
+})

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { STATUS, URGENCY, AREA_LABELS, SORT_OPTIONS, STATUS_FILTERS, timeAgo, formatDate, formatSize } from "@/lib/panel-utils"
 import { ConsultasToolbar, type ToolbarState } from "@/components/panel/consultas-toolbar"
 import { CancelModal } from "@/components/panel/cancel-modal"
+import { toast } from "sonner"
 import type { Id } from "@/convex/_generated/dataModel"
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -37,7 +38,18 @@ type Consulta = {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function ConsultasPage() {
-  const consultas = useQuery(api.consultas.listMine) as Consulta[] | undefined
+  const myRole = useQuery(api.admin.refreshMyRole)
+  const isAdmin = myRole?.role === "admin"
+  const isStaff = myRole?.role === "admin" || myRole?.role === "staff"
+
+  const ownConsultas = useQuery(api.consultas.listMine) as Consulta[] | undefined
+  const allConsultas = useQuery(api.admin.listAll, isStaff ? {} : "skip") as Consulta[] | null | undefined
+  const bulkUpdate = useMutation(api.admin.bulkUpdateStatus)
+  const bulkCancel = useMutation(api.admin.bulkCancel)
+  const bulkDelete = useMutation(api.admin.bulkDelete)
+
+  const [viewAll, setViewAll] = useState(false)
+  const consultas = viewAll && isStaff ? (allConsultas ?? undefined) : ownConsultas
   const cancelConsulta = useMutation(api.consultas.cancel)
   const addNote = useMutation(api.consultas.addNote)
   const getFileUrl = useMutation(api.files.getFileUrl)
@@ -49,6 +61,32 @@ export default function ConsultasPage() {
   const [downloading, setDownloading] = useState<string | null>(null)
   const [noteText, setNoteText] = useState("")
   const [sendingNote, setSendingNote] = useState(false)
+
+  // ── Bulk selection ────────────────────────────────────────────
+  const [selected, setSelected] = useState<Set<Id<"consultas">>>(new Set())
+  const [bulkStatus, setBulkStatus] = useState("pendiente")
+
+  const toggleSelect = (id: Id<"consultas">) => {
+    setSelected(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
+
+  const selectAll = () => {
+    if (selected.size === filtered.length) setSelected(new Set())
+    else setSelected(new Set(filtered.map(c => c._id)))
+  }
+
+  const handleBulkAction = async (action: "status" | "cancel" | "delete") => {
+    const ids = Array.from(selected)
+    try {
+      if (action === "status") await bulkUpdate({ ids, status: bulkStatus })
+      else if (action === "cancel") await bulkCancel({ ids })
+      else await bulkDelete({ ids })
+      toast.success(`${ids.length} consulta${ids.length > 1 ? "s" : ""} ${action === "status" ? "actualizada" : action === "cancel" ? "cancelada" : "eliminada"}${ids.length > 1 ? "s" : ""}`)
+      setSelected(new Set())
+    } catch {
+      toast.error("Error al ejecutar acción")
+    }
+  }
 
   // ── Derived data ───────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -129,19 +167,33 @@ export default function ConsultasPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground">
-            Mis Consultas
+            {viewAll && isStaff ? "Todas las Consultas" : "Mis Consultas"}
           </h2>
           <span className="bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full text-xs font-medium border border-border">
             {filtered.length} Total{filtered.length !== 1 ? "es" : ""}
           </span>
         </div>
-        <Link
-          href="/panel/consultas/nueva"
-          className="bg-brand-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-brand-navy/90 transition-colors shadow-sm w-full sm:w-auto justify-center"
-        >
-          <Plus className="h-5 w-5" />
-          Nueva consulta
-        </Link>
+        <div className="flex items-center gap-2">
+          {/* Admin toggle */}
+          {isStaff && (
+            <button
+              onClick={() => { setViewAll(!viewAll); setSelected(new Set()) }}
+              className={cn(
+                "text-sm font-medium px-4 py-2 rounded-lg border transition-colors",
+                viewAll ? "bg-brand-navy text-white border-brand-navy" : "border-border text-muted-foreground hover:bg-muted"
+              )}
+            >
+              {viewAll ? "Mis consultas" : "Ver todas"}
+            </button>
+          )}
+          <Link
+            href="/panel/consultas/nueva"
+            className="bg-brand-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-brand-navy/90 transition-colors shadow-sm sm:w-auto justify-center"
+          >
+            <Plus className="h-5 w-5" />
+            Nueva consulta
+          </Link>
+        </div>
       </div>
 
       {/* ── Toolbar ─────────────────────────────────────────── */}
@@ -152,6 +204,38 @@ export default function ConsultasPage() {
 
       {/* ── Consultas List ────────────────────────────────────── */}
       <div className="flex flex-col gap-3">
+        {/* Bulk action bar */}
+        {isStaff && selected.size > 0 && (
+          <div className="sticky top-0 z-10 flex items-center gap-3 rounded-xl border border-brand-sky/30 bg-brand-sky/5 px-5 py-3 shadow-sm">
+            <span className="text-sm font-medium text-foreground">
+              {selected.size} seleccionada{selected.size > 1 ? "s" : ""}
+            </span>
+            <select
+              value={bulkStatus}
+              onChange={e => setBulkStatus(e.target.value)}
+              className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium"
+            >
+              <option value="pendiente">Pendiente</option>
+              <option value="en_revision">En revisión</option>
+              <option value="respondida">Respondida</option>
+              <option value="cerrada">Cerrada</option>
+            </select>
+            <button onClick={() => handleBulkAction("status")} className="rounded-lg bg-brand-navy px-4 py-1.5 text-xs font-medium text-white hover:bg-brand-navy/90">
+              Cambiar estado
+            </button>
+            <button onClick={() => handleBulkAction("cancel")} className="rounded-lg border border-[#CF2E2E] px-4 py-1.5 text-xs font-medium text-[#CF2E2E] hover:bg-red-50">
+              Cancelar
+            </button>
+            {isAdmin && (
+              <button onClick={() => handleBulkAction("delete")} className="rounded-lg border border-red-500 px-4 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">
+                Eliminar
+              </button>
+            )}
+            <button onClick={() => setSelected(new Set())} className="ml-auto text-xs text-muted-foreground hover:text-foreground">
+              Deseleccionar
+            </button>
+          </div>
+        )}
         {filtered.length === 0 ? (
           /* Empty state */
           <div className="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-dashed border-border text-center mt-4">
@@ -203,6 +287,15 @@ export default function ConsultasPage() {
                 >
                   <div className="flex-1 min-w-0 flex flex-col gap-1">
                     <div className="flex items-center gap-2 mb-1">
+                      {/* Checkbox (staff only) */}
+                      {isStaff && (
+                        <input
+                          type="checkbox"
+                          checked={selected.has(c._id)}
+                          onChange={(e) => { e.stopPropagation(); toggleSelect(c._id) }}
+                          className="h-4 w-4 rounded border-border text-brand-navy focus:ring-brand-sky/20"
+                        />
+                      )}
                       <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-xs font-medium border border-border">
                         {AREA_LABELS[c.area] || c.area}
                       </span>

@@ -2,11 +2,13 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useUser, SignInButton, UserButton } from "@clerk/nextjs"
 import {
   ArrowRight,
   ChevronDown,
   Menu,
   X,
+  LayoutDashboard,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -88,7 +90,7 @@ function DesktopNav() {
 
 // ─── Mobile nav ─────────────────────────────────────────────────────────────
 
-function MobileNav({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+function MobileNav({ open, onToggle, isSignedIn }: { open: boolean; onToggle: () => void; isSignedIn: boolean }) {
   return (
     <div className="md:hidden">
       <button
@@ -137,6 +139,12 @@ function MobileNav({ open, onToggle }: { open: boolean; onToggle: () => void }) 
           <Link href="/calculadoras/" className="text-base font-semibold text-foreground">
             Calculadoras
           </Link>
+          {isSignedIn && (
+            <Link href="/panel" className="text-base font-semibold text-brand-navy flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              Panel
+            </Link>
+          )}
           <Button asChild className="mt-2 h-12 rounded-full text-sm font-semibold">
             <Link href="/contacto/">Contáctanos</Link>
           </Button>
@@ -150,6 +158,7 @@ function MobileNav({ open, onToggle }: { open: boolean; onToggle: () => void }) 
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const { isSignedIn } = useUser()
 
   return (
     <nav
@@ -165,22 +174,53 @@ export function Navbar() {
 
       <div className="flex items-center gap-2 md:gap-3">
         {/* Mobile: WhatsApp quick CTA */}
-        <a
-          href={WHATSAPP.url()}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Contactar por WhatsApp"
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-brand-sky px-3.5 text-xs font-semibold text-white shadow-[0px_4px_12px_rgba(63,173,254,0.3)] transition-all hover:shadow-[0px_4px_16px_rgba(63,173,254,0.4)] active:scale-95 md:hidden"
-        >
-          WhatsApp
-        </a>
-        <Button
-          asChild
-          className="rounded-full px-6 py-2.5 text-sm font-semibold active:scale-95 hidden md:inline-flex"
-        >
-          <Link href="/contacto/">Contáctanos</Link>
-        </Button>
-        <MobileNav open={mobileMenuOpen} onToggle={() => setMobileMenuOpen((v) => !v)} />
+        {!isSignedIn && (
+          <a
+            href={WHATSAPP.url()}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Contactar por WhatsApp"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-brand-sky px-3.5 text-xs font-semibold text-white shadow-[0px_4px_12px_rgba(63,173,254,0.3)] transition-all hover:shadow-[0px_4px_16px_rgba(63,173,254,0.4)] active:scale-95 md:hidden"
+          >
+            WhatsApp
+          </a>
+        )}
+
+        {/* Signed-in: Panel + UserButton */}
+        {isSignedIn ? (
+          <div className="flex items-center gap-2">
+            <Link
+              href="/panel"
+              className="hidden md:inline-flex items-center gap-1.5 rounded-full bg-brand-navy px-4 py-2 text-sm font-semibold text-white hover:bg-brand-navy/90 transition-colors"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Panel
+            </Link>
+            <UserButton />
+          </div>
+        ) : (
+          <>
+            <Button
+              asChild
+              className="rounded-full px-6 py-2.5 text-sm font-semibold active:scale-95 hidden md:inline-flex"
+            >
+              <Link href="/contacto/">Contáctanos</Link>
+            </Button>
+          </>
+        )}
+
+        {/* Mobile: Panel link when signed in */}
+        {isSignedIn && (
+          <Link
+            href="/panel"
+            className="inline-flex md:hidden h-9 items-center justify-center gap-1.5 rounded-full bg-brand-navy px-3.5 text-xs font-semibold text-white"
+          >
+            <LayoutDashboard className="h-3.5 w-3.5" />
+            Panel
+          </Link>
+        )}
+
+        <MobileNav open={mobileMenuOpen} onToggle={() => setMobileMenuOpen((v) => !v)} isSignedIn={!!isSignedIn} />
       </div>
     </nav>
   )

@@ -1,11 +1,30 @@
 "use client"
 
 import { ReactNode } from "react"
-import { UserButton } from "@clerk/nextjs"
+import { useUser, UserButton } from "@clerk/nextjs"
+import { useConvexAuth } from "convex/react"
 import { Toaster } from "sonner"
+import { Loader2 } from "lucide-react"
 import { PanelSidebar } from "./panel-sidebar"
 
 export function PanelShell({ children }: { children: ReactNode }) {
+  const { isLoaded: clerkReady, isSignedIn } = useUser()
+  const { isLoading: convexLoading } = useConvexAuth()
+
+  // Wait for both Clerk and Convex auth to be fully ready
+  const authReady = clerkReady && isSignedIn && !convexLoading
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-navy" />
+          <p className="text-sm text-muted-foreground">Verificando sesión…</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       <PanelSidebar />

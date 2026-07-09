@@ -1,8 +1,24 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { Clock, Mail, MapPin, Phone } from "lucide-react"
 import { PageHero } from "@/components/page-hero"
-import { ContactForm } from "@/components/contact-form"
+
+// Lazy-load ContactForm — it uses Convex hooks that can't run during static generation
+const ContactForm = dynamic(() => import("@/components/contact-form").then(m => ({ default: m.ContactForm })), {
+  ssr: false,
+  loading: () => (
+    <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 w-56 bg-muted rounded" />
+        <div className="h-4 w-72 bg-muted rounded" />
+        <div className="h-14 bg-muted rounded-full" />
+        <div className="h-14 bg-muted rounded-full" />
+        <div className="h-14 bg-muted rounded-full" />
+      </div>
+    </div>
+  ),
+})
 
 export default function Page() {
   return (
@@ -29,56 +45,30 @@ export default function Page() {
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
-                    <Phone className="size-5" />
+                {[
+                  { icon: Phone, label: "Teléfono", value: "+56 9 5993 7355", href: "tel:+56959937355" },
+                  { icon: Mail, label: "Correo electrónico", value: "consultas@defensur.cl", href: "mailto:consultas@defensur.cl" },
+                  { icon: MapPin, label: "Dirección", value: "Antonio Varas 687, Oficina 1405, Temuco" },
+                  { icon: Clock, label: "Horario", value: "Lunes a Viernes: 09:00–14:00 y 15:00–18:00" },
+                ].map(item => (
+                  <div key={item.label} className="flex items-start gap-4">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
+                      <item.icon className="size-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-primary text-sm">{item.label}</p>
+                      {item.href ? (
+                        <a href={item.href} className="text-muted-foreground hover:text-primary transition-colors">
+                          {item.value}
+                        </a>
+                      ) : (
+                        <p className="text-muted-foreground">{item.value}</p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-primary text-sm">Teléfono</p>
-                    <a href="tel:+56959937355" className="text-muted-foreground hover:text-primary transition-colors">
-                      +56 9 5993 7355
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
-                    <Mail className="size-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-primary text-sm">Correo electrónico</p>
-                    <a href="mailto:consultas@defensur.cl" className="text-muted-foreground hover:text-primary transition-colors">
-                      consultas@defensur.cl
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
-                    <MapPin className="size-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-primary text-sm">Dirección</p>
-                    <p className="text-muted-foreground">
-                      Antonio Varas 687, Oficina 1405, Temuco
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy">
-                    <Clock className="size-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-primary text-sm">Horario</p>
-                    <p className="text-muted-foreground">
-                      Lunes a Viernes: 09:00–14:00 y 15:00–18:00
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Map embed */}
               <div className="rounded-2xl overflow-hidden border border-border">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3113.5!2d-72.599!3d-38.735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDQ0JzA2LjAiUyA3MsKwMzUnNTYuNCJX!5e0!3m2!1ses!2scl!4v1234567890"
@@ -93,7 +83,7 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Right: form */}
+            {/* Right: form (lazy-loaded, no SSR) */}
             <div className="lg:col-span-7">
               <ContactForm />
             </div>

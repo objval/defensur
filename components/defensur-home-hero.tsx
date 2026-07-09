@@ -1,12 +1,14 @@
 import Link from "next/link"
+import { lazy, Suspense } from "react"
 import { Clock, Phone } from "lucide-react"
 
 import { Navbar } from "@/components/navbar"
 import { WhyDefensur } from "@/components/why-defensur"
 import { TeamSection } from "@/components/team-section"
-import { ContactForm } from "@/components/contact-form"
 import { AREAS_DE_PRACTICA, SITE } from "@/lib/site"
 import { cn } from "@/lib/utils"
+
+const ContactForm = lazy(() => import("@/components/contact-form").then(m => ({ default: m.ContactForm })))
 
 // —— Main hero ————————————————————————————————————————————————
 
@@ -89,7 +91,9 @@ export function DefensurHomeHero() {
 
             {/* —— Right column: form card —————————————————————————————————————————————— */}
             <div className="lg:col-span-5 relative lg:-ml-12">
-              <ContactForm />
+              <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-white/85 backdrop-blur-xl" />}>
+                <ContactForm />
+              </Suspense>
             </div>
           </div>
         </section>

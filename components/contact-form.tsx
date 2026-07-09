@@ -83,7 +83,131 @@ function SuccessState({ consultaId, onReset }: { consultaId: string; onReset: ()
   )
 }
 
-export function ContactForm() {
+export function ContactForm({ disabled }: { disabled?: boolean }) {
+  if (disabled) {
+    return <ContactFormDisabled />
+  }
+
+  // Full live version with Convex + Clerk hooks
+  return <ContactFormLive />
+}
+
+// ── Disabled / offline version — no Convex/Clerk hooks — static form ────────
+
+const INITIAL_VALUES: FormValues = {
+  name: "",
+  email: "",
+  phone: "",
+  area: formAreas[0].value,
+  subject: "",
+  description: "",
+  urgency: "media",
+}
+
+function ContactFormDisabled() {
+  const [selectedArea] = React.useState(formAreas[0].value)
+  const [formValues] = React.useState<FormValues>(INITIAL_VALUES)
+
+  return (
+    <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
+      <div className="mb-6 md:mb-8">
+        <h3 className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl font-semibold text-primary mb-2">
+          Consulta Especializada
+        </h3>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Cuéntanos tu caso. Primera consulta gratuita y sin compromiso.
+        </p>
+      </div>
+
+      <form className="space-y-4 md:space-y-5" noValidate>
+        {/* Name */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Nombre completo *</label>
+          <input
+            value={formValues.name}
+            disabled
+            className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm transition-all placeholder:text-muted-foreground/50 border-transparent cursor-not-allowed opacity-60"
+            placeholder="Ej. Javier Mendoza"
+          />
+        </div>
+
+        {/* Email + Phone row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Correo *</label>
+            <input type="email" value={formValues.email} disabled className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm border-transparent cursor-not-allowed opacity-60" placeholder="javier@empresa.com" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Teléfono *</label>
+            <input type="tel" value={formValues.phone} disabled className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm border-transparent cursor-not-allowed opacity-60" placeholder="+56 9 ..." />
+          </div>
+        </div>
+
+        {/* Area */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-brand-navy px-1 tracking-[0.1em] uppercase">Área de interés</label>
+          <AnimatedSelect id="area-select-disabled" options={formAreas} value={selectedArea} onChange={() => {}} label="Área" disabled />
+        </div>
+
+        {/* Subject */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Asunto *</label>
+          <input value={formValues.subject} disabled className="w-full h-14 bg-muted/50 border rounded-full px-6 text-sm border-transparent cursor-not-allowed opacity-60" placeholder="Ej. Despido injustificado, deuda impaga..." />
+        </div>
+
+        {/* Description */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Describe tu caso *</label>
+          <textarea rows={4} value={formValues.description} disabled className="w-full bg-muted/50 border rounded-2xl px-6 py-4 text-sm resize-none border-transparent cursor-not-allowed opacity-60" placeholder="Cuéntanos qué ocurrió, fechas relevantes, personas involucradas..." />
+        </div>
+
+        {/* Urgency */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-brand-navy px-4 tracking-[0.1em] uppercase">Urgencia</label>
+          <div className="flex gap-2">
+            {URGENCY_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                disabled
+                className="flex-1 h-12 rounded-full text-xs font-medium border border-border text-muted-foreground/50 cursor-not-allowed opacity-60"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Submit */}
+        <button
+          type="button"
+          disabled
+          className="w-full h-14 bg-brand-navy/60 text-white rounded-full font-semibold shadow-[0px_8px_24px_rgba(8,24,107,0.2)] cursor-not-allowed inline-flex items-center justify-center gap-2"
+        >
+          Enviar consulta
+        </button>
+      </form>
+
+      <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-4 text-center">
+        <p className="text-xs text-amber-700 leading-relaxed">
+          El formulario de contacto está en mantenimiento. Por ahora puedes escribirnos directamente por{" "}
+          <a href={WHATSAPP.url()} target="_blank" rel="noreferrer" className="font-semibold text-amber-800 underline hover:text-amber-900">WhatsApp</a>.
+        </p>
+      </div>
+
+      <div className="mt-6 flex items-start gap-3 p-4 rounded-xl bg-brand-navy/5">
+        <CheckCircle2 className="size-5 text-brand-navy shrink-0 mt-0.5" />
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Sus datos están protegidos bajo estrictos protocolos de confidencialidad. La primera consulta es gratuita.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ── Live version (with Convex + Clerk hooks) ─────────────────────────────────
+
+function ContactFormLive() {
   const [hydrated, setHydrated] = React.useState(false)
   React.useEffect(() => { setHydrated(true) }, [])
 
@@ -103,10 +227,10 @@ export function ContactForm() {
     )
   }
 
-  return <ContactFormInner />
+  return <ContactFormLiveInner />
 }
 
-function ContactFormInner() {
+function ContactFormLiveInner() {
   const router = useRouter()
   const submitPublic = useMutation(api.consultas.submitPublic)
   const { user, isSignedIn } = useUser()

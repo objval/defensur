@@ -8,24 +8,7 @@ import { PanelHeader } from "@/components/panel/panel-header"
 import { PanelMetrics } from "@/components/panel/panel-metrics"
 import { Clock, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-const STATUS: Record<string, { label: string; color: string }> = {
-  pendiente:    { label: "Pendiente",    color: "bg-amber-100 text-amber-800 border-amber-200" },
-  en_revision:  { label: "En revisión",  color: "bg-blue-100 text-blue-800 border-blue-200" },
-  respondida:   { label: "Respondida",   color: "bg-green-100 text-green-800 border-green-200" },
-  cerrada:      { label: "Cerrada",      color: "bg-gray-100 text-gray-600 border-gray-200" },
-  cancelada:    { label: "Cancelada",    color: "bg-red-100 text-red-700 border-red-200" },
-}
-
-function timeAgo(ts: number): string {
-  const diff = Date.now() - ts
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `Hace ${mins} minuto${mins !== 1 ? "s" : ""}`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `Hace ${hours} hora${hours !== 1 ? "s" : ""}`
-  const days = Math.floor(hours / 24)
-  return `Hace ${days} día${days !== 1 ? "s" : ""}`
-}
+import { STATUS, timeAgo } from "@/lib/panel-utils"
 
 export default function DashboardPage() {
   const consultas = useQuery(api.consultas.listMine)

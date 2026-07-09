@@ -154,8 +154,9 @@ export function ConsultaForm() {
       try {
         // 1. Get upload URL
         const uploadUrl = await generateUploadUrl()
-        // 2. Extract storage ID from URL (last path segment)
-        const storageId = uploadUrl.split("/").pop()!
+        // 2. Extract storage ID from the URL's token parameter
+        const url = new URL(uploadUrl)
+        const storageId = url.searchParams.get("token")!
         // 3. Upload to Convex storage
         const result = await fetch(uploadUrl, {
           method: "POST",

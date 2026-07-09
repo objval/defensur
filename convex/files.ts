@@ -46,6 +46,8 @@ export const getFileUrl = mutation({
   handler: async (ctx, { storageId }) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new Error("Not authenticated")
-    return await ctx.storage.getUrl(storageId)
+    // Strip "upload?token=" prefix from old records (fixed in upload code now)
+    const cleanId = storageId.replace(/^upload\?token=/, "")
+    return await ctx.storage.getUrl(cleanId)
   },
 })

@@ -178,22 +178,17 @@ export default function ConsultasPage() {
   // ── Loading ────────────────────────────────────────────────────
   if (!consultas) {
     return (
-      <div className="flex-1 md:ml-[240px] pt-16 md:pt-0 w-full max-w-[1440px] mx-auto min-h-screen">
-        <div className="p-4 md:p-8 w-full max-w-[896px] xl:max-w-7xl mx-auto space-y-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 w-48 bg-muted rounded" />
-            <div className="h-12 bg-muted rounded-xl" />
-            {[1,2,3,4].map(i => <div key={i} className="h-20 bg-muted rounded-xl" />)}
-          </div>
-        </div>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-muted rounded" />
+        <div className="h-12 bg-muted rounded-xl" />
+        {[1,2,3,4].map(i => <div key={i} className="h-20 bg-muted rounded-xl" />)}
       </div>
     )
   }
 
   // ── Render ─────────────────────────────────────────────────────
   return (
-    <div className="flex-1 md:ml-[240px] pt-16 md:pt-0 w-full max-w-[1440px] mx-auto min-h-screen flex flex-col">
-      <div className="p-4 md:p-8 flex-1 w-full max-w-[896px] xl:max-w-7xl mx-auto flex flex-col gap-6">
+    <div className="space-y-6">
 
         {/* ── Page Header ──────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -500,9 +495,8 @@ export default function ConsultasPage() {
             })
           )}
         </div>
-      </div>
 
-      {/* ── Cancel confirmation modal ─────────────────────────────── */}
+        {/* ── Cancel confirmation modal ─────────────────────────────── */}
       <AnimatePresence>
         {cancelTarget && (
           <motion.div

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useCallback, type DragEvent, type ChangeEvent } from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,50 +8,18 @@ import { useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { consultaSchema, type ConsultaFormValues, AREA_LABELS, URGENCY_LABELS } from "@/lib/consulta-schema"
 import { WHATSAPP } from "@/lib/site"
-import { Upload, X, FileText, Image, Paperclip, Loader2 } from "lucide-react"
+import { X, FileText, Image, Paperclip, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatSize } from "@/lib/panel-utils"
+import { FileDropZone, type PendingFile } from "@/components/panel/file-drop-zone"
 
 // ── Types ────────────────────────────────────────────────────────────────────
-
-type PendingFile = {
-  id: string
-  file: File
-  preview?: string
-  uploading: boolean
-  error?: string
-}
 
 type UploadedFileRef = {
   storageId: string
   fileName: string
   fileType: string
   fileSize: number
-}
-
-// ── Constants ────────────────────────────────────────────────────────────────
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED_TYPES = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-]
-const ALLOWED_EXTENSIONS = ".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-function getFileIcon(fileType: string) {
-  if (fileType.startsWith("image/")) return Image
-  return FileText
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -67,8 +35,6 @@ export function ConsultaForm() {
   const [error, setError] = useState<string | null>(null)
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([])
   const [uploadedRefs, setUploadedRefs] = useState<UploadedFileRef[]>([])
-  const [dragOver, setDragOver] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
     register,
@@ -82,29 +48,6 @@ export function ConsultaForm() {
   const areaValue = watch("area")
 
   // ── File handling ────────────────────────────────────────────────────────
-
-  const validateFiles = useCallback((files: FileList | File[]) => {
-    const valid: File[] = []
-    const errors: string[] = []
-
-    for (const file of Array.from(files)) {
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        errors.push(`"${file.name}" no es un formato permitido`)
-        continue
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        errors.push(`"${file.name}" supera los 10MB`)
-        continue
-      }
-      valid.push(file)
-    }
-
-    if (errors.length > 0) {
-      setError(errors.join(". "))
-    }
-
-    return valid
-  }, [])
 
   const addFiles = useCallback((newFiles: File[]) => {
     const entries: PendingFile[] = newFiles.map((file) => ({
@@ -124,27 +67,6 @@ export function ConsultaForm() {
       return prev.filter((f) => f.id !== id)
     })
   }, [])
-
-  const handleDrop = useCallback(
-    (e: DragEvent) => {
-      e.preventDefault()
-      setDragOver(false)
-      const valid = validateFiles(e.dataTransfer.files)
-      addFiles(valid)
-    },
-    [validateFiles, addFiles]
-  )
-
-  const handleFileSelect = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files) {
-        const valid = validateFiles(e.target.files)
-        addFiles(valid)
-        e.target.value = ""
-      }
-    },
-    [validateFiles, addFiles]
-  )
 
   const uploadFiles = useCallback(async (): Promise<UploadedFileRef[]> => {
     const refs: UploadedFileRef[] = []
@@ -349,79 +271,7 @@ export function ConsultaForm() {
               <span className="text-xs text-muted-foreground">Opcional</span>
             </div>
 
-            {/* Drop zone */}
-            <div
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={cn(
-                "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-colors",
-                dragOver ? "border-brand-sky bg-brand-sky/5" : "border-border hover:border-muted-foreground/30"
-              )}
-            >
-              <Upload className={cn("h-8 w-8", dragOver ? "text-brand-sky" : "text-muted-foreground")} />
-              <div className="text-center">
-                <p className="text-sm font-medium text-foreground">
-                  Arrastra archivos aquí o haz clic para seleccionar
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  PDF, JPG, PNG, DOCX — máximo 10MB por archivo
-                </p>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept={ALLOWED_EXTENSIONS}
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-            </div>
-
-            {/* Pending files list */}
-            {pendingFiles.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">
-                  {pendingFiles.length} archivo{pendingFiles.length > 1 ? "s" : ""} seleccionado{pendingFiles.length > 1 ? "s" : ""}
-                </p>
-                {pendingFiles.map((pf) => {
-                  const Icon = getFileIcon(pf.file.type)
-                  return (
-                    <div
-                      key={pf.id}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3",
-                        pf.error && "border-red-200 bg-red-50"
-                      )}
-                    >
-                      {pf.preview ? (
-                        <img src={pf.preview} alt={pf.file.name} className="h-10 w-10 rounded object-cover" />
-                      ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded bg-brand-navy/5">
-                          <Icon className="h-5 w-5 text-brand-navy" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="truncate text-sm font-medium text-foreground">{pf.file.name}</p>
-                        <p className="text-xs text-muted-foreground">{formatFileSize(pf.file.size)}</p>
-                      </div>
-                      {pf.uploading ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-brand-sky" />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => removeFile(pf.id)}
-                          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+            <FileDropZone files={pendingFiles} onAddFiles={addFiles} onRemoveFile={removeFile} />
 
             <div className="flex gap-3">
               <button

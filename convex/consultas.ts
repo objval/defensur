@@ -115,3 +115,41 @@ export const addNote = mutation({
     return { success: true as const }
   },
 })
+
+// ── Public submission (no auth required) ──────────────────────────────────────
+
+export const submitPublic = mutation({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    area: v.string(),
+    subject: v.string(),
+    description: v.string(),
+    urgency: v.optional(v.string()),
+  },
+  handler: async (ctx, { name, email, phone, area, subject, description, urgency }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    const now = Date.now()
+
+    // If user is signed in, link to their account. Otherwise, use provided info.
+    const userId = identity?.subject ?? "anonymous"
+    const userEmail = identity?.email ?? email
+    const userName = identity?.name ?? name
+
+    return await ctx.db.insert("consultas", {
+      userId,
+      userEmail,
+      userName,
+      area,
+      subject,
+      description,
+      urgency: urgency || "media",
+      status: "pendiente",
+      files: [],
+      responses: [],
+      createdAt: now,
+      updatedAt: now,
+    })
+  },
+})

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useMutation } from "convex/react"
+import { useMutation, useConvexAuth } from "convex/react"
 import { useUser } from "@clerk/nextjs"
 import { BriefcaseBusiness, CheckCircle2, Clock, Landmark, Scale, ShieldCheck, Users, Loader2 } from "lucide-react"
 import { api } from "@/convex/_generated/api"
@@ -84,6 +84,25 @@ function SuccessState({ consultaId, onReset }: { consultaId: string; onReset: ()
 }
 
 export function ContactForm() {
+  const { isLoading: convexLoading } = useConvexAuth()
+  const { isLoaded: clerkLoaded } = useUser()
+
+  // Wait for both Clerk and Convex to be ready before mounting the form
+  if (!clerkLoaded || convexLoading) {
+    return (
+      <div className="rounded-2xl bg-white/85 backdrop-blur-xl p-6 md:p-10 border border-white/40 animate-pulse space-y-4">
+        <div className="h-8 w-48 bg-muted rounded" />
+        <div className="h-14 bg-muted rounded-full" />
+        <div className="h-14 bg-muted rounded-full" />
+        <div className="h-14 bg-muted rounded-full" />
+      </div>
+    )
+  }
+
+  return <ContactFormInner />
+}
+
+function ContactFormInner() {
   const router = useRouter()
   const submitPublic = useMutation(api.consultas.submitPublic)
   const { user, isSignedIn } = useUser()

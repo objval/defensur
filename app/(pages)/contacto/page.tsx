@@ -1,24 +1,8 @@
 "use client"
 
-import dynamic from "next/dynamic"
 import { Clock, Mail, MapPin, Phone } from "lucide-react"
 import { PageHero } from "@/components/page-hero"
-
-// Lazy-load ContactForm — it uses Convex hooks that can't run during static generation
-const ContactForm = dynamic(() => import("@/components/contact-form").then(m => ({ default: m.ContactForm })), {
-  ssr: false,
-  loading: () => (
-    <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 w-56 bg-muted rounded" />
-        <div className="h-4 w-72 bg-muted rounded" />
-        <div className="h-14 bg-muted rounded-full" />
-        <div className="h-14 bg-muted rounded-full" />
-        <div className="h-14 bg-muted rounded-full" />
-      </div>
-    </div>
-  ),
-})
+import { ContactForm } from "@/components/contact-form"
 
 export default function Page() {
   return (

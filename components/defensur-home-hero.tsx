@@ -1,26 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import dynamic from "next/dynamic"
 import { Clock, Phone } from "lucide-react"
 
 import { Navbar } from "@/components/navbar"
 import { WhyDefensur } from "@/components/why-defensur"
 import { TeamSection } from "@/components/team-section"
+import { ContactForm } from "@/components/contact-form"
 import { AREAS_DE_PRACTICA, SITE } from "@/lib/site"
 import { cn } from "@/lib/utils"
-
-const ContactForm = dynamic(() => import("@/components/contact-form").then(m => ({ default: m.ContactForm })), {
-  ssr: false,
-  loading: () => (
-    <div className="rounded-2xl bg-white/85 backdrop-blur-xl p-6 md:p-10 border border-white/40 animate-pulse space-y-4">
-      <div className="h-8 w-48 bg-muted rounded" />
-      <div className="h-14 bg-muted rounded-full" />
-      <div className="h-14 bg-muted rounded-full" />
-      <div className="h-14 bg-muted rounded-full" />
-    </div>
-  ),
-})
 
 // —— Main hero ————————————————————————————————————————————————
 

@@ -4,8 +4,10 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useClerk, UserButton, useUser } from "@clerk/nextjs"
-import { LayoutDashboard, MessageSquare, FolderOpen, Bell, Settings, LogOut, Plus, ChevronLeft, Menu, X } from "lucide-react"
+import { LayoutDashboard, MessageSquare, FolderOpen, Bell, Settings, LogOut, Plus, ChevronLeft, Menu, X, Shield } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/panel", icon: LayoutDashboard },
@@ -20,6 +22,8 @@ export function PanelSidebar() {
   const router = useRouter()
   const { signOut } = useClerk()
   const { user } = useUser()
+  const myRole = useQuery(api.admin.refreshMyRole)
+  const isAdmin = myRole?.role === "admin"
 
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -121,6 +125,25 @@ export function PanelSidebar() {
                 </Link>
               )
             })}
+
+            {/* Admin: Users */}
+            {isAdmin && (
+              <Link
+                href="/panel/users"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  collapsed && "justify-center px-0",
+                  isActive("/panel/users")
+                    ? "bg-brand-navy/10 text-brand-navy font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-primary"
+                )}
+                title={collapsed ? "Usuarios" : undefined}
+              >
+                <Shield className="h-5 w-5 shrink-0" />
+                {!collapsed && "Usuarios"}
+              </Link>
+            )}
           </nav>
 
           {/* ── Bottom section ───────────────────────────────── */}

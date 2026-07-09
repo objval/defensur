@@ -10,11 +10,10 @@ import type { Doc, Id } from "./_generated/dataModel"
 
 async function getAuth(
   ctx: { db: QueryCtx["db"]; auth: QueryCtx["auth"] }
-): Promise<{ userId: string; role: string; banned: boolean }> {
+): Promise<{ userId: string; role: string; banned: boolean } | null> {
   const identity = await ctx.auth.getUserIdentity()
-  if (!identity) throw new Error("Not authenticated")
+  if (!identity) return null
 
-  // Source of truth: Convex users table (realtime role changes)
   const user = await ctx.db
     .query("users")
     .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
@@ -24,7 +23,6 @@ async function getAuth(
     return { userId: identity.subject, role: user.role, banned: user.banned }
   }
 
-  // Fallback: JWT metadata for users not yet synced to Convex
   const role = ((identity as any)?.metadata?.role) || "client"
   return { userId: identity.subject, role, banned: false }
 }
@@ -33,19 +31,15 @@ function isStaff(role: string): boolean {
   return role === "admin" || role === "staff"
 }
 
-// ── Consulta management (staff/admin) ────────────────────────────────────────
+// ── Consulta management ──────────────────────────────────────────────────────
 
 export const listAll = query({
   args: { status: v.optional(v.string()), area: v.optional(v.string()) },
   handler: async (ctx, { status, area }) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) return null
-
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) return null
     if (status) {
-      const results = await ctx.db.query("consultas")
-        .withIndex("by_status", (q) => q.eq("status", status))
-        .order("desc")
-        .collect()
+      const results = await ctx.db.query("consultas").withIndex("by_status", (q) => q.eq("status", status)).order("desc").collect()
       if (area) return results.filter((c) => c.area === area)
       return results
     }
@@ -58,8 +52,8 @@ export const listAll = query({
 export const getById = query({
   args: { id: v.id("consultas") },
   handler: async (ctx, { id }) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) return null
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) return null
     return await ctx.db.get(id)
   },
 })
@@ -67,8 +61,8 @@ export const getById = query({
 export const updateStatus = mutation({
   args: { id: v.id("consultas"), status: v.string() },
   handler: async (ctx, { id, status }) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) throw new Error("Not authorized")
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
     await ctx.db.patch(id, { status, updatedAt: Date.now() })
     return { success: true as const }
   },
@@ -77,10 +71,10 @@ export const updateStatus = mutation({
 export const addResponse = mutation({
   args: { id: v.id("consultas"), response: v.string(), respondedBy: v.string() },
   handler: async (ctx, { id, response, respondedBy }) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) throw new Error("Not authorized")
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
     const consulta = await ctx.db.get(id)
-    if (!consulta) throw new Error("Consulta not found")
+    if (!consulta) throw new Error("Consulta no encontrada")
     const existing = consulta.responses || []
     await ctx.db.patch(id, {
       status: "respondida",
@@ -94,8 +88,8 @@ export const addResponse = mutation({
 export const remove = mutation({
   args: { id: v.id("consultas") },
   handler: async (ctx, { id }) => {
-    const { role } = await getAuth(ctx)
-    if (role !== "admin") throw new Error("Admin only")
+    const auth = await getAuth(ctx)
+    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
     await ctx.db.delete(id)
     return { success: true as const }
   },
@@ -106,8 +100,8 @@ export const remove = mutation({
 export const getStats = query({
   args: {},
   handler: async (ctx) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) return null
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) return null
     const all = await ctx.db.query("consultas").collect()
     return {
       total: all.length,
@@ -126,15 +120,12 @@ export const getStats = query({
   },
 })
 
-// ── User sync (internal) ─────────────────────────────────────────────────────
+// ── User sync ────────────────────────────────────────────────────────────────
 
 export const syncUser = internalMutation({
   args: { userId: v.string(), email: v.string(), name: v.string(), role: v.string() },
   handler: async (ctx, { userId, email, name, role }) => {
-    const existing = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", userId))
-      .first()
+    const existing = await ctx.db.query("users").withIndex("by_clerk_id", (q) => q.eq("clerkId", userId)).first()
     if (existing) {
       if (existing.email !== email || existing.name !== name || existing.role !== role) {
         await ctx.db.patch(existing._id, { email, name, role, updatedAt: Date.now() })
@@ -145,16 +136,12 @@ export const syncUser = internalMutation({
   },
 })
 
-/** Called from client after role change — returns current role instantly from the database */
 export const refreshMyRole = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) return null
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-      .first()
+    const user = await ctx.db.query("users").withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject)).first()
     return { role: user?.role || "client" }
   },
 })
@@ -164,8 +151,8 @@ export const refreshMyRole = query({
 export const listUsers = query({
   args: {},
   handler: async (ctx) => {
-    const { role } = await getAuth(ctx)
-    if (role !== "admin") return null
+    const auth = await getAuth(ctx)
+    if (!auth || auth.role !== "admin") return null
     return await ctx.db.query("users").order("desc").collect()
   },
 })
@@ -173,8 +160,8 @@ export const listUsers = query({
 export const toggleBan = mutation({
   args: { userId: v.id("users"), banned: v.boolean() },
   handler: async (ctx, { userId, banned }) => {
-    const { role } = await getAuth(ctx)
-    if (role !== "admin") throw new Error("Admin only")
+    const auth = await getAuth(ctx)
+    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
     await ctx.db.patch(userId, { banned, updatedAt: Date.now() })
     return { success: true as const }
   },
@@ -183,23 +170,21 @@ export const toggleBan = mutation({
 export const updateUserRole = mutation({
   args: { userId: v.id("users"), role: v.string() },
   handler: async (ctx, { userId, role }) => {
-    const { role: callerRole } = await getAuth(ctx)
-    if (callerRole !== "admin") throw new Error("Admin only")
+    const auth = await getAuth(ctx)
+    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
     await ctx.db.patch(userId, { role, updatedAt: Date.now() })
     return { success: true as const }
   },
 })
 
-// ── Bulk operations (staff/admin) ─────────────────────────────────────────────
+// ── Bulk operations ──────────────────────────────────────────────────────────
 
 export const bulkUpdateStatus = mutation({
   args: { ids: v.array(v.id("consultas")), status: v.string() },
   handler: async (ctx, { ids, status }) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) throw new Error("Not authorized")
-    for (const id of ids) {
-      await ctx.db.patch(id, { status, updatedAt: Date.now() })
-    }
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
+    for (const id of ids) await ctx.db.patch(id, { status, updatedAt: Date.now() })
     return { success: true as const, count: ids.length }
   },
 })
@@ -207,11 +192,9 @@ export const bulkUpdateStatus = mutation({
 export const bulkCancel = mutation({
   args: { ids: v.array(v.id("consultas")) },
   handler: async (ctx, { ids }) => {
-    const { role } = await getAuth(ctx)
-    if (!isStaff(role)) throw new Error("Not authorized")
-    for (const id of ids) {
-      await ctx.db.patch(id, { status: "cancelada", updatedAt: Date.now() })
-    }
+    const auth = await getAuth(ctx)
+    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
+    for (const id of ids) await ctx.db.patch(id, { status: "cancelada", updatedAt: Date.now() })
     return { success: true as const, count: ids.length }
   },
 })
@@ -219,11 +202,9 @@ export const bulkCancel = mutation({
 export const bulkDelete = mutation({
   args: { ids: v.array(v.id("consultas")) },
   handler: async (ctx, { ids }) => {
-    const { role } = await getAuth(ctx)
-    if (role !== "admin") throw new Error("Admin only")
-    for (const id of ids) {
-      await ctx.db.delete(id)
-    }
+    const auth = await getAuth(ctx)
+    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
+    for (const id of ids) await ctx.db.delete(id)
     return { success: true as const, count: ids.length }
   },
 })

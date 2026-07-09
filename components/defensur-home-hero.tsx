@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { Clock, Phone } from "lucide-react"
+import { Clock, Phone, MessageCircle } from "lucide-react"
 
 import { Navbar } from "@/components/navbar"
 import { WhyDefensur } from "@/components/why-defensur"
 import { TeamSection } from "@/components/team-section"
-import { ContactForm } from "@/components/contact-form"
-import { AREAS_DE_PRACTICA, SITE } from "@/lib/site"
+import { AREAS_DE_PRACTICA, SITE, WHATSAPP } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 // —— Main hero ————————————————————————————————————————————————
@@ -89,9 +88,32 @@ export function DefensurHomeHero() {
               </div>
             </div>
 
-            {/* —— Right column: form card —————————————————————————————————————————————— */}
+            {/* —— Right column: WhatsApp CTA (form disabled — under repair) ———————— */}
             <div className="lg:col-span-5 relative lg:-ml-12">
-              <ContactForm />
+              <div className="relative bg-white/85 backdrop-blur-xl p-6 md:p-10 rounded-2xl shadow-[0px_32px_64px_rgba(8,24,107,0.08)] border border-white/40">
+                <div className="flex flex-col items-center gap-6 text-center">
+                  <div className="flex size-16 items-center justify-center rounded-full bg-brand-sky/10 text-brand-navy">
+                    <MessageCircle className="size-8" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-primary">
+                      Consulta Gratuita
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed max-w-[42ch]">
+                      Escríbenos por WhatsApp. Un abogado te responderá en menos de 24 horas.
+                    </p>
+                  </div>
+                  <a
+                    href={WHATSAPP.url()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 w-full h-14 bg-brand-navy text-white rounded-full font-semibold shadow-[0px_8px_24px_rgba(8,24,107,0.2)] hover:shadow-[0px_8px_32px_rgba(8,24,107,0.3)] transition-all duration-300 hover:-translate-y-0.5"
+                  >
+                    <MessageCircle className="size-5" />
+                    Escribir por WhatsApp
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </section>

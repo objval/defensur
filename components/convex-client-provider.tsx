@@ -5,18 +5,22 @@ import { ConvexReactClient } from "convex/react"
 import { ConvexProviderWithClerk } from "convex/react-clerk"
 import { useAuth } from "@clerk/nextjs"
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
-
-// Lazy-init so the build doesn't crash when CONVEX_URL isn't set yet
-let convex: ConvexReactClient | null = null
-if (convexUrl) {
-  convex = new ConvexReactClient(convexUrl)
+// Wrap in try-catch — during SSG (e.g., _not-found page), env vars might not be
+// available or properly formatted. Fall back to rendering children without Convex.
+function getConvexClient(): ConvexReactClient | null {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL
+  if (!url) return null
+  try {
+    return new ConvexReactClient(url)
+  } catch {
+    return null
+  }
 }
+
+const convex = getConvexClient()
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
   if (!convex) {
-    // Convex not configured yet — render children without provider
-    // This allows the build to pass before `npx convex dev` is run
     return <>{children}</>
   }
 

@@ -84,11 +84,15 @@ function SuccessState({ consultaId, onReset }: { consultaId: string; onReset: ()
 }
 
 export function ContactForm() {
+  const [hydrated, setHydrated] = React.useState(false)
+  React.useEffect(() => { setHydrated(true) }, [])
+
   const { isLoading: convexLoading } = useConvexAuth()
   const { isLoaded: clerkLoaded } = useUser()
 
-  // Wait for both Clerk and Convex to be ready before mounting the form
-  if (!clerkLoaded || convexLoading) {
+  // Prevent hydration mismatch: server always renders skeleton, and so does
+  // the first client render. Once hydrated, wait for Clerk + Convex too.
+  if (!hydrated || !clerkLoaded || convexLoading) {
     return (
       <div className="rounded-2xl bg-white/85 backdrop-blur-xl p-6 md:p-10 border border-white/40 animate-pulse space-y-4">
         <div className="h-8 w-48 bg-muted rounded" />

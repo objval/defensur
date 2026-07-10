@@ -188,61 +188,6 @@ export const SENTENCIAS: Sentencia[] = [
   },
 
   {
-    slug: "tutela-laboral-supermercado-lily-villarrica",
-    title:
-      "Tribunal Acoge Tutela Laboral contra Supermercado Lily en Villarrica",
-    excerpt:
-      "Práctica antisindical declarada por tribunal en causa seguida contra Supermercado Lily por represalias contra dirigente sindical que ejercía funciones de representación gremial.",
-    date: "2024-10-08",
-    author: "Nicolás Yáñez",
-    authorRole:
-      "Abogado de Defensur Estudio Jurídico · Especialista en Derecho Laboral y Libertad Sindical",
-    category: "Práctica Antisindical",
-    amount: "$9.900.000",
-
-    summaryHighlight:
-      "El tribunal declaró la existencia de una práctica antisindical en contra de nuestro cliente, dirigente sindical del Supermercado Lily de Villarrica, reconociendo que las represalias ejercidas por la empresa vulneraron su libertad sindical y derechos fundamentales. La sentencia condena al empleador al pago de $9.900.000 más costas, reajustes e intereses.",
-    condemnationSummary:
-      "El tribunal acreditó la práctica antisindical del Supermercado Lily, declarando que las represalias ejercidas contra nuestro cliente, dirigente sindical, vulneraron su libertad sindical y derecho a la no discriminación. La condena incluye: $9.900.000 más costas, reajustes e intereses.",
-    caseContext:
-      "Nuestro cliente, dirigente sindical del Supermercado Lily en Villarrica, fue objeto de represalias sistemáticas por parte de la empresa a raíz del ejercicio de sus funciones de representación gremial. Esta situación configuró una práctica antisindical que vulneró su libertad sindical y dignidad como trabajador. Accionamos judicialmente para obtener el reconocimiento y la reparación de esta vulneración.",
-    judgmentText:
-      "El tribunal acreditó la existencia de una práctica antisindical, estableciendo que las conductas del empleador afectaron directamente la libertad sindical del trabajador:",
-    judgmentQuote:
-      "«Las conductas del empleador constituyen una práctica antisindical que vulnera la libertad sindical del dirigente (Art. 19 N°19 de la Constitución), en relación con los artículos 289 y 485 del Código del Trabajo.»",
-    judgmentConclusion:
-      "El tribunal reconoció que las represalias ejercidas por la empresa no solo afectaron al dirigente sindical, sino que también tuvieron un efecto intimidatorio sobre la organización sindical en su conjunto.",
-    compensations: [
-      {
-        amount: "$9.900.000",
-        description:
-          "por daño moral derivado de la práctica antisindical y vulneración de libertad sindical.",
-      },
-    ],
-    instanciaNote: "Nota: esta sentencia fue dictada en primera instancia.",
-    outcomePoints: [
-      "Práctica antisindical declarada por el tribunal.",
-      "Vulneración de libertad sindical acreditada.",
-      "Condena de $9.900.000 más costas, reajustes e intereses.",
-    ],
-    faqItems: [
-      {
-        question: "¿Qué es una práctica antisindical?",
-        answer:
-          "Una práctica antisindical es cualquier conducta del empleador que obstaculice, restrinja o limite el ejercicio de los derechos sindicales de los trabajadores o sus organizaciones, incluyendo represalias contra dirigentes sindicales por el ejercicio de sus funciones.",
-      },
-      {
-        question: "¿Qué protección tiene un dirigente sindical?",
-        answer:
-          "Los dirigentes sindicales gozan de fuero laboral, lo que significa que el empleador no puede despedirlos ni modificar sus condiciones de trabajo sin autorización judicial. Además, están protegidos contra cualquier tipo de represalia por el ejercicio de sus funciones sindicales.",
-      },
-    ],
-    contactTitle: "La libertad sindical es un derecho fundamental",
-    contactText:
-      "Si eres dirigente sindical y has sido víctima de represalias por el ejercicio de tus funciones, existen acciones legales para defenderte. Contáctate con Nicolás Yáñez para evaluar tu caso sin costo.",
-  },
-
-  {
     slug: "tutela-laboral-aps-perquenco-acoso",
     title:
       "Tutela por Vulneración de Derechos Fundamentales en APS Perquenco",

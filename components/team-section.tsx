@@ -72,9 +72,9 @@ function TeamCard({ member }: { member: TeamMember }) {
           <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-sky">
             {member.role}
           </p>
-          <h4 className="mt-1 text-[13px] font-semibold leading-snug text-white">
+          <h3 className="mt-1 text-[13px] font-semibold leading-snug text-white">
             {member.name}
-          </h4>
+          </h3>
         </div>
       </div>
     </div>

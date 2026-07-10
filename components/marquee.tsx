@@ -16,7 +16,7 @@ export function Marquee({
   className,
   reverse = false,
   pauseOnHover = false,
-  repeat = 4,
+  repeat = 2,
 }: MarqueeProps) {
   return (
     <div
@@ -34,6 +34,7 @@ export function Marquee({
       {Array.from({ length: repeat }).map((_, i) => (
         <div
           key={i}
+          aria-hidden={i > 0 ? "true" : undefined}
           className={cn(
             "flex shrink-0 [animation-duration:var(--duration,30s)] [gap:var(--gap,1rem)] [animation-name:scroll] [animation-timing-function:linear] [animation-iteration-count:infinite]",
             reverse && "[animation-direction:reverse]",

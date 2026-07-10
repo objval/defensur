@@ -41,6 +41,22 @@ export function ContactoContent() {
                   </div>
                 </div>
               </div>
+
+              {/* Los Ángeles office */}
+              <div className="mt-4 border border-border rounded-lg overflow-hidden bg-card shadow-sm">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3496.54!2d-72.349!3d-37.468!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x966bdd4602624ef5%3A0xf03d8055d6a60b7a!2sAlmagro%20483%2C%20oficina%20403%2C%20Los%20Angeles%2C%20B%C3%ADo%20B%C3%ADo!5e0!3m2!1ses!2scl!4v1700000000000"
+                  width="100%" height="180" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade" title="Oficina Defensur Los Ángeles"
+                />
+                <div className="p-4 bg-card flex items-start gap-3">
+                  <MapPin className="size-5 text-brand-navy mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Almagro 483, Oficina 403</p>
+                    <p className="text-sm text-muted-foreground">Los Ángeles, Región del Bío Bío.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-col gap-6">

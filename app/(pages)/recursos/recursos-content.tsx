@@ -134,6 +134,43 @@ _______________________
 RUT: ………………..
 Fecha: ………………..`,
   },
+  {
+    id: "recusacion-fiscal-sumario",
+    title: "Modelo de Recusación de Fiscal — Sumario Administrativo",
+    description:
+      "Documento para solicitar la recusación del fiscal de un sumario administrativo cuando existan antecedentes de falta de imparcialidad, animadversión manifiesta u otra causal que afecte el debido proceso.",
+    area: "sumarios" as Area,
+    icon: ShieldCheck,
+    file: "/recursos/modelo-recusacion-fiscal-sumario-administrativo.docx",
+    fileName: "Modelo-Recusacion-Fiscal-Sumario-Administrativo-Defensur.docx",
+    content: `MODELO DE RECUSACIÓN DE FISCAL — SUMARIO ADMINISTRATIVO
+
+EN LO PRINCIPAL: Formula recusación en contra del fiscal del sumario administrativo.
+PRIMER OTROSÍ: Acompaña documentos.
+
+AL FISCAL DEL SUMARIO ADMINISTRATIVO
+
+[Nombre del abogado o funcionario], en representación de [nombre del funcionario], en los autos sumariales de la referencia, respetuosamente digo:
+
+Que, encontrándome dentro de plazo y conforme a las garantías del debido proceso, especialmente el artículo 19 N° 3 de la Constitución Política de la República y los artículos 132, 133 y siguientes de la Ley N° 18.834 sobre Estatuto Administrativo, vengo en formular recusación en contra del fiscal don/doña [nombre del fiscal].
+
+La solicitud se funda en antecedentes que permiten configurar una causal de falta de imparcialidad o animadversión manifiesta, según los hechos y fundamentos de derecho que deben desarrollarse en el escrito.
+
+I. LOS HECHOS
+[Describir los antecedentes concretos que justifican la recusación.]
+
+II. EL DERECHO
+[Indicar las normas aplicables, garantías del debido proceso y jurisprudencia administrativa o judicial pertinente.]
+
+III. DE LA RECUSACIÓN
+[Explicar por qué los hechos descritos afectan la imparcialidad del fiscal y hacen necesaria su separación del procedimiento.]
+
+POR TANTO,
+RUEGO A USTED tener por formulada recusación en contra del fiscal del sumario administrativo y remitir los antecedentes a la autoridad competente para su resolución.
+
+OTROSÍ: Acompaña documentos con citación.
+RUEGO A USTED tener por acompañados los antecedentes documentales que sirven de fundamento a esta solicitud y ordenar su agregación al expediente sumarial.`,
+  },
 ] as const
 
 const AREA_LABELS: Record<Area, string> = {

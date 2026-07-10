@@ -48,6 +48,12 @@ function isSlotPast(date: Date, slot: string) { const [h,m]=slot.split(":").map(
 function cleanRut(rut: string) { return rut.replace(/[^0-9kK]/g,"").toUpperCase() }
 function validateRut(raw: string) { const c=cleanRut(raw); if(c.length<2||c.length>10)return false; const b=c.slice(0,-1),dv=c.slice(-1); if(!/^\d+$/.test(b))return false; let s=0,m=2; for(let i=b.length-1;i>=0;i--){s+=parseInt(b[i]!)*m;m=m===7?2:m+1} const x=11-(s%11); return dv===(x===11?"0":x===10?"K":x.toString()) }
 function formatRut(raw: string) { const c=cleanRut(raw); if(c.length<2)return raw; const b=c.slice(0,-1),dv=c.slice(-1); const ch=b.split(""); let f=""; for(let i=0;i<ch.length;i++){f=ch[ch.length-1-i]!+f;if((i+1)%3===0&&i!==ch.length-1)f="."+f} return f+"-"+dv }
+function getErrorMessage(error: unknown) { return error instanceof Error && error.message.trim() ? error.message : "Error al enviar. Intenta de nuevo." }
+function getMessageHelperText(message: string) {
+  const remaining = 20 - message.trim().length
+  if (remaining <= 0) return "Descripción lista para continuar."
+  return `Faltan ${remaining} caracteres para poder continuar.`
+}
 
 const STEPS = ["Área y modo","Tus datos","Agenda"] as const
 
@@ -77,18 +83,33 @@ export function HeroContactForm() {
 
   function canAdvance(): boolean {
     if (step===0) return true
-    if (step===1) return name.trim().length>=2 && phone.length>4 && email.includes("@") && message.trim().length>=10 && (!rut.trim()||validateRut(rut))
+    if (step===1) return name.trim().length>=2 && phone.length>4 && email.includes("@") && message.trim().length>=20 && (!rut.trim()||validateRut(rut))
     return selDate!==null && selTime!==null
+  }
+
+  function validateStep1(): string | null {
+    if (name.trim().length < 2) return "Ingresa tu nombre completo."
+    if (rut.trim() && !validateRut(rut)) return "El RUT ingresado no es válido."
+    if (!phone.trim() || phone === "+569") return "Ingresa tu teléfono."
+    if (!email.trim()) return "Ingresa tu correo electrónico."
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "El correo no es válido."
+    if (message.trim().length < 20) return "Describe tu caso con al menos 20 caracteres."
+    return null
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    const validationError = validateStep1()
+    if (validationError) {
+      setError(validationError)
+      return
+    }
     if(!selDate||!selTime){setError("Selecciona día y hora");return}
     setSubmitting(true); setError(null)
     try {
       await submitPublic({ name:name.trim(), email:email.trim(), phone:phone.trim(), rut:rut.trim()||undefined, area, subject:`Consulta ${area} — ${name.trim()}`, description:message.trim(), modality, urgency:"media", scheduledDate:selDate?selDate.getTime():undefined, scheduledTime:selTime??undefined })
       setDone(true)
-    } catch { setError("Error al enviar. Intenta de nuevo.") }
+    } catch (error) { setError(getErrorMessage(error)) }
     finally { setSubmitting(false) }
   }
 
@@ -163,6 +184,7 @@ export function HeroContactForm() {
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Describe tu caso</label>
                   <textarea value={message} onChange={e=>setMessage(e.target.value)} rows={4} className="bg-card border border-border rounded-lg p-4 text-sm focus:outline-none focus:border-brand-sky focus:ring-1 focus:ring-brand-sky/30 resize-none placeholder:text-muted-foreground/50" placeholder="Breve descripción de tu situación..."/>
+                  <p className={cn("text-xs font-medium", message.trim().length >= 20 ? "text-green-700" : "text-amber-700")}>{getMessageHelperText(message)}</p>
                 </div>
               </div>
             )}
@@ -181,7 +203,7 @@ export function HeroContactForm() {
               )}
               <div className="flex-1"/>
               {step<2 ? (
-                <button type="button" onClick={()=>{if(canAdvance()){setStep(s=>s+1);setError(null)}else{setError("Completa los campos requeridos.")}}} className="flex items-center gap-1.5 px-5 py-2.5 bg-brand-navy text-white text-xs font-semibold uppercase tracking-wider rounded-lg hover:bg-brand-navy/90 transition-colors shadow-sm">
+                <button type="button" onClick={()=>{const validationError=validateStep1();if(step===1&&validationError){setError(validationError);return}if(canAdvance()){setStep(s=>s+1);setError(null)}}} className="flex items-center gap-1.5 px-5 py-2.5 bg-brand-navy text-white text-xs font-semibold uppercase tracking-wider rounded-lg hover:bg-brand-navy/90 transition-colors shadow-sm">
                   Siguiente <ArrowRight className="size-3.5"/>
                 </button>
               ) : (

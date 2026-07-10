@@ -93,6 +93,18 @@ function rutFeedback(raw: string): "valid" | "invalid" | "empty" {
   return validateRut(raw) ? "valid" : "invalid"
 }
 
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error && error.message.trim()
+    ? error.message
+    : "Error al enviar. Intente nuevamente."
+}
+
+function getMessageHelperText(message: string): string {
+  const remaining = 20 - message.trim().length
+  if (remaining <= 0) return "Descripción lista para continuar."
+  return `Faltan ${remaining} caracteres para poder continuar.`
+}
+
 // ── Calendar Helpers ─────────────────────────────────────────────────────────
 
 function daysInMonth(year: number, month: number): number {
@@ -185,6 +197,7 @@ function FormInner() {
     if (!email.trim()) return "Ingrese su correo electrónico."
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "El correo no es válido."
     if (!message.trim()) return "Describa brevemente su caso."
+    if (message.trim().length < 20) return "La descripción debe tener al menos 20 caracteres."
     return null
   }
 
@@ -197,6 +210,11 @@ function FormInner() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    const validationError = validatePhase1()
+    if (validationError) {
+      setError(validationError)
+      return
+    }
     if (!selectedDate || !selectedTime) {
       setError("Seleccione un día y hora para su consulta.")
       return
@@ -218,8 +236,8 @@ function FormInner() {
         scheduledTime: selectedTime ?? undefined,
       })
       setSubmitted(true)
-    } catch {
-      setError("Error al enviar. Intente nuevamente.")
+    } catch (error) {
+      setError(getErrorMessage(error))
     } finally {
       setSubmitting(false)
     }
@@ -365,6 +383,7 @@ function FormInner() {
                 <textarea id="hcf-message" value={message} onChange={(e) => setMessage(e.target.value)}
                   className="w-full bg-card border border-border rounded p-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand-sky focus:ring-1 focus:ring-brand-sky/30 transition-shadow resize-y"
                   placeholder="Describa brevemente su situación legal actual." rows={4} />
+                <p className={cn("text-sm font-medium", message.trim().length >= 20 ? "text-green-700" : "text-amber-700")}>{getMessageHelperText(message)}</p>
               </div>
 
               {/* Continue */}

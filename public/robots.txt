@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.defensuraraucania.cl/sitemap.xml
+Sitemap: https://defensuraraucania.cl/sitemap.xml

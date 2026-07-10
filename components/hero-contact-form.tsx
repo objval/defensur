@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Landmark,
   Loader2,
   MapPin,
@@ -36,8 +35,7 @@ const AREAS = [
 
 const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"] as const
 const WEEKDAYS = ["Lu","Ma","Mi","Ju","Vi","Sá","Do"] as const
-const MORNING = ["09:00","09:30","10:00","10:30","11:00","11:30"] as const
-const AFTERNOON = ["14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"] as const
+const TIME_SLOTS = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"] as const
 
 function daysInMonth(y: number, m: number) { return new Date(y, m+1, 0).getDate() }
 function startWeekday(y: number, m: number) { const r = new Date(y, m, 1).getDay(); return r===0?6:r-1 }
@@ -246,16 +244,9 @@ function CompactCalendar({selDate,onSelDate,selTime,onSelTime,bookedSlots}:{selD
       <div className="flex flex-col gap-2.5">
         {selDate?(<>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Mañana</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Horarios disponibles</p>
             <div className="grid grid-cols-3 gap-1.5">
-              {MORNING.map(s=>{const past=isSlotPast(selDate,s);const taken=bookedSlots.includes(s);return <button key={s} type="button" disabled={past||taken} onClick={()=>onSelTime(s)} className={cn("py-2 rounded border text-[11px] font-medium transition-all",past||taken?"border-border bg-muted/30 text-muted-foreground/30 cursor-default":selTime===s?"border-brand-navy bg-brand-navy text-white":"border-border hover:border-brand-sky/50")}>{s}{taken&&!past&&<span className="block text-[8px] leading-none text-muted-foreground/50">ocupado</span>}</button>})}
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-2 py-1.5 px-2 rounded border border-amber-200 bg-amber-50 text-[11px] text-amber-700"><Clock className="size-3"/> Almuerzo 12:00 – 14:00</div>
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Tarde</p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {AFTERNOON.map(s=>{const past=isSlotPast(selDate,s);const taken=bookedSlots.includes(s);return <button key={s} type="button" disabled={past||taken} onClick={()=>onSelTime(s)} className={cn("py-2 rounded border text-[11px] font-medium transition-all",past||taken?"border-border bg-muted/30 text-muted-foreground/30 cursor-default":selTime===s?"border-brand-navy bg-brand-navy text-white":"border-border hover:border-brand-sky/50")}>{s}{taken&&!past&&<span className="block text-[8px] leading-none text-muted-foreground/50">ocupado</span>}</button>})}
+              {TIME_SLOTS.map(s=>{const past=isSlotPast(selDate,s);const taken=bookedSlots.includes(s);return <button key={s} type="button" disabled={past||taken} onClick={()=>onSelTime(s)} className={cn("py-2 rounded border text-[11px] font-medium transition-all",past||taken?"border-border bg-muted/30 text-muted-foreground/30 cursor-default":selTime===s?"border-brand-navy bg-brand-navy text-white":"border-border hover:border-brand-sky/50")}>{s}{taken&&!past&&<span className="block text-[8px] leading-none text-muted-foreground/50">ocupado</span>}</button>})}
             </div>
           </div>
         </>):(<p className="text-xs text-muted-foreground text-center mt-6">Elige un día para ver horarios</p>)}

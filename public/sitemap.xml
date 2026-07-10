@@ -1,112 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.defensuraraucania.cl/</loc>
+    <loc>https://defensuraraucania.cl/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/contacto/</loc>
+    <loc>https://defensuraraucania.cl/contacto/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/quienes-somos/</loc>
+    <loc>https://defensuraraucania.cl/quienes-somos/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/nicolas-yanez/</loc>
+    <loc>https://defensuraraucania.cl/nicolas-yanez/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/calculadoras/</loc>
+    <loc>https://defensuraraucania.cl/calculadoras/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/derecho-laboral-temuco/</loc>
+    <loc>https://defensuraraucania.cl/derecho-laboral-temuco/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/abogados-familia-temuco/</loc>
+    <loc>https://defensuraraucania.cl/abogados-familia-temuco/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/derecho-civil-temuco/</loc>
+    <loc>https://defensuraraucania.cl/derecho-civil-temuco/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/insolvencia-y-reemprendimiento-temuco/</loc>
+    <loc>https://defensuraraucania.cl/insolvencia-y-reemprendimiento-temuco/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sumarios-administrativos-temuco/</loc>
+    <loc>https://defensuraraucania.cl/sumarios-administrativos-temuco/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/acoso-laboral-consultorio-miraflores-30-millones/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/acoso-laboral-consultorio-miraflores-30-millones/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/tutela-laboral-municipalidad-temuco-14-millones/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/tutela-laboral-municipalidad-temuco-14-millones/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/tutela-laboral-supermercado-lily-villarrica/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/tutela-laboral-aps-perquenco-acoso/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/tutela-laboral-aps-perquenco-acoso/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/vulneracion-derechos-municipalidad-gorbea/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/vulneracion-derechos-municipalidad-gorbea/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/indemnizacion-hospital-heyermann-angol/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/indemnizacion-hospital-heyermann-angol/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/condena-acoso-hospital-los-angeles/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/condena-acoso-hospital-los-angeles/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/despido-injustificado-municipalidad-pucon-18-millones/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/despido-injustificado-municipalidad-pucon-18-millones/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/demandas-laborales-municipalidad-los-angeles-31-millones/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/demandas-laborales-municipalidad-los-angeles-31-millones/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/ley-karin-patrullero-disep-pucon-tutela-laboral/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/ley-karin-patrullero-disep-pucon-tutela-laboral/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.defensuraraucania.cl/sentencias/tutela-laboral-director-educacion-municipalidad-pucon-60-millones/</loc>
+    <loc>https://defensuraraucania.cl/sentencias/tutela-laboral-director-educacion-municipalidad-pucon-60-millones/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

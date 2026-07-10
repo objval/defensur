@@ -48,17 +48,17 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Defensur Estudio Jurídico" }],
   creator: "Defensur",
-  metadataBase: new URL("https://www.defensuraraucania.cl"),
+  metadataBase: new URL("https://defensuraraucania.cl"),
   alternates: {
-    canonical: "https://www.defensuraraucania.cl",
+    canonical: "https://defensuraraucania.cl",
     languages: {
-      "es-CL": "https://www.defensuraraucania.cl",
+      "es-CL": "https://defensuraraucania.cl",
     },
   },
   openGraph: {
     type: "website",
     locale: "es_CL",
-    url: "https://www.defensuraraucania.cl",
+    url: "https://defensuraraucania.cl",
     siteName: "Defensur Araucanía",
     title: "Defensur Araucanía — Abogados Laborales en Temuco",
     description:

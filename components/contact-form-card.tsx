@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Landmark,
   Lock,
   MapPin,
@@ -48,8 +47,7 @@ const MONTHS = [
 ] as const
 
 const WEEKDAYS = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"] as const
-const MORNING_SLOTS = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"] as const
-const AFTERNOON_SLOTS = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"] as const
+const TIME_SLOTS = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"] as const
 
 // ── RUT Validation ───────────────────────────────────────────────────────────
 
@@ -490,28 +488,9 @@ function CalendarPicker({ selectedDate, onSelectDate, selectedTime, onSelectTime
         {selectedDate ? (
           <>
             <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Mañana</p>
+              <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Horarios disponibles</p>
               <div className="grid grid-cols-3 gap-1.5">
-                {MORNING_SLOTS.map((slot) => {
-                  const past = isSlotPast(selectedDate, slot)
-                  const taken = bookedSlots.includes(slot)
-                  const disabled = past || taken
-                  return (
-                    <button key={slot} type="button" disabled={disabled} onClick={() => onSelectTime(slot)}
-                      className={cn("py-2 px-2 rounded border text-xs font-medium transition-all", disabled ? "border-border bg-muted/30 text-muted-foreground/40 cursor-default" : selectedTime === slot ? "border-brand-navy bg-brand-navy text-white" : "border-border bg-card text-foreground hover:border-brand-sky/50")}>
-                      {slot}{taken && !past && <span className="block text-[9px] leading-none text-muted-foreground/40">ocupado</span>}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-2 py-2 px-3 rounded border border-amber-200 bg-amber-50 text-xs text-amber-700">
-              <Clock className="size-3" />Almuerzo 12:00 – 14:00
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Tarde</p>
-              <div className="grid grid-cols-3 gap-1.5">
-                {AFTERNOON_SLOTS.map((slot) => {
+                {TIME_SLOTS.map((slot) => {
                   const past = isSlotPast(selectedDate, slot)
                   const taken = bookedSlots.includes(slot)
                   const disabled = past || taken

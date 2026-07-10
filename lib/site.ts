@@ -4,7 +4,7 @@ export const SITE = {
   name: "Defensur",
   fullName: "Defensur Araucanía — Estudio Jurídico",
   tagline: "Justicia con Arquitectura Legal.",
-  domain: "https://www.defensuraraucania.cl",
+  domain: "https://defensuraraucania.cl",
   alternateDomain: "https://www.defensur.cl",
   email: "consultas@defensur.cl",
   phone: {
@@ -24,8 +24,8 @@ export const SITE = {
     longitude: -72.5904,
   },
   hours: {
-    display: "Lun–Vie 09:00–14:00 y 15:00–18:00",
-    openingHours: ["Mo-Fr 09:00-14:00", "Mo-Fr 15:00-18:00"],
+    display: "Lun–Vie 09:00–18:00",
+    openingHours: ["Mo-Fr 09:00-18:00"],
   },
   priceRange: "$$",
   currency: "CLP",

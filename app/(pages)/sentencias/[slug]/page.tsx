@@ -27,11 +27,11 @@ export async function generateMetadata({
   })
 
   return {
-    metadataBase: new URL("https://www.defensuraraucania.cl"),
+    metadataBase: new URL("https://defensuraraucania.cl"),
     title: `${s.title}`,
     description: s.excerpt,
     alternates: {
-      canonical: `https://www.defensuraraucania.cl/sentencias/${slug}`,
+      canonical: `https://defensuraraucania.cl/sentencias/${slug}`,
     },
     openGraph: {
       title: s.title,
@@ -40,7 +40,7 @@ export async function generateMetadata({
       publishedTime: s.date,
       authors: [s.author],
       locale: "es_CL",
-      url: `https://www.defensuraraucania.cl/sentencias/${slug}`,
+      url: `https://defensuraraucania.cl/sentencias/${slug}`,
     },
     twitter: {
       card: "summary_large_image",

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description:
     "Estudio jurídico especializado en derecho laboral, civil, de familia e insolvencia en Temuco, La Araucanía y todo el sur de Chile. Más de 15 años de experiencia. Consulta gratuita por WhatsApp.",
   alternates: {
-    canonical: "https://www.defensuraraucania.cl",
+    canonical: "https://defensuraraucania.cl",
   },
 }
 

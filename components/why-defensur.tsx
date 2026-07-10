@@ -61,7 +61,7 @@ export function WhyDefensur() {
           <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 md:w-24 bg-gradient-to-l from-[var(--background)] to-transparent" />
 
           <div className="-mx-6 flex w-screen flex-col gap-2.5 md:-mx-10 lg:-mx-16">
-            <Marquee className="[--duration:40s] [--gap:0.75rem]" repeat={4}>
+            <Marquee className="[--duration:40s] [--gap:0.75rem]" repeat={2}>
               {m1.map((q) => (
                 <span
                   key={q}
@@ -74,7 +74,7 @@ export function WhyDefensur() {
 
             <Marquee
               className="[--duration:48s] [--gap:0.75rem]"
-              repeat={4}
+              repeat={2}
               reverse
             >
               {m2.map((q) => (
@@ -87,7 +87,7 @@ export function WhyDefensur() {
               ))}
             </Marquee>
 
-            <Marquee className="[--duration:36s] [--gap:0.75rem]" repeat={4}>
+            <Marquee className="[--duration:36s] [--gap:0.75rem]" repeat={2}>
               {m3.map((q) => (
                 <span
                   key={q}

@@ -215,7 +215,7 @@ export function Navbar() {
         className="flex items-center gap-2 font-[family-name:var(--font-heading)] text-2xl font-bold text-primary"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Defensur" className="h-7 w-auto" />
+        <img src="/logo.png" alt="Defensur" className="h-8 w-auto" />
         {SITE.name}
       </Link>
 

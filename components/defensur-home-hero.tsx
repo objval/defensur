@@ -69,13 +69,13 @@ export function DefensurHomeHero() {
                 className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full border border-brand-navy/20 bg-brand-navy/5 hover:bg-brand-navy/10 hover:-translate-y-0.5 transition-all cursor-pointer select-none"
                 aria-label="Defensur Marca Registrada — visitar sitio oficial"
               >
-                <Image 
-                  src="/logo.png" 
-                  alt="Logo Defensur" 
-                  width={14} 
-                  height={14} 
-                  className="h-3.5 w-auto object-contain dark:invert" 
-                  aria-hidden="true" 
+                <Image
+                  src="/logo.png"
+                  alt="Logo Defensur"
+                  width={18}
+                  height={18}
+                  className="h-[18px] w-auto object-contain dark:invert"
+                  aria-hidden="true"
                 />
                 <span className="text-[11px] font-bold tracking-[0.12em] text-brand-navy uppercase leading-none">
                   Defensur

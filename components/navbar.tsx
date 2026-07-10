@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useUser, UserButton } from "@clerk/nextjs"
+import Image from "next/image"
 import { ArrowRight, ChevronDown, Menu, X, LayoutDashboard } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -214,8 +215,7 @@ export function Navbar() {
         href="/"
         className="flex items-center gap-2 font-[family-name:var(--font-heading)] text-2xl font-bold text-primary"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Defensur" className="h-7 w-auto" />
+        <Image src="/logo.png" alt="Defensur" width={72} height={72} className="h-7 w-auto object-contain" />
         {SITE.name}
       </Link>
 

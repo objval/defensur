@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Clock, Phone } from "lucide-react"
 
 import { Navbar } from "@/components/navbar"
@@ -68,11 +69,20 @@ export function DefensurHomeHero() {
                 className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full border border-brand-navy/20 bg-brand-navy/5 hover:bg-brand-navy/10 hover:-translate-y-0.5 transition-all cursor-pointer select-none"
                 aria-label="Defensur Marca Registrada — visitar sitio oficial"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5 text-brand-navy shrink-0" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Z" clipRule="evenodd"/>
-                </svg>
-                <span className="text-[11px] font-bold tracking-[0.12em] text-brand-navy uppercase leading-none">Defensur</span>
-                <span className="text-[10px] font-medium tracking-[0.08em] text-muted-foreground leading-none border-l border-brand-navy/20 pl-2.5">Marca Registrada <sup className="text-[8px]">®</sup></span>
+                <Image 
+                  src="/logo.png" 
+                  alt="Logo Defensur" 
+                  width={14} 
+                  height={14} 
+                  className="h-3.5 w-auto object-contain dark:invert" 
+                  aria-hidden="true" 
+                />
+                <span className="text-[11px] font-bold tracking-[0.12em] text-brand-navy uppercase leading-none">
+                  Defensur
+                </span>
+                <span className="text-[10px] font-medium tracking-[0.08em] text-muted-foreground leading-none border-l border-brand-navy/20 pl-2.5">
+                  Marca Registrada <sup className="text-[8px]">®</sup>
+                </span>
               </a>
 
               {/* +15 años badge */}

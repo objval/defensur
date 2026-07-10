@@ -1,6 +1,3 @@
-"use client"
-
-import Script from "next/script"
 import { SITE, WHATSAPP } from "@/lib/site"
 
 interface SchemaOrgProps {
@@ -141,11 +138,10 @@ export function SchemaOrg({
   const jsonLd = JSON.stringify(baseSchema)
 
   return (
-    <Script
+    <script
       id="schema-org"
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: jsonLd }}
-      strategy="afterInteractive"
     />
   )
 }

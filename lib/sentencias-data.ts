@@ -51,7 +51,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "acoso-laboral-consultorio-miraflores-30-millones",
     title:
-      "Nueva Sentencia: Acoso Laboral en el Consultorio Miraflores — Servicio de Salud Araucanía Sur Condenado a Pagar $30.000.000",
+      "Acoso Laboral en el Consultorio Miraflores — Servicio de Salud Araucanía Sur Condenado a Pagar $30.000.000",
     excerpt:
       "El tribunal acreditó graves episodios de acoso y hostigamiento laboral al interior del Consultorio Miraflores, reconociendo además una enfermedad profesional derivada de esta vulneración. La sentencia condena al Servicio de Salud Araucanía Sur al pago de $30.000.000 más costas, reajustes e intereses, e impone medidas concretas de reparación.",
     date: "2026-06-11",
@@ -136,7 +136,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "tutela-laboral-municipalidad-temuco-14-millones",
     title:
-      "Nueva Sentencia: Municipalidad de Temuco Condenada a Pagar $14.500.000 por Daño Moral",
+      "Municipalidad de Temuco Condenada a Pagar $14.500.000 por Daño Moral",
     excerpt:
       "Tribunal acoge acción de tutela laboral interpuesta en favor de funcionaria municipal que fue objeto de vulneración de derechos fundamentales. Se reconoce daño moral causado por actos de hostigamiento y discriminación en el lugar de trabajo.",
     date: "2024-11-15",
@@ -190,7 +190,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "tutela-laboral-supermercado-lily-villarrica",
     title:
-      "Nueva Sentencia: Tribunal Acoge Tutela Laboral contra Supermercado Lily en Villarrica",
+      "Tribunal Acoge Tutela Laboral contra Supermercado Lily en Villarrica",
     excerpt:
       "Práctica antisindical declarada por tribunal en causa seguida contra Supermercado Lily por represalias contra dirigente sindical que ejercía funciones de representación gremial.",
     date: "2024-10-08",
@@ -245,7 +245,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "tutela-laboral-aps-perquenco-acoso",
     title:
-      "Nueva Sentencia: Tutela por Vulneración de Derechos Fundamentales en APS Perquenco",
+      "Tutela por Vulneración de Derechos Fundamentales en APS Perquenco",
     excerpt:
       "Tribunal acoge tutela laboral por acoso laboral y vulneración de derechos fundamentales contra la Administración de Programas Sanitarios de Perquenco.",
     date: "2024-09-15",
@@ -287,7 +287,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "vulneracion-derechos-municipalidad-gorbea",
     title:
-      "Nueva Sentencia: Condena a Municipalidad de Gorbea por Vulneración de Integridad",
+      "Condena a Municipalidad de Gorbea por Vulneración de Integridad",
     excerpt:
       "Tribunal condena a Municipalidad de Gorbea por afectar integridad física y psíquica de funcionaria municipal a través de actos de acoso laboral sistemático.",
     date: "2024-08-22",
@@ -330,7 +330,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "indemnizacion-hospital-heyermann-angol",
     title:
-      "Nueva Sentencia: Hospital Heyermann de Angol Condenado a Pagar Indemnización",
+      "Hospital Heyermann de Angol Condenado a Pagar Indemnización",
     excerpt:
       "Funcionaria del Hospital Heyermann obtiene indemnización por despido injustificado tras años de servicio dedicado a la salud pública de la comuna.",
     date: "2024-07-10",
@@ -383,7 +383,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "condena-acoso-hospital-los-angeles",
     title:
-      "Nueva Sentencia: Hospital de Los Ángeles Condenado por Acoso Laboral",
+      "Hospital de Los Ángeles Condenado por Acoso Laboral",
     excerpt:
       "Tribunal declara responsabilidad del Hospital de Los Ángeles por acoso laboral contra funcionaria, reconociendo vulneración de derechos fundamentales.",
     date: "2024-06-18",
@@ -427,7 +427,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "despido-injustificado-municipalidad-pucon-18-millones",
     title:
-      "Nueva Sentencia: Municipalidad de Pucón Condenada a Pagar $18.700.000 por Despido Injustificado",
+      "Municipalidad de Pucón Condenada a Pagar $18.700.000 por Despido Injustificado",
     excerpt:
       "El Juzgado de Letras y el Trabajo de Pucón acogió una demanda por despido injustificado y condenó a la Municipalidad a pagar $18.700.000 por años de servicio, aviso previo, feriados y recargo legal, aplicando el principio de realidad sobre un contrato a honorarios de más de 6 años.",
     date: "2026-05-27",
@@ -485,7 +485,7 @@ export const SENTENCIAS: Sentencia[] = [
   {
     slug: "demandas-laborales-municipalidad-los-angeles-31-millones",
     title:
-      "Nueva Sentencia: Municipalidad de Los Ángeles Condenada a Pagar Millonarias Demandas Laborales",
+      "Municipalidad de Los Ángeles Condenada a Pagar Millonarias Demandas Laborales",
     excerpt:
       "Dos demandas laborales presentadas por exfuncionarios obligaron a la Municipalidad de Los Ángeles a destinar $31.000.000 adicionales de su presupuesto: un autodespido por 12 años de honorarios y un acuerdo por discriminación tras fuero maternal.",
     date: "2026-06-16",

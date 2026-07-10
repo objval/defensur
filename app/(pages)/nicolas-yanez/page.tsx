@@ -30,7 +30,7 @@ export default function Page() {
               <div className="lg:sticky lg:top-32">
                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
                   <Image
-                    src="/team/nicolas.webp"
+                    src="/team/nicolas.jpeg"
                     alt="Nicolás Yáñez Inostroza"
                     fill
                     className="object-cover"

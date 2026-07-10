@@ -7,7 +7,6 @@ import { Navbar } from "@/components/navbar"
 import { WhyDefensur } from "@/components/why-defensur"
 import { TeamSection } from "@/components/team-section"
 import { ContactForm } from "@/components/contact-form"
-import { cn } from "@/lib/utils"
 
 // ─── Main hero ──────────────────────────────────────────────────────────────
 
@@ -89,32 +88,15 @@ export function DefensurHomeHero() {
                 </span>
               </a>
 
-              {/* Team avatars + years */}
-              <div className="flex items-center gap-6 pt-2">
-                <div className="flex gap-x-[-0.75rem]" aria-label="Equipo de abogados">
-                  {[
-                    { initials: "NY", bg: "bg-brand-navy" },
-                    { initials: "SP", bg: "bg-brand-sky" },
-                    { initials: "AS", bg: "bg-brand-red" },
-                  ].map((member) => (
-                    <div
-                      key={member.initials}
-                      className={cn(
-                        "w-12 h-12 rounded-full border-2 border-background flex items-center justify-center text-brand-on-navy text-sm font-bold shadow-sm",
-                        member.bg
-                      )}
-                      aria-hidden="true"
-                    >
-                      {member.initials}
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <p className="font-bold text-primary text-sm">+15 Años de Excelencia</p>
-                  <p className="text-muted-foreground text-xs uppercase tracking-[0.1em] font-bold">
-                    Firma Líder Regional
-                  </p>
-                </div>
+              {/* +15 años badge */}
+              <div
+                className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full border border-brand-sky/20 bg-brand-sky/5 select-none"
+                aria-label="+15 años de experiencia"
+              >
+                <Clock className="size-3.5 text-brand-sky shrink-0" aria-hidden="true" />
+                <span className="text-[11px] font-bold tracking-[0.12em] text-brand-sky uppercase leading-none">
+                  +15 años de experiencia
+                </span>
               </div>
             </div>
 

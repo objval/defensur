@@ -54,8 +54,8 @@ function DesktopNav() {
             />
           </Link>
 
-          <div className="pointer-events-none absolute top-full left-0 z-20 w-72 translate-y-3 opacity-0 transition-all duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-1 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-1 group-hover:opacity-100">
-            <div className="rounded-2xl border border-border bg-popover p-2 shadow-lg">
+          <div className="pointer-events-none absolute top-full left-0 z-20 w-72 pt-3 opacity-0 transition-all duration-200 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100">
+            <div className="rounded-2xl border border-border bg-popover p-2 shadow-lg transition-transform duration-200 translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0">
               {group.items.map((item) => (
                 <Link
                   key={item.label}
@@ -79,6 +79,13 @@ function DesktopNav() {
         className="font-[family-name:var(--font-heading)] text-sm tracking-wide text-muted-foreground transition-colors duration-300 hover:text-primary"
       >
         Sentencias
+      </Link>
+
+      <Link
+        href="/recursos/"
+        className="font-[family-name:var(--font-heading)] text-sm tracking-wide text-muted-foreground transition-colors duration-300 hover:text-primary"
+      >
+        Recursos
       </Link>
 
       <Link
@@ -158,6 +165,12 @@ function MobileNav({
             className="text-base font-semibold text-foreground"
           >
             Sentencias
+          </Link>
+          <Link
+            href="/recursos/"
+            className="text-base font-semibold text-foreground"
+          >
+            Recursos
           </Link>
           <Link
             href="/calculadoras/"

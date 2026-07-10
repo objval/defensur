@@ -63,6 +63,7 @@ export const COMPANY_LINKS = [
   { label: "Nicolás Yáñez", href: "/nicolas-yanez/" },
   { label: "Sentencias Destacadas", href: "/sentencias/" },
   { label: "Calculadoras", href: "/calculadoras/" },
+  { label: "Recursos Legales", href: "/recursos/" },
   { label: "Contacto", href: "/contacto/" },
 ] as const
 

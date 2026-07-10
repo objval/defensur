@@ -14,6 +14,7 @@ import type * as authz from "../authz.js";
 import type * as constants from "../constants.js";
 import type * as consultas from "../consultas.js";
 import type * as files from "../files.js";
+import type * as notifications from "../notifications.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   constants: typeof constants;
   consultas: typeof consultas;
   files: typeof files;
+  notifications: typeof notifications;
 }>;
 
 /**

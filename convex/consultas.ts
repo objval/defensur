@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server"
+import { internal } from "./_generated/api"
 import { v } from "convex/values"
 import { areaValidator, modalityValidator, urgencyValidator } from "./constants"
 import { getAuth, isStaff, requireActiveAuth } from "./authz"
@@ -217,7 +218,7 @@ export const submitPublic = mutation({
     const identity = await ctx.auth.getUserIdentity()
     const now = Date.now()
 
-    return await ctx.db.insert("consultas", {
+    const id = await ctx.db.insert("consultas", {
       userId: identity?.subject ?? "anonymous",
       userEmail: identity?.email ?? normalizedEmail,
       userName: identity?.name ?? normalizedName,
@@ -236,6 +237,24 @@ export const submitPublic = mutation({
       createdAt: now,
       updatedAt: now,
     })
+
+    // Notify the team about the new consulta
+    await ctx.scheduler.runAfter(0, internal.notifications.sendNewConsultaNotification, {
+      consultaId: id,
+      name: normalizedName,
+      email: normalizedEmail,
+      phone: normalizedPhone ?? undefined,
+      rut: rut ?? undefined,
+      area,
+      subject: normalizedSubject,
+      modality: modality ?? undefined,
+      urgency: urgency ?? undefined,
+      description: normalizedDescription,
+      scheduledDate: scheduledDate ?? undefined,
+      scheduledTime: scheduledTime ?? undefined,
+    })
+
+    return id
   },
 })
 

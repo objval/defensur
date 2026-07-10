@@ -58,10 +58,27 @@ export default function Page() {
                     <MapPin className="size-5" />
                   </div>
                   <div>
-                    <p className="font-semibold text-primary text-sm">Dirección</p>
+                    <p className="font-semibold text-primary text-sm">Oficina Temuco</p>
                     <p className="text-muted-foreground">
                       Antonio Varas 687, Oficina 1405, Temuco
                     </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted">
+                    <MapPin className="size-5" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-primary text-sm">Oficina Los Ángeles</p>
+                    <a
+                      href="https://www.google.com/maps/place/Almagro+483,+oficina+403,+4441132+Los+Angeles,+Los+Ángeles,+Bío+Bío/data=!4m2!3m1!1s0x966bdd4602624ef5:0xf03d8055d6a60b7a"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Almagro 483, Oficina 403, Los Ángeles
+                    </a>
                   </div>
                 </div>
 
@@ -78,18 +95,63 @@ export default function Page() {
                 </div>
               </div>
 
-              {/* Map embed */}
-              <div className="rounded-2xl overflow-hidden border border-border">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3113.5!2d-72.599!3d-38.735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDQ0JzA2LjAiUyA3MsKwMzUnNTYuNCJX!5e0!3m2!1ses!2scl!4v1234567890"
-                  width="100%"
-                  height="300"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Ubicación de Defensur en Temuco"
-                />
+              {/* Maps — dos oficinas lado a lado */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Temuco */}
+                <div className="space-y-2">
+                  <p className="text-xs font-bold uppercase tracking-[0.1em] text-brand-navy">
+                    Temuco
+                  </p>
+                  <div className="rounded-2xl overflow-hidden border border-border">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3113.0!2d-72.59335!3d-38.73564!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9664c5a1f3b2a7d5%3A0xa1b2c3d4e5f60001!2sAntonio%20Varas%20687%2C%20Temuco!5e0!3m2!1ses!2scl!4v1720000001"
+                      width="100%"
+                      height="220"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Oficina Defensur Temuco — Antonio Varas 687"
+                    />
+                  </div>
+                  <a
+                    href="https://maps.google.com/?q=Antonio+Varas+687,+Temuco,+Chile"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-brand-sky hover:underline"
+                  >
+                    <MapPin className="size-3" />
+                    Abrir en Maps
+                  </a>
+                </div>
+
+                {/* Los Ángeles */}
+                <div className="space-y-2">
+                  <p className="text-xs font-bold uppercase tracking-[0.1em] text-brand-navy">
+                    Los Ángeles
+                  </p>
+                  <div className="rounded-2xl overflow-hidden border border-border">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3496.547421664046!2d-72.3494173!3d-37.4681715!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x966bdd4602624ef5%3A0xf03d8055d6a60b7a!2sAlmagro%20483%2C%20oficina%20403%2C%204441132%20Los%20Angeles%2C%20Los%20%C3%81ngeles%2C%20B%C3%ADo%20B%C3%ADo!5e1!3m2!1ses-419!2scl!4v1783656140356!5m2!1ses-419!2scl"
+                      width="100%"
+                      height="220"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Oficina Defensur Los Ángeles — Almagro 483 Of. 403"
+                    />
+                  </div>
+                  <a
+                    href="https://www.google.com/maps/place/Almagro+483,+oficina+403,+4441132+Los+Angeles,+Los+Ángeles,+Bío+Bío/data=!4m2!3m1!1s0x966bdd4602624ef5:0xf03d8055d6a60b7a"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-brand-sky hover:underline"
+                  >
+                    <MapPin className="size-3" />
+                    Abrir en Maps
+                  </a>
+                </div>
               </div>
             </div>
 

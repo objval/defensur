@@ -16,14 +16,14 @@ const team: TeamMember[] = [
     id: "ny",
     name: "Nicolás Yáñez Inostroza",
     role: "Abogado Jefe",
-    image: "/team/nicolas.webp",
+    image: "/team/nicolas.jpeg",
     featured: true,
   },
   {
     id: "sp",
     name: "Sebastián Pizarro",
     role: "Experto en Derecho Laboral",
-    image: "/team/sebastian.webp",
+    image: "/team/sebastian.jpeg",
   },
   {
     id: "mr",

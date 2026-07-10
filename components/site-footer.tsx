@@ -127,7 +127,17 @@ export function SiteFooter() {
               </li>
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <MapPin className="size-4 text-brand-sky shrink-0 mt-0.5" aria-hidden="true" />
-                <span>Antonio Varas 687, Oficina 1405, Temuco</span>
+                <div className="space-y-1">
+                  <span className="block">Antonio Varas 687, Of. 1405, Temuco</span>
+                  <a
+                    href="https://www.google.com/maps/place/Almagro+483,+oficina+403,+4441132+Los+Angeles,+Los+Ángeles,+Bío+Bío/data=!4m2!3m1!1s0x966bdd4602624ef5:0xf03d8055d6a60b7a"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block hover:text-primary transition-colors"
+                  >
+                    Almagro 483, Of. 403, Los Ángeles
+                  </a>
+                </div>
               </li>
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Clock className="size-4 text-brand-sky shrink-0" aria-hidden="true" />

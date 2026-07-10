@@ -19,10 +19,6 @@ const highlights = [
     title: "Sanciones de Salud",
     description: "Impugnación de sanciones y multas impuestas por la Superintendencia de Salud y otras entidades.",
   },
-  {
-    title: "Registro de Marcas",
-    description: "Registro de marcas comerciales ante INAPI. Protección de tu propiedad intelectual.",
-  },
 ]
 
 const details = [

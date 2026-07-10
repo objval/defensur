@@ -10,7 +10,9 @@ export const metadata: Metadata = {
     "Conoce nuestras sentencias destacadas y casos de éxito en derecho laboral, familiar y civil. Resultados reales que demuestran nuestro compromiso.",
 }
 
-const sentencias = SENTENCIAS
+const sentencias = [...SENTENCIAS].sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+)
 
 export default function Page() {
   return (

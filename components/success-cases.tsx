@@ -11,74 +11,33 @@ import {
   Stethoscope,
   Store,
   Users,
+  Scale,
+  ShieldCheck,
 } from "lucide-react"
+import { SENTENCIAS } from "@/lib/sentencias-data"
 
-const cases = [
-  {
-    icon: Building2,
-    title: "Tutela Laboral — Municipalidad",
-    description:
-      "Municipalidad condenada a pagar $14.500.000 por daño moral por vulneración de derechos fundamentales a funcionaria.",
-    amount: "$14.500.000",
-    tag: "Tutela Laboral",
-  },
-  {
-    icon: Store,
-    title: "Práctica Antisindical",
-    description:
-      "Tribunal acoge tutela laboral contra Supermercado Lily en Villarrica por práctica antisindical.",
-    amount: "$9.900.000",
-    tag: "Tutela Laboral",
-  },
-  {
-    icon: ShieldAlert,
-    title: "Acoso Laboral — APS Perquenco",
-    description:
-      "Tutela por vulneración de derechos fundamentales y acoso laboral contra APS Perquenco.",
-    amount: "$12.000.000",
-    tag: "Acoso Laboral",
-  },
-  {
-    icon: Building2,
-    title: "Integridad Física y Psíquica",
-    description:
-      "Condena a Municipalidad de Gorbea por afectar integridad física y psíquica de funcionaria municipal.",
-    amount: "$6.000.000",
-    tag: "Tutela Laboral",
-  },
-  {
-    icon: Stethoscope,
-    title: "Hospital Heyermann — Angol",
-    description:
-      "Indemnización por despido injustificado de funcionaria del Hospital Heyermann de Angol.",
-    amount: "$15.000.000",
-    tag: "Despido Injustificado",
-  },
-  {
-    icon: Siren,
-    title: "Hospital Los Ángeles",
-    description:
-      "Condena por acoso laboral contra funcionaria del Hospital de Los Ángeles.",
-    amount: "$8.000.000",
-    tag: "Acoso Laboral",
-  },
-  {
-    icon: Heart,
-    title: "Pensión de Alimentos",
-    description:
-      "Cobro exitoso de pensiones de alimentos atrasadas con apremios y retención de remuneraciones.",
-    amount: "Cobro efectivo",
-    tag: "Familia",
-  },
-  {
-    icon: Users,
-    title: "Medidas de Protección",
-    description:
-      "Medidas de protección otorgadas a favor de menores en situación de riesgo.",
-    amount: "Protección lograda",
-    tag: "Familia",
-  },
-]
+// Mapeo de categoría → icono
+const categoryIcon: Record<string, React.ElementType> = {
+  "Tutela Laboral":          Gavel,
+  "Acoso Laboral":           ShieldAlert,
+  "Práctica Antisindical":   Store,
+  "Despido Injustificado":   Building2,
+  "Ley Karin / Tutela Laboral": ShieldCheck,
+  "Familia":                 Heart,
+  "Familia / Protección":    Users,
+  "Derecho Civil":           Scale,
+  "Salud":                   Stethoscope,
+  "Municipalidad":           Siren,
+}
+
+function getIcon(category: string): React.ElementType {
+  return categoryIcon[category] ?? Gavel
+}
+
+// 8 sentencias más recientes
+const cases = [...SENTENCIAS]
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .slice(0, 8)
 
 export function SuccessCases() {
   return (
@@ -109,37 +68,40 @@ export function SuccessCases() {
           </Link>
         </div>
 
-        {/* Grid */}
+        {/* Grid — mismo estilo de tarjeta original */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {cases.map((item) => {
-            const Icon = item.icon
+            const Icon = getIcon(item.category)
             return (
-              <div
-                key={item.title}
+              <Link
+                key={item.slug}
+                href={`/sentencias/${item.slug}`}
                 className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-brand-navy/15 hover:shadow-[0_4px_24px_rgba(8,24,107,0.05)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
               >
+                {/* Icono + tag de categoría */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex size-10 items-center justify-center rounded-xl bg-brand-navy/8 text-brand-navy dark:bg-brand-on-navy-muted/10 dark:text-brand-on-navy-muted">
                     <Icon className="size-5" aria-hidden="true" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-sky px-2.5 py-1 rounded-full bg-brand-sky/10">
-                    {item.tag}
+                    {item.category}
                   </span>
                 </div>
 
-                <h3 className="font-[family-name:var(--font-heading)] text-base font-semibold text-primary mb-2 leading-snug">
+                <h3 className="font-[family-name:var(--font-heading)] text-base font-semibold text-primary mb-2 leading-snug group-hover:text-brand-navy transition-colors dark:group-hover:text-brand-on-navy-muted">
                   {item.title}
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-4">
-                  {item.description}
+                  {item.excerpt}
                 </p>
 
+                {/* Monto */}
                 <div className="pt-4 border-t border-border/50">
                   <p className="text-lg font-bold text-brand-navy dark:text-brand-on-navy-muted">
                     {item.amount}
                   </p>
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>

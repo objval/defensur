@@ -70,7 +70,7 @@ export function CTASection() {
           </a>
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          Atención presencial en Antonio Varas 687, Oficina 1405, Temuco · Lun–Vie
+          Atención presencial en Temuco (Antonio Varas 687, Of. 1405) y Los Ángeles (Almagro 483, Of. 403) · Lun–Vie
           09:00–18:00
         </p>
       </div>

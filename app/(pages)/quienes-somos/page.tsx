@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 }
 
 const team = [
-  { name: "Nicolás Yáñez Inostroza", role: "Abogado Jefe — Laboral y Administrativo", image: "/team/nicolas.webp", featured: true },
-  { name: "Sebastián Pizarro", role: "Experto en Derecho Laboral", image: "/team/sebastian.webp" },
+  { name: "Nicolás Yáñez Inostroza", role: "Abogado Jefe — Laboral y Administrativo", image: "/team/nicolas.jpeg", featured: true },
+  { name: "Sebastián Pizarro", role: "Experto en Derecho Laboral", image: "/team/sebastian.jpeg" },
   { name: "Millaray Rohten", role: "Abogada de Familia", image: "/team/millaray.jpeg" },
   { name: "Carolina Arancibia", role: "Administradora", image: "/team/carolina.jpeg" },
   { name: "Constanza Ampuero", role: "Abogada de Deudas", image: "/team/constanza-ampuero.jpeg" },

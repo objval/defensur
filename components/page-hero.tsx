@@ -15,7 +15,7 @@ type PageHeroProps = {
 export function PageHero({ title, subtitle, breadcrumbs = [] }: PageHeroProps) {
   return (
     <section className="relative bg-brand-navy overflow-hidden">
-      <div className="relative max-w-7xl mx-auto px-5 md:px-12 lg:px-24 pt-28 md:pt-36 pb-12 md:pb-16">
+      <div className="relative max-w-7xl mx-auto px-5 md:px-8 lg:px-12 pt-28 md:pt-36 pb-12 md:pb-16">
         {/* Breadcrumbs */}
         {breadcrumbs.length > 0 && (
           <nav aria-label="Breadcrumb" className="mb-6">

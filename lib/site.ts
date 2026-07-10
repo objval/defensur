@@ -68,8 +68,8 @@ export const COMPANY_LINKS = [
 
 export const AREAS_DE_PRACTICA = [
   "DERECHO LABORAL",
-  "DERECHO DE FAMILIA",
-  "DERECHO CIVIL",
+  "SUMARIO ADMINISTRATIVO",
+  "DERECHO PENAL",
 ] as const
 
 export const STATS = [
@@ -138,8 +138,8 @@ export type TeamMember = {
 }
 
 export const TEAM: TeamMember[] = [
-  { id: "ny", name: "Nicolás Yáñez Inostroza", role: "Abogado Jefe", image: "/team/nicolas.webp", featured: true },
-  { id: "sp", name: "Sebastián Pizarro", role: "Experto en Derecho Laboral", image: "/team/sebastian.webp" },
+  { id: "ny", name: "Nicolás Yáñez Inostroza", role: "Abogado Jefe", image: "/team/nicolas.jpeg", featured: true },
+  { id: "sp", name: "Sebastián Pizarro", role: "Experto en Derecho Laboral", image: "/team/sebastian.jpeg" },
   { id: "mr", name: "Millaray Rohten", role: "Abogada de Familia", image: "/team/millaray.jpeg" },
   { id: "ca", name: "Carolina Arancibia", role: "Administradora", image: "/team/carolina.jpeg" },
   { id: "camp", name: "Constanza Ampuero", role: "Abogada de Deudas", image: "/team/constanza-ampuero.jpeg" },

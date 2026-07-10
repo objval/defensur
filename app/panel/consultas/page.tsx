@@ -1,464 +1,344 @@
 "use client"
 
-import { useState, useMemo, useCallback, type FormEvent } from "react"
-import { useQuery, useMutation } from "convex/react"
+import { useState, useCallback, useMemo, type FormEvent } from "react"
+import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import {
-  Search, X, Clock, Paperclip, ChevronDown, Plus, FolderOpen, FileText,
-  Download, MessageSquare, Send, AlertTriangle, Eye, CheckCircle, SearchX,
-  SlidersHorizontal, ArrowUpDown, Image
+  Search,
+  Plus,
+  User,
+  Phone,
+  CalendarIcon,
+  MapPin,
+  Monitor,
+  Flag,
+  MessageSquare,
+  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { STATUS, URGENCY, AREA_LABELS, SORT_OPTIONS, STATUS_FILTERS, timeAgo, formatDate, formatSize } from "@/lib/panel-utils"
-import { ConsultasToolbar, type ToolbarState } from "@/components/panel/consultas-toolbar"
-import { CancelModal } from "@/components/panel/cancel-modal"
+import { STATUS, timeAgo, formatDate } from "@/lib/panel-utils"
 import { toast } from "sonner"
-import type { Id } from "@/convex/_generated/dataModel"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
 
-// ── Types ────────────────────────────────────────────────────────────────────
+type ConsultaStatus = "pendiente" | "respondida" | "cancelada"
 
-type Consulta = {
-  _id: Id<"consultas">
-  userId: string
-  userEmail: string
-  userName: string
-  area: string
-  subject: string
-  description: string
-  urgency: string
-  status: string
-  files?: Array<{ storageId: string; fileName: string; fileType: string; fileSize: number; uploadedAt: number }>
-  responses?: Array<{ text: string; respondedBy: string; createdAt: number }>
-  createdAt: number
-  updatedAt: number
+function statusColor(s: string) {
+  const m: Record<string, string> = {
+    pendiente: "bg-amber-50 text-amber-800 border-amber-200",
+    respondida: "bg-green-50 text-green-800 border-green-200",
+    cancelada: "bg-red-50 text-red-700 border-red-200",
+  }
+  return m[s] ?? m.pendiente!
 }
-
-// ── Component ────────────────────────────────────────────────────────────────
 
 export default function ConsultasPage() {
   const myRole = useQuery(api.admin.refreshMyRole)
-  const isAdmin = myRole?.role === "admin"
   const isStaff = myRole?.role === "admin" || myRole?.role === "staff"
 
-  const ownConsultas = useQuery(api.consultas.listMine) as Consulta[] | undefined
-  const allConsultas = useQuery(api.admin.listAll, isStaff ? {} : "skip") as Consulta[] | null | undefined
-  const bulkUpdate = useMutation(api.admin.bulkUpdateStatus)
-  const bulkCancel = useMutation(api.admin.bulkCancel)
-  const bulkDelete = useMutation(api.admin.bulkDelete)
+  const ownConsultas = useQuery(api.consultas.listMine) as Doc<"consultas">[] | null | undefined
+  const allConsultas = useQuery(api.admin.listAll, isStaff ? {} : "skip") as Doc<"consultas">[] | null | undefined
+  const updateStatus = useMutation(api.admin.updateStatus)
+  const addNote = useMutation(api.consultas.addNote)
+  const addResponse = useMutation(api.admin.addResponse)
 
   const [viewAll, setViewAll] = useState(false)
   const consultas = viewAll && isStaff ? (allConsultas ?? undefined) : ownConsultas
-  const cancelConsulta = useMutation(api.consultas.cancel)
-  const addNote = useMutation(api.consultas.addNote)
-  const getFileUrl = useMutation(api.files.getFileUrl)
-
-  // ── State ──────────────────────────────────────────────────────
-  const [toolbar, setToolbar] = useState<ToolbarState>({ search: "", statusFilter: "all", areaFilter: "all", sort: "recent" })
-  const [expanded, setExpanded] = useState<Id<"consultas"> | null>(null)
-  const [cancelTarget, setCancelTarget] = useState<Id<"consultas"> | null>(null)
-  const [downloading, setDownloading] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<Id<"consultas"> | null>(null)
+  const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [noteText, setNoteText] = useState("")
   const [sendingNote, setSendingNote] = useState(false)
 
-  // ── Bulk selection ────────────────────────────────────────────
-  const [selected, setSelected] = useState<Set<Id<"consultas">>>(new Set())
-  const [bulkStatus, setBulkStatus] = useState("pendiente")
-
-  const toggleSelect = (id: Id<"consultas">) => {
-    setSelected(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
-  }
-
-  const selectAll = () => {
-    if (selected.size === filtered.length) setSelected(new Set())
-    else setSelected(new Set(filtered.map(c => c._id)))
-  }
-
-  const handleBulkAction = async (action: "status" | "cancel" | "delete") => {
-    const ids = Array.from(selected)
-    try {
-      if (action === "status") await bulkUpdate({ ids, status: bulkStatus })
-      else if (action === "cancel") await bulkCancel({ ids })
-      else await bulkDelete({ ids })
-      toast.success(`${ids.length} consulta${ids.length > 1 ? "s" : ""} ${action === "status" ? "actualizada" : action === "cancel" ? "cancelada" : "eliminada"}${ids.length > 1 ? "s" : ""}`)
-      setSelected(new Set())
-    } catch {
-      toast.error("Error al ejecutar acción")
-    }
-  }
-
-  // ── Derived data ───────────────────────────────────────────────
   const filtered = useMemo(() => {
     if (!consultas) return []
-    let result = [...consultas]
-    const { search, statusFilter, areaFilter, sort } = toolbar
-
+    let r = [...consultas]
     if (search.trim()) {
       const q = search.toLowerCase()
-      result = result.filter(c =>
-        c.subject.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        (AREA_LABELS[c.area] || c.area).toLowerCase().includes(q)
-      )
+      r = r.filter(c => c.subject.toLowerCase().includes(q) || c.userName.toLowerCase().includes(q) || c.description.toLowerCase().includes(q))
     }
-    if (statusFilter !== "all") result = result.filter(c => c.status === statusFilter)
-    if (areaFilter !== "all") result = result.filter(c => c.area === areaFilter)
+    if (statusFilter !== "all") r = r.filter(c => c.status === statusFilter)
+    r.sort((a, b) => b.createdAt - a.createdAt)
+    return r
+  }, [consultas, search, statusFilter])
 
-    if (sort === "recent") result.sort((a, b) => b.createdAt - a.createdAt)
-    else if (sort === "oldest") result.sort((a, b) => a.createdAt - b.createdAt)
-    else if (sort === "urgency") {
-      const order: Record<string, number> = { alta: 0, media: 1, baja: 2 }
-      result.sort((a, b) => (order[a.urgency] ?? 99) - (order[b.urgency] ?? 99))
-    }
-    return result
-  }, [consultas, toolbar])
+  const selected = useMemo(() => selectedId ? filtered.find(c => c._id === selectedId) ?? null : null, [selectedId, filtered])
 
-  const toggleExpand = useCallback((id: Id<"consultas">) => {
-    setExpanded(prev => prev === id ? null : id)
-  }, [])
-
-  const handleCancel = useCallback(async () => {
-    if (!cancelTarget) return
-    await cancelConsulta({ id: cancelTarget })
-    setCancelTarget(null)
-    setExpanded(null)
-  }, [cancelTarget, cancelConsulta])
-
-  const handleDownload = useCallback(async (storageId: string, fileName: string) => {
-    setDownloading(storageId)
-    try {
-      const url = await getFileUrl({ storageId }) as string
-      const a = document.createElement("a")
-      a.href = url; a.download = fileName; a.click()
-    } catch {} finally { setDownloading(null) }
-  }, [getFileUrl])
+  const handleStatusChange = useCallback(async (id: Id<"consultas">, s: ConsultaStatus) => {
+    try { await updateStatus({ id, status: s }); toast.success(`Estado: ${STATUS[s]!.label}`) }
+    catch { toast.error("Error al cambiar estado") }
+  }, [updateStatus])
 
   const handleAddNote = useCallback(async (e: FormEvent) => {
     e.preventDefault()
-    if (!expanded || !noteText.trim()) return
+    if (!selectedId || !noteText.trim()) return
     setSendingNote(true)
     try {
-      await addNote({ id: expanded, text: noteText.trim() })
+      await addNote({ id: selectedId, text: noteText.trim() })
       setNoteText("")
-    } catch {} finally { setSendingNote(false) }
-  }, [expanded, noteText, addNote])
+    } catch { toast.error("Error al guardar") }
+    finally { setSendingNote(false) }
+  }, [selectedId, noteText, addNote])
 
-  const expandedConsulta = useMemo(
-    () => expanded ? filtered.find(c => c._id === expanded) : null,
-    [expanded, filtered]
-  )
+  const handleStaffResponse = useCallback(async () => {
+    if (!selectedId || !noteText.trim()) return
+    setSendingNote(true)
+    try {
+      await addResponse({ id: selectedId, response: noteText.trim() })
+      await updateStatus({ id: selectedId, status: "respondida" })
+      setNoteText("")
+      toast.success("Respondida")
+    } catch { toast.error("Error al responder") }
+    finally { setSendingNote(false) }
+  }, [selectedId, noteText, addResponse, updateStatus])
 
-  // ── Loading ────────────────────────────────────────────────────
-  if (!consultas) {
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 w-48 bg-muted rounded" />
-        <div className="h-12 bg-muted rounded-xl" />
-        {[1,2,3,4].map(i => <div key={i} className="h-20 bg-muted rounded-xl" />)}
-      </div>
-    )
-  }
+  if (!consultas) return <div className="animate-pulse space-y-3 p-6">{Array.from({length:10}).map((_,i)=><div key={i} className="h-16 rounded-lg bg-muted"/>)}</div>
 
-  // ── Render ─────────────────────────────────────────────────────
   return (
-    <div className="space-y-6">
-      {/* ── Page Header ──────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-foreground">
-            {viewAll && isStaff ? "Todas las Consultas" : "Mis Consultas"}
-          </h2>
-          <span className="bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full text-xs font-medium border border-border">
-            {filtered.length} Total{filtered.length !== 1 ? "es" : ""}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Admin toggle */}
-          {isStaff && (
-            <button
-              onClick={() => { setViewAll(!viewAll); setSelected(new Set()) }}
-              className={cn(
-                "text-sm font-medium px-4 py-2 rounded-lg border transition-colors",
-                viewAll ? "bg-brand-navy text-white border-brand-navy" : "border-border text-muted-foreground hover:bg-muted"
-              )}
-            >
-              {viewAll ? "Mis consultas" : "Ver todas"}
-            </button>
-          )}
-          <Link
-            href="/panel/consultas/nueva"
-            className="bg-brand-navy text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 hover:bg-brand-navy/90 transition-colors shadow-sm sm:w-auto justify-center"
-          >
-            <Plus className="h-5 w-5" />
-            Nueva consulta
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Toolbar ─────────────────────────────────────────── */}
-      <ConsultasToolbar
-        state={toolbar}
-        onChange={update => setToolbar(prev => ({ ...prev, ...update }))}
-      />
-
-      {/* ── Consultas List ────────────────────────────────────── */}
-      <div className="flex flex-col gap-3">
-        {/* Bulk action bar */}
-        {isStaff && selected.size > 0 && (
-          <div className="sticky top-0 z-10 flex items-center gap-3 rounded-xl border border-brand-sky/30 bg-brand-sky/5 px-5 py-3 shadow-sm">
-            <span className="text-sm font-medium text-foreground">
-              {selected.size} seleccionada{selected.size > 1 ? "s" : ""}
-            </span>
-            <select
-              value={bulkStatus}
-              onChange={e => setBulkStatus(e.target.value)}
-              className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium"
-            >
-              <option value="pendiente">Pendiente</option>
-              <option value="en_revision">En revisión</option>
-              <option value="respondida">Respondida</option>
-              <option value="cerrada">Cerrada</option>
-            </select>
-            <button onClick={() => handleBulkAction("status")} className="rounded-lg bg-brand-navy px-4 py-1.5 text-xs font-medium text-white hover:bg-brand-navy/90">
-              Cambiar estado
-            </button>
-            <button onClick={() => handleBulkAction("cancel")} className="rounded-lg border border-[#CF2E2E] px-4 py-1.5 text-xs font-medium text-[#CF2E2E] hover:bg-red-50">
-              Cancelar
-            </button>
-            {isAdmin && (
-              <button onClick={() => handleBulkAction("delete")} className="rounded-lg border border-red-500 px-4 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">
-                Eliminar
-              </button>
-            )}
-            <button onClick={() => setSelected(new Set())} className="ml-auto text-xs text-muted-foreground hover:text-foreground">
-              Deseleccionar
-            </button>
-          </div>
-        )}
-        {filtered.length === 0 ? (
-          /* Empty state */
-          <div className="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-dashed border-border text-center mt-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
-              <SearchX className="h-8 w-8 text-muted-foreground" />
+    <div className="flex min-h-0 flex-1 gap-0 overflow-hidden">
+      {/* List — 50% */}
+      <div className="flex flex-col min-w-0 border-r border-border bg-card overflow-hidden w-1/2">
+        <div className="shrink-0 border-b border-border bg-muted/30 px-5 py-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-foreground">
+                {viewAll && isStaff ? "Consultas" : "Mis Consultas"}
+              </h2>
+              <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">{filtered.length}</span>
             </div>
-            <h3 className="font-semibold text-foreground mb-2">No se encontraron consultas</h3>
-            <p className="text-sm text-muted-foreground max-w-md">
-              {toolbar.search || toolbar.statusFilter !== "all" || toolbar.areaFilter !== "all"
-                ? "Intenta ajustar los filtros de búsqueda o limpia el texto para ver todos tus registros."
-                : "Envía tu primera consulta especializada y nuestro equipo te responderá en menos de 24 horas."
-              }
-            </p>
-            {(toolbar.search || toolbar.statusFilter !== "all" || toolbar.areaFilter !== "all") ? (
-              <button
-                onClick={() => setToolbar({ search: "", statusFilter: "all", areaFilter: "all", sort: "recent" })}
-                className="mt-4 text-brand-sky font-medium text-sm hover:underline"
-              >
-                Limpiar filtros
+            {isStaff && (
+              <button onClick={() => { setViewAll(!viewAll); setSelectedId(null) }}
+                className={cn("rounded-lg border px-4 py-2 text-sm font-semibold transition-colors", viewAll ? "border-brand-navy bg-brand-navy text-white" : "border-border text-muted-foreground hover:bg-muted")}>
+                {viewAll ? "Solo míos" : "Ver todos"}
               </button>
-            ) : (
-              <Link
-                href="/panel/consultas/nueva"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-navy/90"
-              >
-                <Plus className="h-4 w-4" />
-                Nueva consulta
-              </Link>
             )}
           </div>
-        ) : (
-          filtered.map(c => {
-            const status = STATUS[c.status] || STATUS.pendiente
-            const urgency = URGENCY[c.urgency] || URGENCY.media
-            const isExpanded = expanded === c._id
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar cliente o asunto..."
+                className="w-full h-10 pl-9 pr-4 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:border-brand-sky focus:ring-1 focus:ring-brand-sky/30"/>
+            </div>
+            <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}
+              className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:border-brand-sky">
+              <option value="all">Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="respondida">Respondida</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+        </div>
 
-            return (
-              <div
-                key={c._id}
-                className={cn(
-                  "bg-card rounded-xl border overflow-hidden hover:border-brand-sky/30 transition-colors shadow-sm group",
-                  isExpanded ? "border-brand-sky/30" : "border-border",
-                )}
-              >
-                {/* Row header */}
-                <div
-                  onClick={() => toggleExpand(c._id)}
-                  className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer"
-                >
-                  <div className="flex-1 min-w-0 flex flex-col gap-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {/* Checkbox (staff only) */}
-                      {isStaff && (
-                        <input
-                          type="checkbox"
-                          checked={selected.has(c._id)}
-                          onChange={(e) => { e.stopPropagation(); toggleSelect(c._id) }}
-                          className="h-4 w-4 rounded border-border text-brand-navy focus:ring-brand-sky/20"
-                        />
-                      )}
-                      <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-xs font-medium border border-border">
-                        {AREA_LABELS[c.area] || c.area}
-                      </span>
-                      <div className={cn("flex items-center gap-1 text-xs font-medium", urgency.textColor)}>
-                        <div className={cn("h-2 w-2 rounded-full", urgency.dot)} />
-                        {urgency.label}
+        <div className="flex-1 overflow-y-auto">
+          {filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center px-6">
+              <FileText className="h-12 w-12 text-muted-foreground/30 mb-4"/>
+              <p className="text-sm text-muted-foreground">Sin consultas{search||statusFilter!=="all"?" con estos filtros":""}</p>
+              {!search && statusFilter==="all" && (
+                <Link href="/panel/consultas/nueva" className="mt-4 flex items-center gap-2 rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-navy/90">
+                  <Plus className="h-4 w-4"/>Nueva consulta
+                </Link>
+              )}
+            </div>
+          ) : (
+            filtered.map(c => {
+              const isActive = selectedId === c._id
+              const st = STATUS[c.status] ?? STATUS.pendiente!
+              const urgent = c.urgency === "alta"
+
+              return (
+                <div key={c._id}
+                  onClick={() => setSelectedId(isActive ? null : c._id)}
+                  className={cn(
+                    "group border-b border-border cursor-pointer p-4 flex gap-4 relative transition-colors",
+                    isActive ? "bg-brand-navy/[0.04] hover:bg-brand-navy/[0.05]" : "hover:bg-muted/50"
+                  )}>
+                  {isActive && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-brand-navy"/>}
+                  <div className="flex-1 min-w-0 flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-mono text-xs text-muted-foreground shrink-0">#{c._id.slice(-6).toUpperCase()}</span>
+                        <span className="font-semibold text-sm text-foreground truncate">{c.subject}</span>
                       </div>
+                      <span className={cn("shrink-0 text-xs font-medium px-2.5 py-1 rounded-full border", statusColor(c.status))}>{st.label}</span>
                     </div>
-                    <h3 className="font-semibold text-foreground truncate group-hover:text-foreground transition-colors">
-                      {c.subject}
-                    </h3>
-                  </div>
-
-                  <div className="flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-6 shrink-0 w-full md:w-auto">
-                    <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {timeAgo(c.createdAt)}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1.5"><User className="h-3.5 w-3.5"/><span className="truncate max-w-[140px]">{c.userName || "Anónimo"}</span></span>
+                      <span className="flex items-center gap-1.5"><CalendarIcon className="h-3.5 w-3.5"/>{timeAgo(c.createdAt)}</span>
+                      {c.modality && (
+                        <span className="flex items-center gap-1.5">{c.modality==="presencial"?<MapPin className="h-3.5 w-3.5"/>:<Monitor className="h-3.5 w-3.5"/>}{c.modality==="presencial"?"Presencial":"Online"}</span>
+                      )}
+                      {urgent && (
+                        <span className="flex items-center gap-1 text-brand-red ml-auto font-medium"><Flag className="h-3.5 w-3.5"/>Urgente</span>
+                      )}
                     </div>
-                    <div className={cn("px-2.5 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5", status.color)}>
-                      <Clock className="h-3.5 w-3.5" />
-                      {status.label}
-                    </div>
-                    <div className="flex items-center gap-1 text-muted-foreground" title={`${c.files?.length || 0} archivos`}>
-                      <Paperclip className="h-[18px] w-[18px]" />
-                      <span className="text-xs">{c.files?.length || 0}</span>
-                    </div>
-                    <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="ml-auto md:ml-0">
-                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                    </motion.div>
                   </div>
                 </div>
+              )
+            })
+          )}
+        </div>
+      </div>
 
-                {/* Detail panel */}
-                <AnimatePresence>
-                  {isExpanded && expandedConsulta && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="border-t border-border bg-muted/20 p-4 md:p-6">
-                        <div className="flex flex-col lg:flex-row gap-6">
-                          {/* Left: Description + Files */}
-                          <div className="flex-1 flex flex-col gap-6">
-                            <div>
-                              <h4 className="font-semibold text-foreground mb-2">Descripción de la consulta</h4>
-                              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                                {expandedConsulta.description}
-                              </p>
-                            </div>
+      {/* Detail — 50%, no outer scroll, DetailView owns all scrolling */}
+      <div className="w-1/2 flex flex-col min-w-0 min-h-0 bg-background overflow-hidden">
+        {selected ? (
+          <DetailView
+            consulta={selected}
+            isStaff={isStaff}
+            noteText={noteText}
+            onNoteChange={setNoteText}
+            onSendNote={handleAddNote}
+            onStaffResponse={handleStaffResponse}
+            sendingNote={sendingNote}
+            onStatusChange={(s) => handleStatusChange(selected._id, s)}
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center space-y-3 px-8">
+              <MessageSquare className="h-16 w-16 text-muted-foreground/20 mx-auto"/>
+              <p className="text-base text-muted-foreground">Selecciona una consulta para ver los detalles</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
-                            {expandedConsulta.files && expandedConsulta.files.length > 0 && (
-                              <div>
-                                <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                                  <FolderOpen className="h-[18px] w-[18px]" />
-                                  Archivos Adjuntos ({expandedConsulta.files.length})
-                                </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                  {expandedConsulta.files.map(f => {
-                                    const isImage = f.fileType.startsWith("image/")
-                                    return (
-                                      <div key={f.storageId} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-brand-sky/30 transition-colors">
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                          <div className="p-2 rounded-md bg-brand-navy/10 text-brand-navy">
-                                            {isImage ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
-                                          </div>
-                                          <div className="truncate">
-                                            <p className="text-sm text-foreground truncate">{f.fileName}</p>
-                                            <p className="text-xs text-muted-foreground">{formatSize(f.fileSize)}</p>
-                                          </div>
-                                        </div>
-                                        <button
-                                          onClick={(e) => { e.stopPropagation(); handleDownload(f.storageId, f.fileName) }}
-                                          className="p-1.5 rounded-md text-muted-foreground hover:text-brand-sky hover:bg-muted transition-colors"
-                                        >
-                                          {downloading === f.storageId ? (
-                                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand-sky border-t-transparent" />
-                                          ) : (
-                                            <Download className="h-5 w-5" />
-                                          )}
-                                        </button>
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              </div>
-                            )}
+// ── Detail View ──────────────────────────────────────────────────────────────
 
-                            {c.status === "pendiente" && (
-                              <div className="mt-auto pt-4 flex gap-3">
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); setCancelTarget(c._id) }}
-                                  className="px-4 py-2 rounded-lg text-sm font-semibold border border-[#CF2E2E] text-[#CF2E2E] hover:bg-red-50 transition-colors flex items-center gap-2"
-                                >
-                                  <X className="h-[18px] w-[18px]" />
-                                  Cancelar consulta
-                                </button>
-                              </div>
-                            )}
-                          </div>
+function DetailView({ consulta: c, isStaff, noteText, onNoteChange, onSendNote, onStaffResponse, sendingNote, onStatusChange }: {
+  consulta: Doc<"consultas">
+  isStaff: boolean
+  noteText: string
+  onNoteChange: (v: string) => void
+  onSendNote: (e: FormEvent) => void
+  onStaffResponse: () => void
+  sendingNote: boolean
+  onStatusChange: (s: ConsultaStatus) => void
+}) {
+  const st = STATUS[c.status] ?? STATUS.pendiente!
 
-                          {/* Right: Comments */}
-                          <div className="w-full lg:w-[320px] xl:w-[400px] flex flex-col border-t lg:border-t-0 lg:border-l border-border pt-6 lg:pt-0 lg:pl-6">
-                            <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                              <MessageSquare className="h-[18px] w-[18px]" />
-                              Comentarios y Seguimiento
-                            </h4>
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* User profile header */}
+        <div className="px-7 pt-8 pb-6">
+          <div className="flex items-center gap-4 mb-5">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand-navy text-white font-bold text-xl">
+              {c.userName?.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase() || "??"}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground leading-tight">{c.userName || "Anónimo"}</h2>
+              <p className="text-sm text-muted-foreground">{c.userEmail || "—"}</p>
+            </div>
+          </div>
 
-                            <div className="flex-1 flex flex-col gap-4 overflow-y-auto max-h-[300px] mb-4 pr-2">
-                              {expandedConsulta.responses && expandedConsulta.responses.length > 0 ? (
-                                expandedConsulta.responses.map((r, i) => (
-                                  <div key={i} className="rounded-lg border border-border bg-card p-3">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className="text-xs font-medium text-foreground">{r.respondedBy}</span>
-                                      <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{r.text}</p>
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="text-center py-6 text-muted-foreground text-sm bg-muted/30 rounded-lg border border-dashed border-border">
-                                  No hay comentarios aún. Nuestro equipo se pondrá en contacto pronto.
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="mt-auto">
-                              <form onSubmit={handleAddNote} className="flex gap-2">
-                                <input
-                                  value={noteText}
-                                  onChange={e => setNoteText(e.target.value)}
-                                  placeholder="Añadir un comentario..."
-                                  className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-brand-sky/20 focus:border-brand-sky outline-none"
-                                />
-                                <button
-                                  type="submit"
-                                  disabled={sendingNote || !noteText.trim()}
-                                  className="p-2 rounded-lg bg-brand-navy text-white hover:bg-brand-navy/90 transition-colors disabled:opacity-50"
-                                >
-                                  <Send className="h-5 w-5" />
-                                </button>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-5">
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Teléfono</p>
+              <p className="text-sm font-medium text-foreground flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground"/>{c.phone || "—"}</p>
+            </div>
+            {(c as Doc<"consultas"> & { rut?: string }).rut && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">RUT</p>
+                <p className="text-sm font-medium text-foreground">{(c as Doc<"consultas"> & { rut?: string }).rut}</p>
               </div>
-            )
-          })
+            )}
+            {c.modality && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">Modalidad</p>
+                <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                  {c.modality==="presencial"?<MapPin className="h-3.5 w-3.5 text-muted-foreground"/>:<Monitor className="h-3.5 w-3.5 text-muted-foreground"/>}
+                  {c.modality==="presencial"?"Presencial":"Videollamada"}
+                </p>
+              </div>
+            )}
+            {c.scheduledDate && c.scheduledTime && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">Agendada</p>
+                <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                  <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground"/>{formatDate(c.scheduledDate)} — {c.scheduledTime} hrs.
+                </p>
+              </div>
+            )}
+            {c.urgency === "alta" && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">Urgencia</p>
+                <p className="text-sm font-semibold text-brand-red flex items-center gap-1.5"><Flag className="h-3.5 w-3.5"/>Alta</p>
+              </div>
+            )}
+          </div>
+
+          {/* Status row */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">Estado:</span>
+            <span className={cn("text-sm font-medium px-3 py-1 rounded-full border", statusColor(c.status))}>{st.label}</span>
+            {isStaff && c.status !== "cancelada" && (
+              <>
+                {c.status === "pendiente" && (
+                  <button onClick={() => onStatusChange("respondida")}
+                    className="px-3 py-1.5 text-sm font-medium rounded-lg border bg-green-50 text-green-800 border-green-200 transition-colors hover:opacity-85">
+                    Respondida
+                  </button>
+                )}
+                <button onClick={() => onStatusChange("cancelada")}
+                  className="px-3 py-1.5 text-sm font-medium rounded-lg border bg-red-50 text-red-700 border-red-200 transition-colors hover:opacity-85">
+                  Cancelar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="border-t border-border" />
+
+        {/* Subject + Description */}
+        <div className="px-7 py-6">
+          <h3 className="font-[family-name:var(--font-heading)] text-xl font-bold text-foreground mb-4 leading-snug">{c.subject}</h3>
+          <p className="text-base leading-relaxed whitespace-pre-wrap text-foreground/85">{c.description}</p>
+        </div>
+
+        {/* Comments */}
+        {c.responses && c.responses.length > 0 && (
+          <>
+            <div className="border-t border-border" />
+            <div className="px-7 py-6">
+              <h4 className="text-base font-semibold text-foreground mb-5 flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Comentarios</h4>
+              <div className="space-y-0">
+                {c.responses.map((r,i) => (
+                  <div key={i} className="relative border-l-2 border-border ml-3 pl-5 pb-5">
+                    <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-background border-2 border-border"/>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold text-foreground">{r.respondedBy}</span>
+                      <span className="text-sm text-muted-foreground">{formatDate(r.createdAt)}</span>
+                    </div>
+                    <p className="text-sm text-foreground/80 leading-relaxed">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         )}
       </div>
 
-      {/* ── Cancel Modal ────────────────────────────────────────── */}
-      <CancelModal
-        open={!!cancelTarget}
-        onClose={() => setCancelTarget(null)}
-        onConfirm={handleCancel}
-      />
+      {/* Comment input — always visible at bottom */}
+      <div className="shrink-0 border-t border-border bg-card px-6 py-3">
+        <div className="flex gap-2 items-end">
+          <textarea value={noteText} onChange={e=>onNoteChange(e.target.value)} placeholder="Añadir nota..." rows={2}
+            className="flex-1 bg-muted/30 border border-border rounded-lg py-2 px-3 text-sm resize-none focus:border-brand-sky focus:ring-1 focus:ring-brand-sky/20"/>
+          <div className="flex gap-1.5 shrink-0">
+            {isStaff && (
+              <button onClick={onStaffResponse} disabled={sendingNote||!noteText.trim()}
+                className="px-3 py-2 bg-brand-navy text-white rounded-md text-sm font-semibold hover:bg-brand-navy/90 disabled:opacity-50 transition-colors">Responder</button>
+            )}
+            <button onClick={onSendNote} disabled={sendingNote||!noteText.trim()}
+              className="px-3 py-2 border border-border bg-card rounded-md text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50 transition-colors">Guardar</button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

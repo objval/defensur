@@ -1,3 +1,5 @@
+> **Design brief / historical reference.** Current implementation and constraints live in `AGENTS.md` and `DESIGN.md`; do not treat this prompt as a backend or authorization specification.
+
 Build a dashboard for a Chilean law firm called "Defensur Araucanía" using Next.js 16 App Router + Tailwind CSS. The dashboard lives at /panel and has a sidebar navigation. It's light-mode only (white backgrounds, no dark mode).
 
 ─── BRAND ────────────────────────────────────────────

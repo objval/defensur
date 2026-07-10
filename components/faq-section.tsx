@@ -45,7 +45,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 export function FAQSection() {
   return (
     <section className="py-16 md:py-28 bg-muted/30" aria-label="Preguntas frecuentes">
-      <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           {/* Left: heading */}
           <div className="lg:col-span-4">

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { SENTENCIAS, getSentenciaBySlug, getAllSlugs } from "@/lib/sentencias-data"
+import { getSentenciaBySlug, getAllSlugs } from "@/lib/sentencias-data"
 import { SentenciaDetail } from "@/components/sentencia-detail"
 
 // ─── SSG ─────────────────────────────────────────────────────────────────────

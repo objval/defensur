@@ -4,6 +4,7 @@ export const consultaSchema = z.object({
   area: z.enum(["laboral", "familia", "civil", "insolvencia", "sumarios"]),
   subject: z.string().min(5, "El asunto debe tener al menos 5 caracteres").max(100, "Máximo 100 caracteres"),
   description: z.string().min(20, "Describe tu caso con al menos 20 caracteres").max(2000, "Máximo 2000 caracteres"),
+  modality: z.enum(["presencial", "online"]).optional(),
   urgency: z.enum(["baja", "media", "alta"]),
 })
 

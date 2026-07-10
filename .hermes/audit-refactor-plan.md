@@ -1,5 +1,7 @@
 # Defensur — Audit & Refactor Plan
 
+> **Historical audit/plan.** Findings and source counts are dated. Revalidate against the active repository before treating any listed item as open.
+
 > Audit basado en `/impeccable-design-principles` + análisis estructural del codebase.
 > `app/` = 13 páginas, `components/` = 23 archivos, `lib/` = 2 archivos ([REDACTED]). Total ≈ 5,400 líneas TSX/TS.
 

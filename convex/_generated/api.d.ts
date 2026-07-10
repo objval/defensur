@@ -9,6 +9,9 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as adminActions from "../adminActions.js";
+import type * as authz from "../authz.js";
+import type * as constants from "../constants.js";
 import type * as consultas from "../consultas.js";
 import type * as files from "../files.js";
 
@@ -20,6 +23,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  adminActions: typeof adminActions;
+  authz: typeof authz;
+  constants: typeof constants;
   consultas: typeof consultas;
   files: typeof files;
 }>;

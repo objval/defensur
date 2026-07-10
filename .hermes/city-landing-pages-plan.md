@@ -1,5 +1,7 @@
 # Plan: Páginas de Aterrizaje por Ciudad del Sur de Chile
 
+> **Future proposal, not implemented.** Validate demand, legal-service coverage, and unique local content before creating any route from this document.
+
 > Solicitado por el jefe. Estrategia SEO local para captar clientes en Valdivia, Osorno, Puerto Montt y Punta Arenas sin perder el foco en Temuco.
 
 ---

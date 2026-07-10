@@ -10,7 +10,7 @@ const sentencias = SENTENCIAS.slice(0, 4)
 export function SentenciasSection() {
   return (
     <section className="py-16 md:py-28 bg-background" aria-label="Sentencias destacadas">
-      <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
           <div className="space-y-4">

@@ -1,51 +1,71 @@
-// convex/admin.ts — Admin/staff functions for managing consultas and users.
-// Roles are read from the Convex users table for real-time updates (no re-auth needed).
-// JWT metadata is used as initial fallback for new users not yet synced.
-
-import { query, mutation, internalMutation, type QueryCtx, type MutationCtx } from "./_generated/server"
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+  type MutationCtx,
+} from "./_generated/server"
 import { v } from "convex/values"
-import type { Doc, Id } from "./_generated/dataModel"
+import type { Id } from "./_generated/dataModel"
+import { areaValidator, roleValidator, statusValidator } from "./constants"
+import {
+  getAuth,
+  isStaff,
+  requireActiveAuth,
+  requireAdmin,
+  requireStaff,
+} from "./authz"
 
-// ── Auth helper — reads role from users table (realtime), falls back to JWT ──
+const MAX_BULK_OPERATION_SIZE = 100
 
-async function getAuth(
-  ctx: { db: QueryCtx["db"]; auth: QueryCtx["auth"] }
-): Promise<{ userId: string; role: string; banned: boolean } | null> {
-  const identity = await ctx.auth.getUserIdentity()
-  if (!identity) return null
-
-  const user = await ctx.db
-    .query("users")
-    .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-    .first()
-
-  if (user) {
-    return { userId: identity.subject, role: user.role, banned: user.banned }
+function assertBulkSize(ids: readonly unknown[]): void {
+  if (ids.length === 0 || ids.length > MAX_BULK_OPERATION_SIZE) {
+    throw new Error(`Selecciona entre 1 y ${MAX_BULK_OPERATION_SIZE} consultas`)
   }
-
-  const role = ((identity as any)?.metadata?.role) || "client"
-  return { userId: identity.subject, role, banned: false }
 }
 
-function isStaff(role: string): boolean {
-  return role === "admin" || role === "staff"
+async function assertAdminCanModifyUser(
+  ctx: Pick<MutationCtx, "db">,
+  actorId: string,
+  targetId: Id<"users">,
+  removesActiveAdmin: boolean
+): Promise<void> {
+  const target = await ctx.db.get(targetId)
+  if (!target) throw new Error("Usuario no encontrado")
+  if (target.clerkId === actorId)
+    throw new Error("No puedes modificar tu propia cuenta desde este panel")
+
+  if (removesActiveAdmin && target.role === "admin" && !target.banned) {
+    const activeAdmins = await ctx.db
+      .query("users")
+      .withIndex("by_role", (q) => q.eq("role", "admin"))
+      .collect()
+    if (activeAdmins.filter((user) => !user.banned).length <= 1) {
+      throw new Error("Debe quedar al menos un administrador activo")
+    }
+  }
 }
 
 // ── Consulta management ──────────────────────────────────────────────────────
 
 export const listAll = query({
-  args: { status: v.optional(v.string()), area: v.optional(v.string()) },
+  args: {
+    status: v.optional(statusValidator),
+    area: v.optional(areaValidator),
+  },
   handler: async (ctx, { status, area }) => {
     const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) return null
-    if (status) {
-      const results = await ctx.db.query("consultas").withIndex("by_status", (q) => q.eq("status", status)).order("desc").collect()
-      if (area) return results.filter((c) => c.area === area)
-      return results
-    }
-    const results = await ctx.db.query("consultas").order("desc").collect()
-    if (area) return results.filter((c) => c.area === area)
-    return results
+    if (!auth || auth.banned || !isStaff(auth.role)) return null
+
+    const results = status
+      ? await ctx.db
+          .query("consultas")
+          .withIndex("by_status", (q) => q.eq("status", status))
+          .order("desc")
+          .collect()
+      : await ctx.db.query("consultas").order("desc").collect()
+
+    return area ? results.filter((consulta) => consulta.area === area) : results
   },
 })
 
@@ -53,32 +73,47 @@ export const getById = query({
   args: { id: v.id("consultas") },
   handler: async (ctx, { id }) => {
     const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) return null
+    if (!auth || auth.banned || !isStaff(auth.role)) return null
     return await ctx.db.get(id)
   },
 })
 
 export const updateStatus = mutation({
-  args: { id: v.id("consultas"), status: v.string() },
+  args: { id: v.id("consultas"), status: statusValidator },
   handler: async (ctx, { id, status }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
+    requireStaff(await requireActiveAuth(ctx))
+    const consulta = await ctx.db.get(id)
+    if (!consulta) throw new Error("Consulta no encontrada")
     await ctx.db.patch(id, { status, updatedAt: Date.now() })
     return { success: true as const }
   },
 })
 
 export const addResponse = mutation({
-  args: { id: v.id("consultas"), response: v.string(), respondedBy: v.string() },
-  handler: async (ctx, { id, response, respondedBy }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
+  args: { id: v.id("consultas"), response: v.string() },
+  handler: async (ctx, { id, response }) => {
+    requireStaff(await requireActiveAuth(ctx))
     const consulta = await ctx.db.get(id)
     if (!consulta) throw new Error("Consulta no encontrada")
-    const existing = consulta.responses || []
+
+    const text = response.trim()
+    if (!text || text.length > 2000)
+      throw new Error("La respuesta debe tener entre 1 y 2000 caracteres")
+    const responses = consulta.responses ?? []
+    if (responses.length >= 100)
+      throw new Error("La consulta alcanzó el máximo de comentarios")
+
+    const identity = await ctx.auth.getUserIdentity()
     await ctx.db.patch(id, {
       status: "respondida",
-      responses: [...existing, { text: response, respondedBy, createdAt: Date.now() }],
+      responses: [
+        ...responses,
+        {
+          text,
+          respondedBy: identity?.name ?? identity?.email ?? "Equipo Defensur",
+          createdAt: Date.now(),
+        },
+      ],
       updatedAt: Date.now(),
     })
     return { success: true as const }
@@ -88,8 +123,9 @@ export const addResponse = mutation({
 export const remove = mutation({
   args: { id: v.id("consultas") },
   handler: async (ctx, { id }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
+    requireAdmin(await requireActiveAuth(ctx))
+    const consulta = await ctx.db.get(id)
+    if (!consulta) throw new Error("Consulta no encontrada")
     await ctx.db.delete(id)
     return { success: true as const }
   },
@@ -101,78 +137,142 @@ export const getStats = query({
   args: {},
   handler: async (ctx) => {
     const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) return null
+    if (!auth || auth.banned || !isStaff(auth.role)) return null
+
     const all = await ctx.db.query("consultas").collect()
     return {
       total: all.length,
-      pendiente: all.filter((c) => c.status === "pendiente").length,
-      en_revision: all.filter((c) => c.status === "en_revision").length,
-      respondida: all.filter((c) => c.status === "respondida").length,
-      cerrada: all.filter((c) => c.status === "cerrada").length,
+      pendiente: all.filter((consulta) => consulta.status === "pendiente")
+        .length,
+      en_revision: all.filter((consulta) => consulta.status === "en_revision")
+        .length,
+      respondida: all.filter((consulta) => consulta.status === "respondida")
+        .length,
+      cerrada: all.filter((consulta) => consulta.status === "cerrada").length,
+      fileCount: all.reduce(
+        (count, consulta) => count + (consulta.files?.length ?? 0),
+        0
+      ),
       byArea: {
-        laboral: all.filter((c) => c.area === "laboral").length,
-        familia: all.filter((c) => c.area === "familia").length,
-        civil: all.filter((c) => c.area === "civil").length,
-        insolvencia: all.filter((c) => c.area === "insolvencia").length,
-        sumarios: all.filter((c) => c.area === "sumarios").length,
+        laboral: all.filter((consulta) => consulta.area === "laboral").length,
+        familia: all.filter((consulta) => consulta.area === "familia").length,
+        civil: all.filter((consulta) => consulta.area === "civil").length,
+        insolvencia: all.filter((consulta) => consulta.area === "insolvencia")
+          .length,
+        sumarios: all.filter((consulta) => consulta.area === "sumarios").length,
       },
     }
   },
 })
 
-// ── User sync ────────────────────────────────────────────────────────────────
+// ── Users and authorization ──────────────────────────────────────────────────
 
+// Runs from the Clerk administrative CLI after changing Clerk metadata/ban state.
+// It deliberately has no client-facing API surface.
 export const syncUser = internalMutation({
-  args: { userId: v.string(), email: v.string(), name: v.string(), role: v.string() },
-  handler: async (ctx, { userId, email, name, role }) => {
-    const existing = await ctx.db.query("users").withIndex("by_clerk_id", (q) => q.eq("clerkId", userId)).first()
+  args: {
+    userId: v.string(),
+    email: v.string(),
+    name: v.string(),
+    role: roleValidator,
+    banned: v.boolean(),
+  },
+  handler: async (ctx, { userId, email, name, role, banned }) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", userId))
+      .first()
+
     if (existing) {
-      if (existing.email !== email || existing.name !== name || existing.role !== role) {
-        await ctx.db.patch(existing._id, { email, name, role, updatedAt: Date.now() })
+      if (
+        existing.email !== email ||
+        existing.name !== name ||
+        existing.role !== role ||
+        existing.banned !== banned
+      ) {
+        await ctx.db.patch(existing._id, {
+          email,
+          name,
+          role,
+          banned,
+          updatedAt: Date.now(),
+        })
       }
       return existing._id
     }
-    return await ctx.db.insert("users", { clerkId: userId, email, name, role, banned: false, createdAt: Date.now(), updatedAt: Date.now() })
+
+    return await ctx.db.insert("users", {
+      clerkId: userId,
+      email,
+      name,
+      role,
+      banned,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
   },
 })
 
 export const refreshMyRole = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) return null
-    const user = await ctx.db.query("users").withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject)).first()
-    return { role: user?.role || "client" }
+    const auth = await getAuth(ctx)
+    if (!auth || auth.banned) return null
+    return { role: auth.role }
   },
 })
-
-// ── User management (admin only) ─────────────────────────────────────────────
 
 export const listUsers = query({
   args: {},
   handler: async (ctx) => {
     const auth = await getAuth(ctx)
-    if (!auth || auth.role !== "admin") return null
+    if (!auth || auth.banned || auth.role !== "admin") return null
     return await ctx.db.query("users").order("desc").collect()
   },
 })
 
-export const toggleBan = mutation({
-  args: { userId: v.id("users"), banned: v.boolean() },
-  handler: async (ctx, { userId, banned }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
-    await ctx.db.patch(userId, { banned, updatedAt: Date.now() })
+// These two internal functions are called only by adminActions.ts after Clerk's
+// state has been updated. Both re-check authorization to close TOCTOU windows.
+export const getAdminTarget = internalQuery({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    requireAdmin(await requireActiveAuth(ctx))
+    const target = await ctx.db.get(userId)
+    if (!target) throw new Error("Usuario no encontrado")
+    return { clerkId: target.clerkId }
+  },
+})
+
+export const setUserRole = internalMutation({
+  args: { userId: v.id("users"), role: roleValidator },
+  handler: async (ctx, { userId, role }) => {
+    const actor = requireAdmin(await requireActiveAuth(ctx))
+    const target = await ctx.db.get(userId)
+    if (!target) throw new Error("Usuario no encontrado")
+    await assertAdminCanModifyUser(
+      ctx,
+      actor.userId,
+      userId,
+      target.role === "admin" && role !== "admin"
+    )
+    await ctx.db.patch(userId, { role, updatedAt: Date.now() })
     return { success: true as const }
   },
 })
 
-export const updateUserRole = mutation({
-  args: { userId: v.id("users"), role: v.string() },
-  handler: async (ctx, { userId, role }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
-    await ctx.db.patch(userId, { role, updatedAt: Date.now() })
+export const setUserBan = internalMutation({
+  args: { userId: v.id("users"), banned: v.boolean() },
+  handler: async (ctx, { userId, banned }) => {
+    const actor = requireAdmin(await requireActiveAuth(ctx))
+    const target = await ctx.db.get(userId)
+    if (!target) throw new Error("Usuario no encontrado")
+    await assertAdminCanModifyUser(
+      ctx,
+      actor.userId,
+      userId,
+      banned && target.role === "admin"
+    )
+    await ctx.db.patch(userId, { banned, updatedAt: Date.now() })
     return { success: true as const }
   },
 })
@@ -180,11 +280,12 @@ export const updateUserRole = mutation({
 // ── Bulk operations ──────────────────────────────────────────────────────────
 
 export const bulkUpdateStatus = mutation({
-  args: { ids: v.array(v.id("consultas")), status: v.string() },
+  args: { ids: v.array(v.id("consultas")), status: statusValidator },
   handler: async (ctx, { ids, status }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
-    for (const id of ids) await ctx.db.patch(id, { status, updatedAt: Date.now() })
+    requireStaff(await requireActiveAuth(ctx))
+    assertBulkSize(ids)
+    for (const id of ids)
+      await ctx.db.patch(id, { status, updatedAt: Date.now() })
     return { success: true as const, count: ids.length }
   },
 })
@@ -192,9 +293,10 @@ export const bulkUpdateStatus = mutation({
 export const bulkCancel = mutation({
   args: { ids: v.array(v.id("consultas")) },
   handler: async (ctx, { ids }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || !isStaff(auth.role)) throw new Error("No autorizado")
-    for (const id of ids) await ctx.db.patch(id, { status: "cancelada", updatedAt: Date.now() })
+    requireStaff(await requireActiveAuth(ctx))
+    assertBulkSize(ids)
+    for (const id of ids)
+      await ctx.db.patch(id, { status: "cancelada", updatedAt: Date.now() })
     return { success: true as const, count: ids.length }
   },
 })
@@ -202,8 +304,8 @@ export const bulkCancel = mutation({
 export const bulkDelete = mutation({
   args: { ids: v.array(v.id("consultas")) },
   handler: async (ctx, { ids }) => {
-    const auth = await getAuth(ctx)
-    if (!auth || auth.role !== "admin") throw new Error("Solo administradores")
+    requireAdmin(await requireActiveAuth(ctx))
+    assertBulkSize(ids)
     for (const id of ids) await ctx.db.delete(id)
     return { success: true as const, count: ids.length }
   },

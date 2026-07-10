@@ -1,5 +1,7 @@
 # Defensur Panel — Feature Roadmap
 
+> **Historical roadmap.** The baseline statements here are dated 2026-07-09. Admin-wide consulta visibility, toast feedback, and bulk operations have since been implemented; revalidate every remaining item before scheduling it.
+
 > 2026-07-09. Post-refactor. Panel is clean: single-responsibility components, full-width layout, real Convex data, 0 `any` types.
 
 ---

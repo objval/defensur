@@ -17,7 +17,7 @@ export default function Page() {
       />
       <ServicePageContent
         title={service.title}
-        subtitle={service.subtitle}
+
         intro={service.intro}
         highlights={service.highlights}
         details={service.details}

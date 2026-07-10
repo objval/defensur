@@ -13,11 +13,16 @@ export default function Page() {
       <PageHero
         title={service.heroTitle}
         subtitle={service.heroSubtitle}
-        breadcrumbs={[{ label: service.title, href: "/insolvencia-y-reemprendimiento-temuco/" }]}
+        breadcrumbs={[
+          {
+            label: service.title,
+            href: "/insolvencia-y-reemprendimiento-temuco/",
+          },
+        ]}
       />
       <ServicePageContent
         title={service.title}
-        subtitle={service.subtitle}
+
         intro={service.intro}
         highlights={service.highlights}
         details={service.details}

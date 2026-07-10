@@ -7,14 +7,20 @@ import { WhatsAppCta, ContactInfo } from "@/components/ui/whatsapp-cta"
 
 type ServicePageProps = {
   title: string
-  subtitle: string
+
   intro: string
   highlights: { title: string; description: string }[]
   details: { heading: string; content: string }[]
   faqs: { question: string; answer: string }[]
 }
 
-function AccordionItem({ question, answer }: { question: string; answer: string }) {
+function AccordionItem({
+  question,
+  answer,
+}: {
+  question: string
+  answer: string
+}) {
   const [open, setOpen] = React.useState(false)
   return (
     <div className="border-b border-border/50 last:border-0">
@@ -24,7 +30,7 @@ function AccordionItem({ question, answer }: { question: string; answer: string 
         className="flex w-full items-center justify-between gap-4 py-5 text-left"
         aria-expanded={open}
       >
-        <h3 className="font-[family-name:var(--font-heading)] text-base md:text-lg font-semibold text-primary">
+        <h3 className="font-[family-name:var(--font-heading)] text-base font-semibold text-primary md:text-lg">
           {question}
         </h3>
         <ChevronDown
@@ -40,7 +46,7 @@ function AccordionItem({ question, answer }: { question: string; answer: string 
           open ? "max-h-96" : "max-h-0"
         )}
       >
-        <p className="pb-5 text-sm text-muted-foreground leading-relaxed pr-12">
+        <p className="pr-12 pb-5 text-sm leading-relaxed text-muted-foreground">
           {answer}
         </p>
       </div>
@@ -50,7 +56,7 @@ function AccordionItem({ question, answer }: { question: string; answer: string 
 
 export function ServicePageContent({
   title,
-  subtitle,
+
   intro,
   highlights,
   details,
@@ -59,20 +65,22 @@ export function ServicePageContent({
   return (
     <>
       {/* Intro */}
-      <section className="py-12 md:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
+      <section className="bg-background py-12 md:py-20">
+        <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
           <div className="max-w-3xl space-y-6">
-            <p className="text-lg text-muted-foreground leading-relaxed">{intro}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              {intro}
+            </p>
+            <div className="grid grid-cols-1 gap-4 pt-4 sm:grid-cols-2 lg:grid-cols-3">
               {highlights.map((h) => (
                 <div
                   key={h.title}
-                  className="p-5 rounded-xl border border-border bg-card"
+                  className="rounded-xl border border-border bg-card p-5"
                 >
-                  <h3 className="font-[family-name:var(--font-heading)] font-semibold text-primary mb-2">
+                  <h3 className="mb-2 font-[family-name:var(--font-heading)] font-semibold text-primary">
                     {h.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {h.description}
                   </p>
                 </div>
@@ -83,16 +91,16 @@ export function ServicePageContent({
       </section>
 
       {/* Details */}
-      <section className="py-12 md:py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-8 space-y-12">
+      <section className="bg-muted/30 py-12 md:py-20">
+        <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-20">
+            <div className="space-y-12 lg:col-span-8">
               {details.map((d) => (
                 <div key={d.heading} className="space-y-4">
                   <h2 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-primary">
                     {d.heading}
                   </h2>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  <p className="leading-relaxed whitespace-pre-line text-muted-foreground">
                     {d.content}
                   </p>
                 </div>
@@ -101,13 +109,13 @@ export function ServicePageContent({
 
             {/* Sidebar CTA */}
             <aside className="lg:col-span-4">
-              <div className="lg:sticky lg:top-32 rounded-2xl border border-border bg-card p-6 md:p-8 space-y-5">
+              <div className="space-y-5 rounded-2xl border border-border bg-card p-6 md:p-8 lg:sticky lg:top-32">
                 <h3 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-primary">
                   ¿Necesitas asesoría en {title.toLowerCase()}?
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Cuéntanos tu caso y te responderemos en menos de 24 horas. Primera
-                  consulta gratuita.
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Cuéntanos tu caso y te responderemos en menos de 24 horas.
+                  Primera consulta gratuita.
                 </p>
                 <WhatsAppCta context={title} className="w-full" />
                 <ContactInfo />
@@ -119,15 +127,19 @@ export function ServicePageContent({
 
       {/* FAQ */}
       {faqs.length > 0 && (
-        <section className="py-12 md:py-20 bg-background">
-          <div className="max-w-3xl mx-auto px-5 md:px-12 lg:px-24">
-            <h2 className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl font-semibold text-primary mb-8">
+        <section className="bg-background py-12 md:py-20">
+          <div className="mx-auto max-w-3xl px-5 md:px-8 lg:px-12">
+            <h2 className="mb-8 font-[family-name:var(--font-heading)] text-2xl font-semibold text-primary md:text-3xl">
               Preguntas frecuentes sobre{" "}
-              <span className="italic font-normal">{title.toLowerCase()}</span>
+              <span className="font-normal italic">{title.toLowerCase()}</span>
             </h2>
             <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
               {faqs.map((faq) => (
-                <AccordionItem key={faq.question} question={faq.question} answer={faq.answer} />
+                <AccordionItem
+                  key={faq.question}
+                  question={faq.question}
+                  answer={faq.answer}
+                />
               ))}
             </div>
           </div>

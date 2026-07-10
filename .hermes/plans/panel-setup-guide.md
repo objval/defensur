@@ -1,170 +1,97 @@
-# Defensur Panel — Setup Guide
+# Defensur Panel — Clerk + Convex Setup Guide
 
-This guide walks you through everything you need to do manually to get the Clerk + Convex auth system running. The code is already scaffolded and packages are installed — you just need to create accounts, get keys, and configure JWT templates.
+> Active setup guide as of 2026-07-09. Do not copy values from this document into source control.
 
----
+## 1. Clerk
 
-## Step 1: Create a Clerk Account
+1. Create/open the Defensur Clerk application.
+2. Configure the approved local and production redirect URLs:
+   - `http://localhost:3000/sign-in`
+   - `http://localhost:3000/sign-up`
+   - `http://localhost:3000/panel`
+   - `https://defensuraraucania.cl/sign-in`
+   - `https://defensuraraucania.cl/panel`
+3. Copy the Publishable Key and Secret Key from **API Keys**.
+4. Enable the Convex integration or create the Clerk JWT template required by Convex. The issuer must match the Clerk Frontend API domain configured below.
 
-1. Go to [clerk.com/sign-up](https://dashboard.clerk.com/sign-up)
-2. Create an account
-3. Create a new application — name it "Defensur"
-4. In **User & Organizations → User authentication → Social connections**, enable **Google**
-5. Go to **Integrations → Convex → Activate**
-6. Copy your **Frontend API URL** (format: `https://verb-noun-00.clerk.accounts.dev`)
-7. Go to **API Keys** → copy **Publishable Key** (`pk_test_...`) and **Secret Key** (`sk_test_...`)
+The current backend does **not** authorize from Clerk metadata claims. `publicMetadata.role` is mirrored for Clerk but Convex reads role and ban state from its own `users` table.
 
-## Step 2: Configure Clerk JWT Template (CRITICAL for roles)
+## 2. Convex
 
-The Convex integration auto-creates a JWT template called "convex". You need to ensure it includes the `metadata` claim so roles work.
-
-1. Go to **JWT Templates** in Clerk Dashboard
-2. Find the "convex" template (auto-created by the Convex integration)
-3. Edit the template — ensure the claims include:
-   ```json
-   {
-     "aud": "convex",
-     "metadata": "{{user.public_metadata}}"
-   }
-   ```
-4. Also go to **Sessions → Customize session token** and add:
-   ```json
-   { "metadata": "{{user.public_metadata}}" }
-   ```
-   (This makes role data available in both the session token and the Convex JWT)
-
-**Why this matters:** The `metadata` claim carries `publicMetadata.role` from Clerk to Convex. Without it, Convex functions can't check roles — every user defaults to "client".
-
-## Step 3: Set Redirect URLs
-
-In Clerk Dashboard → **Sessions → Customize redirects**:
-
-- Sign-in: `http://localhost:3000/sign-in`
-- Sign-up: `http://localhost:3000/sign-up`
-- After sign-in: `http://localhost:3000/panel`
-- After sign-out: `http://localhost:3000/`
-
-For production, add:
-- `https://defensuraraucania.cl/sign-in`
-- `https://defensuraraucania.cl/panel`
-
-## Step 4: Create a Convex Account
-
-1. Go to [convex.dev](https://dashboard.convex.dev) and sign up
-2. Create a new project — name it "Defensur"
-3. Copy the **Deployment URL** (format: `https://animated-fox-123.convex.cloud`)
-4. Go to **Settings → Environment Variables** → add:
-   - Name: `CLERK_JWT_ISSUER_DOMAIN`
-   - Value: your Clerk Frontend API URL from Step 1.6
-
-## Step 5: Create `.env.local`
-
-Create a file at `D:\Projects\defensur\.env.local`:
+Create/open the project deployment and set its environment variables:
 
 ```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_YOUR_KEY_HERE
-CLERK_SECRET_KEY=sk_test_YOUR_KEY_HERE
-NEXT_PUBLIC_CONVEX_URL=https://YOUR_PROJECT.convex.cloud
-CLERK_JWT_ISSUER_DOMAIN=https://YOUR_APP.clerk.accounts.dev
+CLERK_JWT_ISSUER_DOMAIN=https://your-clerk-frontend-api-domain
+CLERK_SECRET_KEY=sk_...
 ```
 
-## Step 6: Initialize Convex
+`CLERK_JWT_ISSUER_DOMAIN` must correspond to the issuer domain accepted by `convex/auth.config.ts`. `CLERK_SECRET_KEY` is required only for privileged `adminActions.ts` to synchronize changes back to Clerk.
+
+## 3. Local environment
+
+Create `D:\Projects\defensur\.env.local`:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+```
+
+Keep this file untracked. Convex reads its own deployment variables; do not rely on a browser-exposed environment value for backend secrets.
+
+## 4. Run locally
 
 ```bash
 cd D:\Projects\defensur
 npx convex dev
-```
-
-This will:
-- Create `convex/_generated/` (auto-generated types)
-- Sync `convex/auth.config.ts` and `convex/schema.ts` to your backend
-- Start watching for changes
-
-Leave this running. It auto-redeploys when you edit files in `convex/`.
-
-## Step 7: Test Locally
-
-```bash
 npm run dev
 ```
 
-- `http://localhost:3000` → marketing site (no auth)
-- `http://localhost:3000/panel` → redirects to sign-in
-- Sign in with Google → land on `/panel`
-- `/panel/consultas/nueva` → form to submit a consulta
+`convex dev` generates `convex/_generated/` and deploys the development functions. Keep it running while iterating on `convex/` source.
 
-## Step 8: Make Yourself Admin
+## 5. First administrator
 
-After you've signed in once (creating your Clerk user):
+1. Sign in to `/panel` once.
+2. Find the Clerk user ID:
 
-1. Find your user ID:
    ```bash
    npm run admin:list-users
    ```
-   Copy the ID (format: `user_xxxxx`)
 
-2. Set yourself as admin:
+3. Assign the role and mirror it to Convex:
+
    ```bash
-   npm run admin:set-role user_xxxxx admin
+   npm run admin:set-role user_xxx admin
    ```
 
-3. **Sign out and sign back in** — existing JWT tokens don't pick up metadata changes until you re-authenticate.
+4. Re-authenticate to refresh Clerk session metadata. Convex permissions update immediately after the synchronization succeeds.
 
-## Admin Toolkit Commands
-
-The `scripts/admin.mjs` CLI lets me manage your Clerk users and Convex data:
+## 6. Operational commands
 
 ```bash
-npm run admin                          # Show help
-npm run admin:list-users               # List all Clerk users
-npm run admin:set-role <id> <role>     # Set role (admin/client/staff)
-npm run admin:ban <id>                 # Ban a user
-npm run admin:unban <id>               # Unban a user
-node scripts/admin.mjs get-user <id>   # Get user details
-node scripts/admin.mjs whoami <id>     # Show user metadata
+npm run admin
+npm run admin:list-users
+npm run admin:set-role <userId> <admin|staff|client>
+npm run admin:ban <userId>
+npm run admin:unban <userId>
 ```
 
-Once you create the Clerk account and give me the Secret Key, I can:
-- List your users
-- Set roles (admin, client, staff)
-- Ban/unban users
-- Query Convex tables
-- Check consultas
+The CLI loads `.env.local` using Node’s `--env-file` flag, preserves existing Clerk public metadata, and invokes internal Convex synchronization. Never run it with an untrusted user ID or a production secret in shared logs.
 
-## Step 9: Deploy to Vercel
+## 7. Acceptance test
 
-1. Vercel → Project Settings → Environment Variables → add all 4 vars
-2. Clerk → update redirect URLs to production domain
-3. Deploy Convex:
-   ```bash
-   npx convex deploy
-   ```
-4. Convex dashboard → Settings → Environment Variables → add `CLERK_JWT_ISSUER_DOMAIN` for production
-5. Push to `main` → Vercel auto-deploys
+- [ ] `npx convex dev` or `npx convex codegen` succeeds.
+- [ ] `npm run lint`, `npm run typecheck`, and `npm run build` succeed.
+- [ ] Logged-out `/panel` requests redirect to Clerk sign-in.
+- [ ] Signed-in clients can create, list, cancel, and comment on their own consultas.
+- [ ] Staff can list/update all consultas but cannot delete them or administer users.
+- [ ] Admins can change another user’s role/ban state, while the last active admin and their own account remain protected.
+- [ ] Uploads outside the allowed type/size limits are rejected; an unauthorized user cannot obtain an attachment URL.
 
----
+## 8. Production
 
-## Role System
-
-| Role | Can access /panel | Can see all consultas | Can ban users | Can delete consultas |
-|------|:-:|:-:|:-:|:-:|
-| `client` | ✅ | ❌ (own only) | ❌ | ❌ |
-| `staff` | ✅ | ✅ | ❌ | ❌ |
-| `admin` | ✅ | ✅ | ✅ | ✅ |
-
-New users get `client` by default. Use `npm run admin:set-role` to promote.
-
-## Architecture
-
-```
-proxy.ts (clerkMiddleware) → sets auth context
-    ↓
-app/panel/layout.tsx → auth.protect() → redirect to /sign-in if not authenticated
-    ↓
-Clerk JWT (with metadata.role) → Convex auth.config.ts validates token
-    ↓
-Convex functions check identity.metadata.role for authorization
-    ↓
-admin.ts: staff/admin functions (listAll, updateStatus, ban, etc.)
-consultas.ts: client functions (listMine, create, getMine)
-```
+1. Set the three browser/Next.js variables in Vercel: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, and `NEXT_PUBLIC_CONVEX_URL`.
+2. Set `CLERK_JWT_ISSUER_DOMAIN` and `CLERK_SECRET_KEY` in the production Convex deployment.
+3. Deploy Convex to the intended production deployment.
+4. Deploy the Vercel build.
+5. Perform the acceptance test with a client, staff account, and a separate admin account.

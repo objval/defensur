@@ -1,5 +1,7 @@
 # Defensur Panel — Clerk + Convex Auth & Consulta Especializada
 
+> **Historical implementation plan (superseded).** The panel, realtime consultas, uploads, and role-based administration are implemented. Use `AGENTS.md` and `.hermes/plans/panel-setup-guide.md` for current architecture and setup.
+
 > **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
 > **Status:** Initial structure scaffolded. Code is ready — just needs `npm install` + `.env.local` + `npx convex dev`.
 

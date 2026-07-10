@@ -70,7 +70,7 @@ export function TeamSection() {
 
   return (
     <section className="py-16 md:py-28" aria-label="Nuestro equipo">
-      <div className="mx-auto max-w-7xl px-5 md:px-12 lg:px-24">
+      <div className="mx-auto max-w-7xl px-5 md:px-8 lg:px-12">
         <div className="mb-12 grid gap-8 border-b border-border/70 pb-10 md:mb-16 md:pb-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.9fr)] lg:items-end">
           <div className="space-y-4">
             <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy">

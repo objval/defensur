@@ -12,10 +12,9 @@
 //   help                                Show this help
 
 import { createClerkClient } from "@clerk/backend"
+import { execFileSync } from "node:child_process"
 
 const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL
-
 if (!CLERK_SECRET_KEY) {
   console.error("❌ CLERK_SECRET_KEY not set in environment")
   console.error("   Create a .env.local file with CLERK_SECRET_KEY=sk_test_xxx")
@@ -25,6 +24,28 @@ if (!CLERK_SECRET_KEY) {
 
 /** @type {import('@clerk/backend').ClerkClient} */
 const clerk = createClerkClient({ secretKey: CLERK_SECRET_KEY })
+
+function convexCommand() {
+  return process.platform === "win32" ? "node_modules/.bin/convex.cmd" : "node_modules/.bin/convex"
+}
+
+function userSnapshot(user) {
+  const metadataRole = user.publicMetadata?.role
+  return {
+    userId: user.id,
+    email: user.emailAddresses?.[0]?.emailAddress || "",
+    name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+    role: ["admin", "staff", "client"].includes(metadataRole) ? metadataRole : "client",
+    banned: user.banned,
+  }
+}
+
+function syncUserToConvex(user) {
+  const snapshot = userSnapshot(user)
+  execFileSync(convexCommand(), ["run", "admin:syncUser", JSON.stringify(snapshot)], {
+    stdio: "inherit",
+  })
+}
 
 // ── Commands ────────────────────────────────────────────────────────────────
 
@@ -40,11 +61,13 @@ async function setRole(userId, role) {
   }
 
   try {
-    await clerk.users.updateUser(userId, {
-      publicMetadata: { role },
+    const currentUser = await clerk.users.getUser(userId)
+    const user = await clerk.users.updateUser(userId, {
+      publicMetadata: { ...currentUser.publicMetadata, role },
     })
-    console.log(`✅ Set role "${role}" for user ${userId}`)
-    console.log(`   User must sign out and back in for the change to take effect.`)
+    syncUserToConvex(user)
+    console.log(`✅ Set role "${role}" for user ${userId} in Clerk and Convex`)
+    console.log(`   Convex permissions update immediately; re-authenticate to refresh Clerk metadata.`)
   } catch (e) {
     console.error(`❌ Failed to set role: ${e.message}`)
     process.exit(1)
@@ -97,8 +120,9 @@ async function listUsers() {
  */
 async function banUser(userId) {
   try {
-    await clerk.users.updateUser(userId, { banned: true })
-    console.log(`✅ Banned user ${userId}`)
+    const user = await clerk.users.banUser(userId)
+    syncUserToConvex(user)
+    console.log(`✅ Banned user ${userId} in Clerk and Convex`)
   } catch (e) {
     console.error(`❌ Failed to ban user: ${e.message}`)
     process.exit(1)
@@ -110,8 +134,9 @@ async function banUser(userId) {
  */
 async function unbanUser(userId) {
   try {
-    await clerk.users.updateUser(userId, { banned: false })
-    console.log(`✅ Unbanned user ${userId}`)
+    const user = await clerk.users.unbanUser(userId)
+    syncUserToConvex(user)
+    console.log(`✅ Unbanned user ${userId} in Clerk and Convex`)
   } catch (e) {
     console.error(`❌ Failed to unban user: ${e.message}`)
     process.exit(1)

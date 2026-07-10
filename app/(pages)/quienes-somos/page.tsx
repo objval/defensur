@@ -34,7 +34,7 @@ export default function Page() {
 
       {/* Story */}
       <section className="py-12 md:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="space-y-6">
               <h2 className="font-[family-name:var(--font-heading)] text-3xl font-semibold text-primary leading-tight">
@@ -92,7 +92,7 @@ export default function Page() {
 
       {/* Team */}
       <section className="py-12 md:py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-12">
           <h2 className="font-[family-name:var(--font-heading)] text-3xl font-semibold text-primary mb-10">
             Nuestro equipo
           </h2>

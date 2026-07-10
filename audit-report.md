@@ -1,6 +1,8 @@
 # Defensur Araucanía — SEO, Accessibility & Metadata Audit Report
 **Date:** 2026-07-08 | **Project:** D:\Projects\defensur | **Target:** defensuraraucania.cl (es_CL, Temuco/La Araucanía)
 
+> **Historical snapshot.** Findings reflect the repository on 2026-07-08 and are not a current defect list. Revalidate every item against the active code and `AGENTS.md` before planning work.
+
 ---
 
 ## Executive Summary

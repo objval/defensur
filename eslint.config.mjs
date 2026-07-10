@@ -11,6 +11,10 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "convex/_generated/**",
+    ".agents/**",
+    "agent/**",
+    ".hermes/skills/**",
     "next-env.d.ts",
   ]),
 ]);

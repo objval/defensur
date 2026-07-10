@@ -7,7 +7,7 @@ const stats = STATS
 export function StatsBar() {
   return (
     <section className="relative bg-brand-navy overflow-hidden" aria-label="Estadísticas">
-      <div className="relative max-w-7xl mx-auto px-5 md:px-12 lg:px-24 py-12 md:py-16">
+      <div className="relative max-w-7xl mx-auto px-5 md:px-8 lg:px-12 py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
@@ -53,7 +53,7 @@ export function CTASection() {
           </a>
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          Atención presencial en {SITE.address} · {SITE.hours.display}
+          Atención presencial en Temuco (Antonio Varas 687, Of. 1405) y Los Ángeles (Almagro 483, Of. 403) · {SITE.hours.display}
         </p>
       </div>
     </section>

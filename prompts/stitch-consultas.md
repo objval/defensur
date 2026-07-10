@@ -1,5 +1,7 @@
 # Stitch Prompt — "Mis Consultas" Page
 
+> **Design brief / historical reference.** Current implementation and constraints live in `AGENTS.md` and `DESIGN.md`; do not treat this prompt as a backend or authorization specification.
+
 > Paste this into Stitch AI or any design-to-code tool.
 > Brand: Defensur Araucanía (Chilean law firm). Spanish (es_CL). Light mode only.
 

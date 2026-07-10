@@ -1,5 +1,7 @@
 # Panel Dashboard — Impeccable Design Audit
 
+> **Historical audit.** This is a 2026-07-09 snapshot. Its refactor recommendations and line counts are superseded where they conflict with `AGENTS.md` or current code.
+
 > 2026-07-09. 7 panel files, 1,836 total lines.
 
 ---

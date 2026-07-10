@@ -3,6 +3,7 @@ import { DefensurHomeHero } from "@/components/defensur-home-hero"
 import { ServicesGrid } from "@/components/services-grid"
 import { VideoSection } from "@/components/video-section"
 import { SuccessCases } from "@/components/success-cases"
+import { ReelsSection } from "@/components/reels-section"
 import { SentenciasSection } from "@/components/sentencias-section"
 import { FAQSection } from "@/components/faq-section"
 import { CTASection } from "@/components/stats-bar"
@@ -25,6 +26,7 @@ export default function Page() {
       <ServicesGrid />
       <VideoSection />
       <SuccessCases />
+      <ReelsSection />
       <SentenciasSection />
       <FAQSection />
       <CTASection />

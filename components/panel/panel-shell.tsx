@@ -9,12 +9,9 @@ import { PanelSidebar } from "./panel-sidebar"
 
 export function PanelShell({ children }: { children: ReactNode }) {
   const { isLoaded: clerkReady, isSignedIn } = useUser()
-  const { isLoading: convexLoading } = useConvexAuth()
+  const { isLoading: convexLoading, isAuthenticated } = useConvexAuth()
 
-  // Wait for both Clerk and Convex auth to be fully ready
-  const authReady = clerkReady && isSignedIn && !convexLoading
-
-  if (!authReady) {
+  if (!clerkReady || convexLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
@@ -25,16 +22,25 @@ export function PanelShell({ children }: { children: ReactNode }) {
     )
   }
 
+  if (!isSignedIn || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6 text-center">
+        <p className="max-w-md text-sm text-muted-foreground">
+          No fue posible validar tu sesión con el sistema de consultas. Cierra
+          sesión e inténtalo nuevamente.
+        </p>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       <PanelSidebar />
-      <main className="flex-1 min-w-0">
-        <div className="flex items-center justify-end px-4 py-3 border-b border-border bg-card md:hidden">
+      <main className="min-w-0 flex-1 flex flex-col">
+        <div className="flex items-center justify-end border-b border-border bg-card px-4 py-3 md:hidden">
           <UserButton />
         </div>
-        <div className="p-4 md:p-6 lg:p-8">
-          {children}
-        </div>
+        <div className="flex-1">{children}</div>
       </main>
       <Toaster richColors position="top-right" />
     </div>

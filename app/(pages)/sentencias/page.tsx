@@ -14,7 +14,9 @@ export const metadata: Metadata = {
   },
 }
 
-const sentencias = SENTENCIAS
+const sentencias = [...SENTENCIAS].sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+)
 
 export default function Page() {
   return (
@@ -26,7 +28,7 @@ export default function Page() {
       />
 
       <section className="py-12 md:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {sentencias.map((s, i) => (
               <Link

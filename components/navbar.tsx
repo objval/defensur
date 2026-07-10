@@ -2,11 +2,11 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useTheme } from "next-themes"
 import {
   ArrowRight,
   ChevronDown,
-  Gavel,
   Menu,
   MoonStar,
   SunMedium,
@@ -184,7 +184,7 @@ export function Navbar() {
       aria-label="Barra de navegación"
     >
       <Link href="/" className="text-2xl font-bold text-primary flex items-center gap-2 font-[family-name:var(--font-heading)]">
-        <Gavel className="size-6" aria-hidden="true" />
+        <Image src="/logo.png" alt="Defensur Logo" width={64} height={64} className="h-6 w-auto object-contain dark:invert" />
         Defensur
       </Link>
 

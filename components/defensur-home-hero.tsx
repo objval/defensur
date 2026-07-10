@@ -38,7 +38,7 @@ export function DefensurHomeHero() {
               <div className="space-y-5">
                 <h1 className="font-[family-name:var(--font-heading)] text-[clamp(2.2rem,8vw,4.5rem)] leading-[1.08] tracking-[-0.02em] font-bold text-primary max-w-2xl">
                   Confianza y{" "}
-                  <span className="italic font-normal">compromiso en el sur de Chile.</span>
+                  <span className="italic font-normal">compromiso desde el sur de Chile.</span>
                 </h1>
                 <p className="text-lg leading-[1.7] text-muted-foreground max-w-xl">
                   Protegemos sus intereses con una estructura legal sólida y sofisticada. Defensur combina la tradición jurídica con la agilidad contemporánea.

@@ -80,6 +80,7 @@ function ReelCard({ reel }: { reel: Reel }) {
               year: "numeric",
               month: "short",
               day: "numeric",
+              timeZone: "UTC",
             })}
           </span>
           <a

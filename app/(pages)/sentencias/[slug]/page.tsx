@@ -24,6 +24,7 @@ export async function generateMetadata({
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   })
 
   return {

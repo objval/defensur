@@ -47,6 +47,7 @@ export function SentenciaDetail({ s }: { s: Sentencia }) {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   })
 
   return (

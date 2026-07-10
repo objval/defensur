@@ -67,6 +67,7 @@ export function SentenciasSection() {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
+                      timeZone: "UTC",
                     })}
                   </span>
                 </div>

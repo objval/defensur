@@ -1,7 +1,6 @@
 "use client"
 
 import { Scale, BriefcaseBusiness, ShieldCheck, Phone } from "lucide-react"
-import { Marquee } from "@/components/marquee"
 import { cn } from "@/lib/utils"
 import { MARQUEE_QUESTIONS } from "@/lib/site"
 
@@ -35,10 +34,6 @@ const values = [
 ]
 
 export function WhyDefensur() {
-  const m1 = marqueeQuestions.slice(0, 4)
-  const m2 = marqueeQuestions.slice(4, 8)
-  const m3 = marqueeQuestions.slice(8)
-
   return (
     <section className="relative bg-background py-16 md:py-28">
       <div className="mx-auto max-w-full">
@@ -54,50 +49,16 @@ export function WhyDefensur() {
           </p>
         </div>
 
-        {/* ── Marquee rows ───────────────────────────────────────────────── */}
-        <div className="relative mx-auto mt-12 max-w-5xl overflow-hidden">
-          {/* Edge fades */}
-          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 md:w-24 bg-gradient-to-r from-[var(--background)] to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 md:w-24 bg-gradient-to-l from-[var(--background)] to-transparent" />
-
-          <div className="-mx-6 flex w-screen flex-col gap-2.5 md:-mx-10 lg:-mx-16">
-            <Marquee className="[--duration:40s] [--gap:0.75rem]" repeat={2}>
-              {m1.map((q) => (
-                <span
-                  key={q}
-                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
-                >
-                  {q}
-                </span>
-              ))}
-            </Marquee>
-
-            <Marquee
-              className="[--duration:48s] [--gap:0.75rem]"
-              repeat={2}
-              reverse
+        {/* ── Questions ───────────────────────────────────────────────────── */}
+        <div className="mx-auto mt-12 flex max-w-5xl flex-wrap justify-center gap-2.5 px-5 md:px-10">
+          {marqueeQuestions.map((q) => (
+            <span
+              key={q}
+              className="rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
             >
-              {m2.map((q) => (
-                <span
-                  key={q}
-                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
-                >
-                  {q}
-                </span>
-              ))}
-            </Marquee>
-
-            <Marquee className="[--duration:36s] [--gap:0.75rem]" repeat={2}>
-              {m3.map((q) => (
-                <span
-                  key={q}
-                  className="shrink-0 rounded-full border border-brand-navy/10 bg-brand-navy/[0.04] px-4 py-2 text-sm text-brand-navy/80"
-                >
-                  {q}
-                </span>
-              ))}
-            </Marquee>
-          </div>
+              {q}
+            </span>
+          ))}
         </div>
 
         {/* ── Values grid ────────────────────────────────────────────────── */}

@@ -6,7 +6,7 @@ import { Clock, Phone } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { WhyDefensur } from "@/components/why-defensur"
 import { TeamSection } from "@/components/team-section"
-import { ContactForm } from "@/components/contact-form"
+import { HeroContactForm } from "@/components/hero-contact-form"
 import { AREAS_DE_PRACTICA, SITE } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
@@ -19,7 +19,7 @@ export function DefensurHomeHero() {
 
       {/* —— Hero section ——————————————————————————————————————————————— */}
       <main>
-        <section className="relative z-10 pt-24 md:pt-32 pb-16 md:pb-24 px-5 md:px-12 lg:px-24 max-w-7xl mx-auto" aria-label="Inicio">
+        <section className="relative z-10 mx-auto max-w-7xl px-5 pt-24 pb-16 md:px-8 md:pt-32 md:pb-24 lg:px-12" aria-label="Inicio">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start lg:items-center">
             {/* —— Left column —————————————————————————————————————————————— */}
             <div className="lg:col-span-7 flex flex-col gap-8">
@@ -39,7 +39,7 @@ export function DefensurHomeHero() {
               <div className="space-y-5">
                 <h1 className="font-[family-name:var(--font-heading)] text-[clamp(2.2rem,8vw,4.5rem)] leading-[1.08] tracking-[-0.02em] font-bold text-primary max-w-2xl">
                   Confianza y <br />
-                  <span className="italic font-normal">compromiso en el sur de Chile.</span>
+                  <span className="italic font-normal">compromiso desde el sur de Chile.</span>
                 </h1>
                 <p className="text-lg leading-[1.7] text-muted-foreground max-w-xl">
                   Protegemos sus intereses con una estructura legal sólida y sofisticada. Defensur combina la tradición jurídica con la agilidad contemporánea.
@@ -59,6 +59,21 @@ export function DefensurHomeHero() {
                   </p>
                 </div>
               </div>
+
+              {/* Marca Registrada badge */}
+              <a
+                href="https://www.defensur.cl"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 self-start px-4 py-2 rounded-full border border-brand-navy/20 bg-brand-navy/5 hover:bg-brand-navy/10 hover:-translate-y-0.5 transition-all cursor-pointer select-none"
+                aria-label="Defensur Marca Registrada — visitar sitio oficial"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5 text-brand-navy shrink-0" aria-hidden="true">
+                  <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Z" clipRule="evenodd"/>
+                </svg>
+                <span className="text-[11px] font-bold tracking-[0.12em] text-brand-navy uppercase leading-none">Defensur</span>
+                <span className="text-[10px] font-medium tracking-[0.08em] text-muted-foreground leading-none border-l border-brand-navy/20 pl-2.5">Marca Registrada <sup className="text-[8px]">®</sup></span>
+              </a>
 
               {/* Team avatars + years */}
               <div className="flex items-center gap-6 pt-2">
@@ -91,7 +106,7 @@ export function DefensurHomeHero() {
 
             {/* —— Right column: form */}
             <div className="lg:col-span-5 relative lg:-ml-12">
-              <ContactForm />
+              <HeroContactForm />
             </div>
           </div>
         </section>
